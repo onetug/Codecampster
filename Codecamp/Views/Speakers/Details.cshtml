@@ -1,0 +1,79 @@
+﻿@model Codecamp.Models.Speaker
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Speaker</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.CodecampUser.FirstName)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.CodecampUser.FirstName)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.CodecampUser.LastName)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.CodecampUser.LastName)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.CompanyName)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.CompanyName)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Bio)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Bio)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.WebsiteUrl)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.WebsiteUrl)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.BlogUrl)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.BlogUrl)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Image)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Image)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.IsMvp)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.IsMvp)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.LinkedIn)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.LinkedIn)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.CodecampUser.TwitterHandle)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.CodecampUser.TwitterHandle)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.SpeakerId">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

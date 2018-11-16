@@ -1,0 +1,170 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Profile";
+}
+
+<h4>@ViewData["Title"]</h4>
+@Html.Partial("_StatusMessage", Model.StatusMessage)
+
+<div class="row">
+    <div class="col-md-6">
+        <form id="profile-form" method="post" enctype="multipart/form-data">
+            @if (Model.IsSpeaker)
+            {
+                <div asp-validation-summary="All" class="text-danger"></div>
+                <div class="form-group">
+                    <label asp-for="Username"></label>
+                    <input asp-for="Username" class="form-control" disabled />
+                </div>
+                <div class="form-group">
+                    <label asp-for="Input.Email"></label>
+                    @if (Model.IsEmailConfirmed)
+                    {
+                        <div class="input-group">
+                            <input asp-for="Input.Email" class="form-control" />
+                            <span class="input-group-addon" aria-hidden="true"><span class="glyphicon glyphicon-ok text-success"></span></span>
+                        </div>
+                    }
+                    else
+                    {
+                        <input asp-for="Input.Email" class="form-control" />
+                        <button id="email-verification" type="submit" asp-page-handler="SendVerificationEmail" class="btn btn-link">Send verification email</button>
+                    }
+                    <span asp-validation-for="Input.Email" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <div class="form-group">
+                        <label asp-for="Input.FirstName"></label>
+                        <input asp-for="Input.FirstName" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Input.LastName"></label>
+                        <input asp-for="Input.LastName" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Input.CompanyName"></label>
+                        <input asp-for="Input.CompanyName" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Input.Image"></label>
+                        @{
+                            string imgSrc = string.Empty;
+                            if (Model.Input.Image != null && Model.Input.Image.Length != 0)
+                            {
+                                var base64 = Convert.ToBase64String(Model.Input.Image);
+                                imgSrc = String.Format("data:image;base64,{0}", base64);
+                            }
+                            else
+                            {
+                                imgSrc = "/images/default_user_icon.jpg";
+                            }
+                        }
+                        <img style="max-width: 150px;"
+                             src="@imgSrc"
+                             alt="@(string.Format("{0} {1}", Model.Input.FirstName, Model.Input.LastName))" />
+                        <input asp-for="Input.ImageFile" type="file" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Input.Bio"></label>
+                        <textarea asp-for="Input.Bio" class="form-control"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Input.WebsiteUrl"></label>
+                        <input asp-for="Input.WebsiteUrl" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Input.BlogUrl"></label>
+                        <input asp-for="Input.BlogUrl" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Input.GeographicLocation"></label>
+                        <input asp-for="Input.GeographicLocation" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Input.TwitterHandle"></label>
+                        <input asp-for="Input.TwitterHandle" class="form-control" />
+                    </div>
+                    <div>
+                        <label asp-for="Input.LinkedIn"></label>
+                        <input asp-for="Input.LinkedIn" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Input.IsVolunteer"></label>
+                        <input asp-for="Input.IsVolunteer" class="form-inline" />
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Input.IsMvp"></label>
+                        <input asp-for="Input.IsMvp" class="form-inline" />
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Input.NoteToOrganizers"></label>
+                        <textarea asp-for="Input.NoteToOrganizers" class="form-control"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Input.PhoneNumber"></label>
+                        <input asp-for="Input.PhoneNumber" class="form-control" />
+                        <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div asp-validation-summary="All" class="text-danger"></div>
+                <div class="form-group">
+                    <label asp-for="Username"></label>
+                    <input asp-for="Username" class="form-control" disabled />
+                </div>
+                <div class="form-group">
+                    <label asp-for="Input.Email"></label>
+                    @if (Model.IsEmailConfirmed)
+                    {
+                        <div class="input-group">
+                            <input asp-for="Input.Email" class="form-control" />
+                            <span class="input-group-addon" aria-hidden="true"><span class="glyphicon glyphicon-ok text-success"></span></span>
+                        </div>
+                    }
+                    else
+                    {
+                        <input asp-for="Input.Email" class="form-control" />
+                        <button id="email-verification" type="submit" asp-page-handler="SendVerificationEmail" class="btn btn-link">Send verification email</button>
+                    }
+                    <span asp-validation-for="Input.Email" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <div class="form-group">
+                        <label asp-for="Input.FirstName"></label>
+                        <input asp-for="Input.FirstName" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Input.LastName"></label>
+                        <input asp-for="Input.LastName" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Input.GeographicLocation"></label>
+                        <input asp-for="Input.GeographicLocation" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Input.TwitterHandle"></label>
+                        <input asp-for="Input.TwitterHandle" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Input.IsVolunteer"></label>
+                        <input asp-for="Input.IsVolunteer" class="form-inline" />
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Input.PhoneNumber"></label>
+                        <input asp-for="Input.PhoneNumber" class="form-control" />
+                        <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+                    </div>
+                </div>
+            }
+
+            <button type="submit" class="btn btn-default">Save</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

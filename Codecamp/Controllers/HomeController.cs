@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Codecamp.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Codecamp.Controllers
 {
@@ -15,9 +16,17 @@ namespace Codecamp.Controllers
             return View();
         }
 
+        [Authorize]
         public IActionResult About()
         {
             ViewData["Message"] = "Your application description page.";
+
+            return View();
+        }
+
+        public IActionResult Event()
+        {
+            ViewData["Message"] = "This page contains the event essentials: date, time, and location";
 
             return View();
         }

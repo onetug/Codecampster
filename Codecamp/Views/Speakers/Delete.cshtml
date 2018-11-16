@@ -1,0 +1,76 @@
+﻿@model Codecamp.Models.Speaker
+
+@{
+    ViewData["Title"] = "Delete";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Delete</h2>
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>Speaker</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.CompanyName)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.CompanyName)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Bio)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Bio)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.WebsiteUrl)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.WebsiteUrl)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.BlogUrl)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.BlogUrl)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Image)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Image)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.NoteToOrganizers)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.NoteToOrganizers)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.IsMvp)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.IsMvp)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.LinkedIn)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.LinkedIn)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.CodecampUser)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.CodecampUser.Id)
+        </dd>
+    </dl>
+    
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="SpeakerId" />
+        <input type="submit" value="Delete" class="btn btn-default" /> |
+        <a asp-action="Index">Back to List</a>
+    </form>
+</div>
