@@ -23,12 +23,12 @@ else
         @if ((await _eventBL.GetActiveEvent()).IsSpeakerRegistrationOpen)
         {
             // Only show speaker registration when speaker registration is open
-            <li><a asp-area="Identity" asp-page="/Account/RegisterSpeaker">Register as Speaker</a></li>
+            <li><a asp-area="Identity" asp-page="/Account/RegisterSpeaker">Register as a Speaker</a></li>
         }
         @if ((await _eventBL.GetActiveEvent()).IsAttendeeRegistrationOpen)
         {
             // Only show attendee registration when attendee registration is open
-            <li><a asp-area="Identity" asp-page="/Account/RegisterAttendee">Register as Attendee</a></li>
+            <li><a asp-area="Identity" asp-page="/Account/RegisterAttendee">Register as an Attendee</a></li>
         }
         <li><a asp-area="Identity" asp-page="/Account/Login">Login</a></li>
     </ul>
