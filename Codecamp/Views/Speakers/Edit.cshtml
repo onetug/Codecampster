@@ -1,4 +1,4 @@
-﻿@model Codecamp.Models.Speaker
+﻿@model Codecamp.ViewModels.SpeakerViewModel
 
 @{
     ViewData["Title"] = "Edit";
@@ -11,13 +11,56 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Edit">
+        <form asp-action="Edit" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <input type="hidden" asp-for="CodecampUserId" />
             <input type="hidden" asp-for="SpeakerId" />
+
+            @if (User.IsInRole("Admin"))
+            {
+                <div class="form-group">
+                    <div class="checkbox">
+                        <label>
+                            <input asp-for="IsApproved" /> @Html.DisplayNameFor(model => model.IsApproved)
+                        </label>
+                    </div>
+                </div>
+                <hr />
+            }
+            <div class="form-group">
+                <label asp-for="FirstName"></label>
+                <input asp-for="FirstName" class="form-control" />
+                <span asp-validation-for="FirstName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="LastName"></label>
+                <input asp-for="LastName" class="form-control" />
+                <span asp-validation-for="LastName" class="text-danger"></span>
+            </div>
             <div class="form-group">
                 <label asp-for="CompanyName" class="control-label"></label>
                 <input asp-for="CompanyName" class="form-control" />
                 <span asp-validation-for="CompanyName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Image"></label>
+                @{
+                    string imgSrc = string.Empty;
+                    if (Model.Image != null && Model.Image.Length != 0)
+                    {
+                        var base64 = Convert.ToBase64String(Model.Image);
+                        imgSrc = String.Format("data:image;base64,{0}", base64);
+                    }
+                    else
+                    {
+                        imgSrc = "/images/default_user_icon.jpg";
+                    }
+                }
+                <img style="max-width: 150px;"
+                     src="@imgSrc"
+                     alt="@(string.Format("{0} {1}", Model.FirstName, Model.LastName))" />
+                <input asp-for="ImageFile" type="file" class="form-control" />
             </div>
             <div class="form-group">
                 <label asp-for="Bio" class="control-label"></label>
@@ -35,14 +78,26 @@
                 <span asp-validation-for="BlogUrl" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Image" class="control-label"></label>
-                <input asp-for="Image" type="file" class="form-control" />
-                <span asp-validation-for="Image" class="text-danger"></span>
+                <label asp-for="GeographicLocation"></label>
+                <input asp-for="GeographicLocation" class="form-control" />
+                <span asp-validation-for="GeographicLocation" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="NoteToOrganizers" class="control-label"></label>
-                <input asp-for="NoteToOrganizers" class="form-control" />
-                <span asp-validation-for="NoteToOrganizers" class="text-danger"></span>
+                <label asp-for="TwitterHandle"></label>
+                <input asp-for="TwitterHandle" class="form-control" />
+                <span asp-validation-for="TwitterHandle" class="text-danger"></span>
+            </div>
+            <div>
+                <label asp-for="LinkedIn"></label>
+                <input asp-for="LinkedIn" class="form-control" />
+                <span asp-validation-for="LinkedIn" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <div class="checkbox">
+                    <label>
+                        <input asp-for="IsVolunteer" /> @Html.DisplayNameFor(model => model.IsVolunteer)
+                    </label>
+                </div>
             </div>
             <div class="form-group">
                 <div class="checkbox">
@@ -52,14 +107,19 @@
                 </div>
             </div>
             <div class="form-group">
-                <label asp-for="LinkedIn" class="control-label"></label>
-                <input asp-for="LinkedIn" class="form-control" />
-                <span asp-validation-for="LinkedIn" class="text-danger"></span>
+                <label asp-for="NoteToOrganizers" class="control-label"></label>
+                <input asp-for="NoteToOrganizers" class="form-control" />
+                <span asp-validation-for="NoteToOrganizers" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="CodecampUserId" class="control-label"></label>
-                <select asp-for="CodecampUserId" class="form-control" asp-items="ViewBag.CodecampUserId"></select>
-                <span asp-validation-for="CodecampUserId" class="text-danger"></span>
+                <label asp-for="Email" class="control-label"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PhoneNumber" class="control-label"></label>
+                <input asp-for="PhoneNumber" class="form-control" />
+                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-default" />

@@ -61,6 +61,7 @@ namespace Codecamp
 
             services.AddSingleton<IEmailSender, AuthMessageEmailSender>();
             services.AddTransient<ISpeakerBusinessLogic, SpeakerBusinessLogic>();
+            services.AddTransient<IUserBusinessLogic, UserBusinessLogic>();
             services.AddTransient<IEventBusinessLogic, EventBusinessLogic>();
             // Register the event business logic service
             services.AddTransient<EventBusinessLogic>();

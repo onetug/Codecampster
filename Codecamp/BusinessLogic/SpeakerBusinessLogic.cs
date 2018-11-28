@@ -17,6 +17,7 @@ namespace Codecamp.BusinessLogic
         Task<Speaker> GetSpeaker(int speakerId);
         Task<bool> SpeakerExists(int speakerId);
         Task<bool> UpdateSpeaker(Speaker speaker);
+        Task<CodecampUser> GetUserInfoForSpeaker(int speakerId);
     }
 
     public class SpeakerBusinessLogic : ISpeakerBusinessLogic
@@ -99,6 +100,15 @@ namespace Codecamp.BusinessLogic
                 else
                     throw;
             }
+        }
+        public async Task<CodecampUser> GetUserInfoForSpeaker(int speakerId)
+        {
+            var speaker = await _context.Speakers
+                .FirstOrDefaultAsync(s => s.SpeakerId == speakerId);
+
+            return speaker != null ? await _context.CodecampUsers
+                .FirstOrDefaultAsync(c => c.Id == speaker.CodecampUserId)
+                : null;
         }
     }
 }

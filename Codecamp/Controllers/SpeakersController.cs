@@ -9,6 +9,8 @@ using Codecamp.Data;
 using Codecamp.Models;
 using Microsoft.AspNetCore.Identity;
 using Codecamp.BusinessLogic;
+using Codecamp.ViewModels;
+using System.IO;
 
 namespace Codecamp.Controllers
 {
@@ -17,15 +19,20 @@ namespace Codecamp.Controllers
         private readonly CodecampDbContext _context;
         private readonly UserManager<CodecampUser> _userManager;
         private readonly ISpeakerBusinessLogic _speakerBL;
+        private readonly IUserBusinessLogic _userBL;
+
+        private SpeakerViewModel Speaker { get; set; }
 
         public SpeakersController(
             UserManager<CodecampUser> userManager,
             CodecampDbContext context,
-            ISpeakerBusinessLogic speakerBL)
+            ISpeakerBusinessLogic speakerBL,
+            IUserBusinessLogic userBL)
         {
             _context = context;
             _userManager = userManager;
             _speakerBL = speakerBL;
+            _userBL = userBL;
         }
 
         // GET: Speakers
@@ -106,10 +113,31 @@ namespace Codecamp.Controllers
             if (speaker == null)
                 return NotFound();
 
-            ViewData["CodecampUserId"] = new SelectList(_context.CodecampUsers, "Id", "Id", speaker.CodecampUserId);
+            var user = await _speakerBL.GetUserInfoForSpeaker(speaker.SpeakerId);
+
+            var speakerVM = new SpeakerViewModel
+            {
+                SpeakerId = speaker.SpeakerId,
+                CodecampUserId = user.Id,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                CompanyName = speaker.CompanyName,
+                Image = speaker.Image,
+                Bio = speaker.Bio,
+                WebsiteUrl = speaker.WebsiteUrl,
+                BlogUrl = speaker.BlogUrl,
+                GeographicLocation = user.GeographicLocation,
+                TwitterHandle = user.TwitterHandle,
+                IsVolunteer = user.IsVolunteer,
+                IsMvp = speaker.IsMvp,
+                NoteToOrganizers = speaker.NoteToOrganizers,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber,
+                IsApproved = speaker.IsApproved
+            };
 
             // Else return the view with the speaker information
-            return View(speaker);
+            return View(speakerVM);
         }
 
         // POST: Speakers/Edit/5
@@ -117,14 +145,54 @@ namespace Codecamp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("SpeakerId,CompanyName,Bio,WebsiteUrl,BlogUrl,ImageUrl,NoteToOrganizers,IsMvp,LinkedIn,CodecampUserId")] Speaker speaker)
+        public async Task<IActionResult> Edit(int id, 
+            [Bind("SpeakerId,CodecampUserId,FirstName,LastName,CompanyName,ImageFile,Bio,WebsiteUrl,BlogUrl,GeographicLocation,TwitterHandle,LinkedIn,IsVolunteering,IsMvp,NoteToOrganizers,Email,PhoneNumber,IsApproved")] SpeakerViewModel speakerVM)
         {
-            if (id != speaker.SpeakerId)
+            if (id != speakerVM.SpeakerId)
                 return NotFound();
 
             if (ModelState.IsValid)
             {
+                // Update the speaker information from the page
+                var speaker = new Speaker
+                {
+                    SpeakerId = speakerVM.SpeakerId,
+                    CompanyName = speakerVM.CompanyName,
+                    Bio = speakerVM.Bio,
+                    WebsiteUrl = speakerVM.WebsiteUrl,
+                    BlogUrl = speakerVM.BlogUrl,
+                    NoteToOrganizers = speakerVM.NoteToOrganizers,
+                    IsApproved = speakerVM.IsApproved,
+                    IsMvp = speakerVM.IsMvp,
+                    LinkedIn = speakerVM.LinkedIn,
+                    CodecampUserId = speakerVM.CodecampUserId
+                };
+
+                // Convert the image to a byte array and store it in the
+                // database
+                if (speakerVM.ImageFile != null &&
+                    speakerVM.ImageFile.ContentType.ToLower().StartsWith("image/"))
+                {
+                    MemoryStream ms = new MemoryStream();
+                    speakerVM.ImageFile.OpenReadStream().CopyTo(ms);
+
+                    speaker.Image = ms.ToArray();
+                }
+
                 var result = await _speakerBL.UpdateSpeaker(speaker);
+
+                var user = await _userBL.GetUser(speakerVM.CodecampUserId);
+
+                // Update the user information from the page
+                user.FirstName = speakerVM.FirstName;
+                user.LastName = speakerVM.LastName;
+                user.GeographicLocation = speakerVM.GeographicLocation;
+                user.TwitterHandle = speakerVM.TwitterHandle;
+                user.IsVolunteer = speakerVM.IsVolunteer;
+                user.Email = speakerVM.Email;
+                user.PhoneNumber = speakerVM.PhoneNumber;
+
+                result &= await _userBL.UpdateUser(user);
 
                 if (result == false)
                     return NotFound();
@@ -132,9 +200,7 @@ namespace Codecamp.Controllers
                     return RedirectToAction(nameof(Index));
             }
 
-            ViewData["CodecampUserId"] = new SelectList(_context.CodecampUsers, "Id", "Id", speaker.CodecampUserId);
-
-            return View(speaker);
+            return View(speakerVM);
         }
 
         // GET: Speakers/Delete/5

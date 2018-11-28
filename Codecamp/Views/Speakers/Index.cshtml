@@ -19,14 +19,15 @@
         {
             @:</div>
             @:<div class="row">
-    @* create a new row after four speakers*@
-    rowIndex = 1;
-    }
-    if (userId == speaker.CodecampUser.Id)
+            @* create a new row after four speakers*@
+            rowIndex = 1;
+        }
+
+    if (User.IsInRole("Admin"))
     {
         <div class="col-md-3">
-            @* Allow the user to edit themselves via the manage user page *@
-            <a asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">
+            @* This is for the Admins to allow them to edit the speaker *@
+            <a asp-controller="Speakers" asp-action="Edit" asp-route-id="@speaker.SpeakerId" title="Edit Speaker">
                 <div style="text-align:center;">
                     <div style="width: 150px; height: 150px; margin-left: auto; margin-right: auto">
                         @{
@@ -54,41 +55,73 @@
                 </div>
             </a>
         </div>
-    }
-    else
-    {
-        <div class="col-md-3">
-            <a asp-action="Details") asp-route-id="@(speaker.SpeakerId)">
-                <div style="text-align:center;">
-                    <div style="width: 150px; height: 150px; margin-left: auto; margin-right: auto;">
-                        @{
-                            string imgSrc = string.Empty;
-                            if (speaker.Image != null && speaker.Image.Length != 0)
-                            {
-                                var base64 = Convert.ToBase64String(speaker.Image);
-                                imgSrc = String.Format("data:image;base64,{0}", base64);
-                            }
-                            else
-                            {
-                                imgSrc = "/images/default_user_icon.jpg";
-                            }
-                        }
-                        <img style="max-width: 150px;"
-                             src="@imgSrc"
-                             alt="@(string.Format("{0} {1}", speaker.CodecampUser.FirstName, speaker.CodecampUser.LastName))" />
-                        @if (speaker.IsMvp)
+    } else if (userId == speaker.CodecampUser.Id)
+{
+    <div class="col-md-3">
+        @* Allow the user to edit themselves via the manage user page *@
+        <a asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">
+            <div style="text-align:center;">
+                <div style="width: 150px; height: 150px; margin-left: auto; margin-right: auto">
+                    @{
+                        string imgSrc = string.Empty;
+                        if (speaker.Image != null && speaker.Image.Length != 0)
                         {
-                            <img style="width: 30px; height: 30px; z-index: 10; position:absolute; top: 110px; left: 150px;"
-                                 src=@("/images/ms-mvp.jpg") alt=@("Microsoft MVP") />
+                            var base64 = Convert.ToBase64String(speaker.Image);
+                            imgSrc = String.Format("data:image;base64,{0}", base64);
                         }
-                    </div>
-                    <h5>@(string.Format("{0} {1}", speaker.CodecampUser.FirstName, speaker.CodecampUser.LastName))</h5>
+                        else
+                        {
+                            imgSrc = "/images/default_user_icon.jpg";
+                        }
+                    }
+                    <img style="max-width: 150px;"
+                         src="@imgSrc"
+                         alt="@(string.Format("{0} {1}", speaker.CodecampUser.FirstName, speaker.CodecampUser.LastName))" />
+                    @if (speaker.IsMvp)
+                    {
+                        <img style="width: 30px; height: 30px; z-index: 10; position:absolute; top: 110px; left: 150px;"
+                             src=@("/images/ms-mvp.jpg") alt=@("Microsoft MVP") />
+                    }
                 </div>
-            </a>
-        </div>
-    }
-    rowIndex++;
-    }
+                <h5>@(string.Format("{0} {1}", speaker.CodecampUser.FirstName, speaker.CodecampUser.LastName))</h5>
+            </div>
+        </a>
+    </div>
+}
+else
+{
+    <div class="col-md-3">
+        <a asp-action="Details" ) asp-route-id="@(speaker.SpeakerId)">
+            <div style="text-align:center;">
+                <div style="width: 150px; height: 150px; margin-left: auto; margin-right: auto;">
+                    @{
+                        string imgSrc = string.Empty;
+                        if (speaker.Image != null && speaker.Image.Length != 0)
+                        {
+                            var base64 = Convert.ToBase64String(speaker.Image);
+                            imgSrc = String.Format("data:image;base64,{0}", base64);
+                        }
+                        else
+                        {
+                            imgSrc = "/images/default_user_icon.jpg";
+                        }
+                    }
+                    <img style="max-width: 150px;"
+                         src="@imgSrc"
+                         alt="@(string.Format("{0} {1}", speaker.CodecampUser.FirstName, speaker.CodecampUser.LastName))" />
+                    @if (speaker.IsMvp)
+                    {
+                        <img style="width: 30px; height: 30px; z-index: 10; position:absolute; top: 110px; left: 150px;"
+                             src=@("/images/ms-mvp.jpg") alt=@("Microsoft MVP") />
+                    }
+                </div>
+                <h5>@(string.Format("{0} {1}", speaker.CodecampUser.FirstName, speaker.CodecampUser.LastName))</h5>
+            </div>
+        </a>
+    </div>
+}
+rowIndex++;
+}
 </div>
 
 @*
