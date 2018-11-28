@@ -56,7 +56,7 @@ namespace Codecamp.BusinessLogic
 
         public async Task<int> CreateEvent(Event theEvent)
         {
-            _context.Add(theEvent);
+            _context.Events.Add(theEvent);
 
             if (theEvent.IsActive == false)
                 return await _context.SaveChangesAsync();
