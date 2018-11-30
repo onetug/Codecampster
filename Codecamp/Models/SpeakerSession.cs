@@ -6,19 +6,13 @@ using System.Threading.Tasks;
 
 namespace Codecamp.Models
 {
-    /// <summary>
-    /// Attendee session, this class represents a session favorited by an attendee
-    /// </summary>
-    public class AttendeeSession
+    public class SpeakerSession
     {
-        [ForeignKey("CodecampUser")]
-        public string CodecampUserId { get; set; }
-
-        public CodecampUser CodecampUser { get; set; }
-
+        [ForeignKey("Speaker")]
+        public int SpeakerId { get; set; }
+        public Speaker Speaker { get; set; }
         [ForeignKey("Session")]
         public int SessionId { get; set; }
-
         public Session Session { get; set; }
     }
 }

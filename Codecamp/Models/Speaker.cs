@@ -40,6 +40,6 @@ namespace Codecamp.Models
         public bool IsApproved { get; set; }
 
         // List of sessions associated with the speaker
-        public List<Session> Sessions { get; set; }
+        public virtual List<SpeakerSession> SpeakerSessions { get; set; }
     }
 }

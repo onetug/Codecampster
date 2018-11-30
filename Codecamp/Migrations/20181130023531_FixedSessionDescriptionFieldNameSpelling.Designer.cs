@@ -4,14 +4,16 @@ using Codecamp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Codecamp.Migrations
 {
     [DbContext(typeof(CodecampDbContext))]
-    partial class CodecampDbContextModelSnapshot : ModelSnapshot
+    [Migration("20181130023531_FixedSessionDescriptionFieldNameSpelling")]
+    partial class FixedSessionDescriptionFieldNameSpelling
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,11 +23,17 @@ namespace Codecamp.Migrations
 
             modelBuilder.Entity("Codecamp.Models.AttendeeSession", b =>
                 {
+                    b.Property<int>("AttendeeSessionId")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
                     b.Property<string>("CodecampUserId");
 
                     b.Property<int>("SessionId");
 
-                    b.HasKey("CodecampUserId", "SessionId");
+                    b.HasKey("AttendeeSessionId");
+
+                    b.HasIndex("CodecampUserId");
 
                     b.HasIndex("SessionId");
 
@@ -150,9 +158,13 @@ namespace Codecamp.Migrations
 
                     b.Property<int>("SkillLevel");
 
+                    b.Property<int?>("SpeakerId");
+
                     b.HasKey("SessionId");
 
                     b.HasIndex("EventId");
+
+                    b.HasIndex("SpeakerId");
 
                     b.ToTable("Sessions");
                 });
@@ -183,6 +195,8 @@ namespace Codecamp.Migrations
 
                     b.Property<string>("NoteToOrganizers");
 
+                    b.Property<int?>("SessionId");
+
                     b.Property<string>("WebsiteUrl");
 
                     b.HasKey("SpeakerId");
@@ -191,20 +205,9 @@ namespace Codecamp.Migrations
 
                     b.HasIndex("EventId");
 
-                    b.ToTable("Speakers");
-                });
-
-            modelBuilder.Entity("Codecamp.Models.SpeakerSession", b =>
-                {
-                    b.Property<int>("SpeakerId");
-
-                    b.Property<int>("SessionId");
-
-                    b.HasKey("SpeakerId", "SessionId");
-
                     b.HasIndex("SessionId");
 
-                    b.ToTable("SpeakerSessions");
+                    b.ToTable("Speakers");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -320,12 +323,11 @@ namespace Codecamp.Migrations
             modelBuilder.Entity("Codecamp.Models.AttendeeSession", b =>
                 {
                     b.HasOne("Codecamp.Models.CodecampUser", "CodecampUser")
-                        .WithMany("AttendeeSessions")
-                        .HasForeignKey("CodecampUserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .WithMany()
+                        .HasForeignKey("CodecampUserId");
 
                     b.HasOne("Codecamp.Models.Session", "Session")
-                        .WithMany("AttendeeSessions")
+                        .WithMany()
                         .HasForeignKey("SessionId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
@@ -346,6 +348,10 @@ namespace Codecamp.Migrations
                     b.HasOne("Codecamp.Models.Event", "Event")
                         .WithMany("Sessions")
                         .HasForeignKey("EventId");
+
+                    b.HasOne("Codecamp.Models.Speaker")
+                        .WithMany("Sessions")
+                        .HasForeignKey("SpeakerId");
                 });
 
             modelBuilder.Entity("Codecamp.Models.Speaker", b =>
@@ -357,19 +363,10 @@ namespace Codecamp.Migrations
                     b.HasOne("Codecamp.Models.Event")
                         .WithMany("Speakers")
                         .HasForeignKey("EventId");
-                });
 
-            modelBuilder.Entity("Codecamp.Models.SpeakerSession", b =>
-                {
-                    b.HasOne("Codecamp.Models.Session", "Session")
-                        .WithMany("SpeakerSessions")
-                        .HasForeignKey("SessionId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Codecamp.Models.Speaker", "Speaker")
-                        .WithMany("SpeakerSessions")
-                        .HasForeignKey("SpeakerId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                    b.HasOne("Codecamp.Models.Session")
+                        .WithMany("Speakers")
+                        .HasForeignKey("SessionId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
