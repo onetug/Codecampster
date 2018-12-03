@@ -36,7 +36,7 @@
                     <li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
                     <li><a asp-area="" asp-controller="Speakers" asp-action="Index">Speakers</a></li>
                     <li><a asp-area="" asp-controller="Sessions" asp-action="Index">Sessions</a></li>
-
+                    <li><a target="_blank" href="/documents/OrlandoCodeCampSponsorInfo2019.pdf">Sponsors</a></li>
                     @* Not available at this point, details well be fleshed out during development *@
                     @*<li><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
                     <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contact</a></li>*@
@@ -51,7 +51,7 @@
         </div>
     </nav>
 
-    <partial name="_CookieConsentPartial" />
+    @*<partial name="_CookieConsentPartial" />*@
 
     <div class="container body-content">
         @RenderBody()
