@@ -1,0 +1,84 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject UserManager<CodecampUser> UserManager
+@model IEnumerable<Codecamp.ViewModels.SessionViewModel>
+
+@{
+    ViewData["Title"] = "Index";
+    int? speakerId = null;
+    var user = await UserManager.GetUserAsync(User);
+    if (user != null)
+    {
+        speakerId = user.SpeakerId;
+    }
+}
+
+<h2>Index</h2>
+
+@if (User.IsInRole("Speaker"))
+{
+    <p>
+        <a asp-action="Create">Create New</a>
+    </p>
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Speakers)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SkillLevel)
+            </th>
+            @if (User.IsInRole("Admin") || User.IsInRole("Speaker"))
+            {
+                <th>
+                    @Html.DisplayNameFor(model => model.IsApproved)
+                </th>
+            }
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Speakers)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SkillLevel)
+            </td>
+            @if (User.IsInRole("Admin") || User.IsInRole("Speaker"))
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.IsApproved)
+                </td>
+            }
+            <td>
+                @if (User.IsInRole("Admin") || (speakerId.HasValue && item.SpeakerSessions.Any(s => s.SpeakerId == speakerId.Value)))
+                {
+                    <a asp-action="Edit" asp-route-id="@item.SessionId">Edit</a><span> | </span>
+                }
+                <a asp-action="Details" asp-route-id="@item.SessionId">Details</a>
+                @if (User.IsInRole("Admin") || (speakerId.HasValue && item.SpeakerSessions.Any(s => s.SpeakerId == speakerId.Value)))
+                {
+                    <span> | </span><a asp-action="Delete" asp-route-id="@item.SessionId">Delete</a>
+                }
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>

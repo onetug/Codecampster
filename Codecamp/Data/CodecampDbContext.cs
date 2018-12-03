@@ -25,6 +25,8 @@ namespace Codecamp.Data
 
         public DbSet<AttendeeSession> AttendeesSessions { get; set; }
 
+        public DbSet<SpeakerSession> SpeakerSessions { get; set; }
+
         public CodecampDbContext(DbContextOptions<CodecampDbContext> options)
             : base(options)
         {
@@ -37,10 +39,33 @@ namespace Codecamp.Data
             // For example, you can rename the ASP.NET Identity table names and more.
             // Add your customizations after calling base.OnModelCreating(builder);
 
-            builder.Entity<Session>().HasMany(s => s.Speakers);
+            // Many to many relationship between speakers and sessions
+            builder.Entity<SpeakerSession>()
+                .HasKey(ss => new { ss.SpeakerId, ss.SessionId });
 
-            builder.Entity<Speaker>().HasMany(s => s.Sessions);
+            builder.Entity<SpeakerSession>()
+                .HasOne(ss => ss.Speaker)
+                .WithMany(ss => ss.SpeakerSessions)
+                .HasForeignKey(ss => ss.SpeakerId);
 
+            builder.Entity<SpeakerSession>()
+                .HasOne(ss => ss.Session)
+                .WithMany(ss => ss.SpeakerSessions)
+                .HasForeignKey(ss => ss.SessionId);
+
+            // Many to many relationship between attendees and sessions
+            builder.Entity<AttendeeSession>()
+                .HasKey(_as => new { _as.CodecampUserId, _as.SessionId });
+
+            builder.Entity<AttendeeSession>()
+                .HasOne(_as => _as.CodecampUser)
+                .WithMany(_as => _as.AttendeeSessions)
+                .HasForeignKey(_as => _as.CodecampUserId);
+
+            builder.Entity<AttendeeSession>()
+                .HasOne(_as => _as.Session)
+                .WithMany(_as => _as.AttendeeSessions)
+                .HasForeignKey(_as => _as.SessionId);
         }
     }
 }

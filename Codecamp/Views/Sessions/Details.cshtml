@@ -1,0 +1,59 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject UserManager<CodecampUser> UserManager
+@model Codecamp.Models.Session
+
+@{
+    ViewData["Title"] = "Details";
+    int? speakerId = null;
+    var user = await UserManager.GetUserAsync(User);
+    if (user != null)
+    {
+        speakerId = user.SpeakerId;
+    }
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Session</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.SkillLevel)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.SkillLevel)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Keywords)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Keywords)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.IsApproved)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.IsApproved)
+        </dd>
+    </dl>
+</div>
+<div>
+    @if (User.IsInRole("Admin") || (speakerId.HasValue && Model.SpeakerSessions.Any(s => s.SpeakerId == speakerId.Value)))
+    {
+        <a asp-action="Edit" asp-route-id="@Model.SessionId">Edit</a><span> | </span>
+    }
+    <a asp-action="Index">Back to List</a>
+</div>

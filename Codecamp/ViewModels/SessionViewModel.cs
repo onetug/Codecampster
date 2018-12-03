@@ -1,13 +1,13 @@
-﻿using System;
+﻿using Codecamp.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Codecamp.Models
+namespace Codecamp.ViewModels
 {
-    public class Session
+    public class SessionViewModel
     {
         public int SessionId { get; set; }
 
@@ -16,21 +16,20 @@ namespace Codecamp.Models
         public string Description { get; set; }
 
         [Display(Name = "Skill Level")]
-        public int SkillLevel { get; set; }
+        public string SkillLevel { get; set; }
 
         // Keywords associated with the session.
         public string Keywords { get; set; }
 
+        [Display(Name = "Is Approved")]
         public bool IsApproved { get; set; }
 
         // Session speakers
+        public string Speakers { get; set; }
+
         public virtual List<SpeakerSession> SpeakerSessions { get; set; }
 
-        public virtual List<AttendeeSession> AttendeeSessions { get; set; }
-
-        [ForeignKey("Event")]
-        public int? EventId { get; set; }
-
-        public virtual Event Event { get; set; }
+        [Display(Name = "Event Name")]
+        public string EventName { get; set; }
     }
 }

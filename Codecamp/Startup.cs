@@ -63,6 +63,7 @@ namespace Codecamp
             services.AddTransient<ISpeakerBusinessLogic, SpeakerBusinessLogic>();
             services.AddTransient<IUserBusinessLogic, UserBusinessLogic>();
             services.AddTransient<IEventBusinessLogic, EventBusinessLogic>();
+            services.AddTransient<ISessionBusinessLogic, SessionBusinessLogic>();
             // Register the event business logic service
             services.AddTransient<EventBusinessLogic>();
             services.Configure<AuthMessageSenderOptions>(Configuration.GetSection("AppSettings"));

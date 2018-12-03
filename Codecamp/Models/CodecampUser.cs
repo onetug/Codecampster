@@ -47,5 +47,9 @@ namespace Codecamp.Models
         public int? EventId { get; set; }
 
         public Event Event { get; set; }
+
+        public virtual List<AttendeeSession> AttendeeSessions { get; set; }
+
+        public string FullName { get { return FirstName + " " + LastName; } }
     }
 }
