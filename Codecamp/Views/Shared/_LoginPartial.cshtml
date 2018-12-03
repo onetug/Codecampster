@@ -4,6 +4,10 @@
 @inject UserManager<CodecampUser> UserManager
 @inject EventBusinessLogic _eventBL
 
+@{ 
+    var theEvent = await _eventBL.GetActiveEvent();
+}
+
 @if (SignInManager.IsSignedIn(User))
 {
     <form asp-area="Identity" asp-page="/Account/Logout" method="post" id="logoutForm" class="navbar-right">
@@ -20,12 +24,12 @@
 else
 {
     <ul class="nav navbar-nav navbar-right">
-        @if ((await _eventBL.GetActiveEvent()).IsSpeakerRegistrationOpen)
+        @if (theEvent != null && theEvent.IsSpeakerRegistrationOpen)
         {
             // Only show speaker registration when speaker registration is open
             <li><a asp-area="Identity" asp-page="/Account/RegisterSpeaker">Register as a Speaker</a></li>
         }
-        @if ((await _eventBL.GetActiveEvent()).IsAttendeeRegistrationOpen)
+        @if (theEvent != null && theEvent.IsAttendeeRegistrationOpen)
         {
             // Only show attendee registration when attendee registration is open
             <li><a asp-area="Identity" asp-page="/Account/RegisterAttendee">Register as an Attendee</a></li>

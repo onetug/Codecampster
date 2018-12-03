@@ -61,6 +61,7 @@
                      src="@imgSrc"
                      alt="@(string.Format("{0} {1}", Model.FirstName, Model.LastName))" />
                 <input asp-for="ImageFile" type="file" class="form-control" />
+                <input type="hidden" asp-for="Image" />
             </div>
             <div class="form-group">
                 <label asp-for="Bio" class="control-label"></label>

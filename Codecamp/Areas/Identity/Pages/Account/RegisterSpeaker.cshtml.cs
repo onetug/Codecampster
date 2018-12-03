@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using Codecamp.BusinessLogic;
 using Codecamp.Data;
 using Codecamp.Models;
 using Codecamp.Services;
@@ -23,20 +24,23 @@ namespace Codecamp.Areas.Identity.Pages.Account
         private readonly ILogger<RegisterSpeakerModel> _logger;
         private readonly IEmailSender _emailSender;
         private readonly CodecampDbContext _context;
-
+        private readonly IEventBusinessLogic _eventBL;
 
         public RegisterSpeakerModel(
             UserManager<CodecampUser> userManager,
             SignInManager<CodecampUser> signInManager,
             ILogger<RegisterSpeakerModel> logger,
             IEmailSender emailSender,
-            CodecampDbContext context)
+            CodecampDbContext context,
+            IEventBusinessLogic eventBL
+            )
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
             _context = context;
+            _eventBL = eventBL;
         }
 
         [BindProperty]
@@ -69,6 +73,9 @@ namespace Codecamp.Areas.Identity.Pages.Account
              
             if (ModelState.IsValid)
             {
+                // Get the current event
+                var theEvent = await _eventBL.GetActiveEvent();
+
                 // This is a speaker registration
                 var user
                     = new CodecampUser
@@ -76,7 +83,8 @@ namespace Codecamp.Areas.Identity.Pages.Account
                         IsAttending = true,
                         IsSpeaker = true,
                         UserName = Input.Email,
-                        Email = Input.Email
+                        Email = Input.Email,
+                        EventId = theEvent != null ? theEvent.EventId : (int?)null
                     };
 
                 var result = await _userManager.CreateAsync(user, Input.Password);
@@ -88,6 +96,7 @@ namespace Codecamp.Areas.Identity.Pages.Account
                     user.Speaker = new Speaker()
                     {
                         CodecampUserId = user.Id,
+                        EventId = user.EventId,
                     };
 
                     // Add the user to the Speaker role

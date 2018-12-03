@@ -1,9 +1,19 @@
 ﻿@page
 @model LoginModel
 
+@using Microsoft.AspNetCore.Identity
+@using Codecamp.BusinessLogic
+@using Codecamp.Models
+@inject SignInManager<CodecampUser> SignInManager
+@inject UserManager<CodecampUser> UserManager
+@inject EventBusinessLogic _eventBL
+
 @{
     ViewData["Title"] = Model.LoginWithRegistration != ""
         && Model.LoginWithRegistration != null ? Model.LoginWithRegistration + " Registration" : "Log in";
+
+    // Get the event
+    var theEvent = await _eventBL.GetActiveEvent();
 }
 
 <h2>@ViewData["Title"]</h2>
@@ -13,11 +23,13 @@
             <form asp-route-returnUrl="@Model.ReturnUrl"
                   asp-route-loginWithRegistration="@Model.LoginWithRegistration" method="post">
                 @if (Model.LoginWithRegistration != ""
-                   && Model.LoginWithRegistration != null)
+                  && Model.LoginWithRegistration != null)
                 {
                     <div>
-                        <h4>The email address/username already exists, 
-                        login to complete @Model.LoginWithRegistration.ToLower() registration</h4>
+                        <h4>
+                            The email address/username already exists,
+                            login to complete @Model.LoginWithRegistration.ToLower() registration
+                        </h4>
                     </div>
                 }
                 else
@@ -51,9 +63,18 @@
                     <p>
                         <a asp-page="./ForgotPassword">Forgot your password?</a>
                     </p>
-                    <p>
-                        <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Register as a new user</a>
-                    </p>
+                    @if (theEvent != null && theEvent.IsSpeakerRegistrationOpen)
+                    {
+                        <p>
+                            <a asp-page="./RegisterSpeaker" asp-route-returnUrl="@Model.ReturnUrl">Register as a new Speaker</a>
+                        </p>
+                    }
+                    @if (theEvent != null && theEvent.IsAttendeeRegistrationOpen)
+                    {
+                        <p>
+                            <a asp-page="./RegisterAttendee" asp-route-returnUrl="@Model.ReturnUrl">Register as a new Attendee</a>
+                        </p>
+                    }
                 </div>
             </form>
         </section>

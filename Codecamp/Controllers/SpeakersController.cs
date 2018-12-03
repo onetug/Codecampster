@@ -146,7 +146,7 @@ namespace Codecamp.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, 
-            [Bind("SpeakerId,CodecampUserId,FirstName,LastName,CompanyName,ImageFile,Bio,WebsiteUrl,BlogUrl,GeographicLocation,TwitterHandle,LinkedIn,IsVolunteering,IsMvp,NoteToOrganizers,Email,PhoneNumber,IsApproved")] SpeakerViewModel speakerVM)
+            [Bind("SpeakerId,CodecampUserId,FirstName,LastName,CompanyName,ImageFile,Image,Bio,WebsiteUrl,BlogUrl,GeographicLocation,TwitterHandle,LinkedIn,IsVolunteer,IsMvp,NoteToOrganizers,Email,PhoneNumber,IsApproved")] SpeakerViewModel speakerVM)
         {
             if (id != speakerVM.SpeakerId)
                 return NotFound();
@@ -165,7 +165,8 @@ namespace Codecamp.Controllers
                     IsApproved = speakerVM.IsApproved,
                     IsMvp = speakerVM.IsMvp,
                     LinkedIn = speakerVM.LinkedIn,
-                    CodecampUserId = speakerVM.CodecampUserId
+                    CodecampUserId = speakerVM.CodecampUserId,
+                    Image = speakerVM.Image
                 };
 
                 // Convert the image to a byte array and store it in the

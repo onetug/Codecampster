@@ -73,12 +73,10 @@ namespace Codecamp.Controllers
             if (!id.HasValue)
                 return NotFound();
 
-            var session = await _sessionBL.GetSession(id.Value);
+            var session = await _sessionBL.GetSessionViewModel(id.Value);
 
             if (session == null)
-            {
                 return NotFound();
-            }
 
             return View(session);
         }
