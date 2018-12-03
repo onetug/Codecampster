@@ -48,8 +48,10 @@ namespace Codecamp.Models
 
         public Event Event { get; set; }
 
+        // List of sessions a user has favorited
         public virtual List<AttendeeSession> AttendeeSessions { get; set; }
 
+        // Get method to generate the user's full name
         public string FullName { get { return FirstName + " " + LastName; } }
     }
 }

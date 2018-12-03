@@ -1,8 +1,18 @@
-﻿@model Codecamp.Models.Speaker
+﻿@using Microsoft.AspNetCore.Identity
+@inject UserManager<CodecampUser> UserManager
+@model Codecamp.Models.Speaker
 
 @{
     ViewData["Title"] = "Details";
     Layout = "~/Views/Shared/_Layout.cshtml";
+
+    // Get the speaker Id
+    int? speakerId = null;
+    var user = await UserManager.GetUserAsync(User);
+    if (user != null)
+    {
+        speakerId = user.SpeakerId;
+    }
 }
 
 <h2>Details</h2>
@@ -51,7 +61,28 @@
             @Html.DisplayNameFor(model => model.Image)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Image)
+            <div style="width: 150px; height: 150px; position: relative;">
+                @{
+                    string imgSrc = string.Empty;
+                    if (Model.Image != null && Model.Image.Length != 0)
+                    {
+                        var base64 = Convert.ToBase64String(Model.Image);
+                        imgSrc = String.Format("data:image;base64,{0}", base64);
+                    }
+                    else
+                    {
+                        imgSrc = "/images/default_user_icon.jpg";
+                    }
+                }
+                <img style="max-width: 150px;"
+                        src="@imgSrc"
+                        alt="@(string.Format("{0} {1}", Model.CodecampUser.FirstName, Model.CodecampUser.LastName))" />
+                @if (Model.IsMvp)
+                {
+                    <img style="width: 30px; height: 30px; z-index: 10; position: absolute; right: 20px; bottom: 20px;"
+                            src=@("/images/ms-mvp.jpg") alt=@("Microsoft MVP") />
+                }
+            </div>
         </dd>
         <dt>
             @Html.DisplayNameFor(model => model.IsMvp)
@@ -74,6 +105,10 @@
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model.SpeakerId">Edit</a> |
+    @if (User.IsInRole("Admin") || ((User.IsInRole("Speaker")
+     && speakerId.HasValue && Model.SpeakerId == speakerId)))
+    {
+        <a asp-action="Edit" asp-route-id="@Model.SpeakerId">Edit</a><span> | </span>
+    }
     <a asp-action="Index">Back to List</a>
 </div>

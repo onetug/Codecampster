@@ -23,9 +23,10 @@ namespace Codecamp.Models
 
         public bool IsApproved { get; set; }
 
-        // Session speakers
+        // The sessions associated with speakers
         public virtual List<SpeakerSession> SpeakerSessions { get; set; }
 
+        // The sessions users have favorited
         public virtual List<AttendeeSession> AttendeeSessions { get; set; }
 
         [ForeignKey("Event")]

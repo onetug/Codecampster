@@ -55,24 +55,15 @@
     <div class="col-md-3 col-lg-offset-1">
         <h3>Action Items</h3>
         <ul>
-            <li>Speakers</li>
-            <ul>
-                @if (User.Identity.IsAuthenticated)
-                {
-                    if ((ViewBag.SpeakerProfile != null))
-                    {
-                        <li><a asp-controller="Speakers" asp-action="Edit"><button class="btn btn-primary">Edit Speaker Profile</button></a><br /><br /></li>
-                        <li><a asp-controller="Speakers" asp-action="Sessions"><button class="btn btn-primary">Manage Sessions</button></a><br /><br /></li>
-                    }
-                    <li><a asp-controller="Sessions" asp-action="Index">Manage Sessions</a></li>
-                } 
-                else
-                {
+            @if (Model != null && Model.IsSpeakerRegistrationOpen)
+            {
+                <li>Speakers</li>
+                <ul>
                     <li>No account? <a asp-area="Identity" asp-page="/Account/RegisterSpeaker"><button class="btn btn-primary">Register as a Speaker</button></a></li>
                     <li>Already have an account? <a asp-area="Identity" asp-page="/Account/Login">Login</a></li>
                     <li><em>Note:</em> 2018 or previous years registrations have not been carried over</li>
-                }
-            </ul>
+                </ul>
+             }
         </ul>
     </div>
     <div class="col-md-3">

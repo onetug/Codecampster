@@ -308,6 +308,11 @@ namespace Codecamp.BusinessLogic
             }
         }
 
+        /// <summary>
+        /// Convert a Session to a SessionViewModel
+        /// </summary>
+        /// <param name="sessions"></param>
+        /// <returns></returns>
         private IQueryable<SessionViewModel> ToSessionViewModel(IQueryable<Session> sessions)
         {
             return from session in sessions
