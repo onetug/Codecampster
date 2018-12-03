@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Codecamp.Services;
 
 namespace Codecamp.Areas.Identity.Pages.Account
 {
@@ -16,9 +17,9 @@ namespace Codecamp.Areas.Identity.Pages.Account
     public class ForgotPasswordModel : PageModel
     {
         private readonly UserManager<CodecampUser> _userManager;
-        private readonly IEmailSender _emailSender;
+        private readonly Codecamp.Services.IEmailSender _emailSender;
 
-        public ForgotPasswordModel(UserManager<CodecampUser> userManager, IEmailSender emailSender)
+        public ForgotPasswordModel(UserManager<CodecampUser> userManager, Codecamp.Services.IEmailSender emailSender)
         {
             _userManager = userManager;
             _emailSender = emailSender;
