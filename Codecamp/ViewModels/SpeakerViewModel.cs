@@ -24,6 +24,10 @@ namespace Codecamp.ViewModels
         public string LastName { get; set; }
 
         [DataType(DataType.Text)]
+        [Display(Name = "Name")]
+        public string FullName { get; set; }
+
+        [DataType(DataType.Text)]
         [Display(Name = "Company")]
         public string CompanyName { get; set; }
 
@@ -50,7 +54,7 @@ namespace Codecamp.ViewModels
         public string GeographicLocation { get; set; }
 
         [DataType(DataType.Text)]
-        [Display(Name = "Twitter Handle")]
+        [Display(Name = "Twitter")]
         public string TwitterHandle { get; set; }
 
         [DataType(DataType.Text)]
@@ -79,5 +83,8 @@ namespace Codecamp.ViewModels
         [Required]
         [Display(Name = "Is Approved")]
         public bool IsApproved { get; set; }
+
+        [Display(Name = "Sessions")]
+        public IQueryable<SessionViewModel> Sessions { get; set; }
     }
 }
