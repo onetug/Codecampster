@@ -69,8 +69,6 @@ namespace Codecamp.Areas.Identity.Pages.Account
 
         public async Task<IActionResult> OnPostAsync()
         {
-            var manageUserPage = Url.Content("./Manage/Index");
-             
             if (ModelState.IsValid)
             {
                 // Get the current event
@@ -115,11 +113,8 @@ namespace Codecamp.Areas.Identity.Pages.Account
                     await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
                         $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 
-                    // await _signInManager.SignInAsync(user, isPersistent: false);
-
-                    // Redirect to the manage user page so the speaker can add
-                    // additional information
-                    return RedirectToPage(manageUserPage, new { LoginWithRegistration = "Speaker" });
+                    // Redirect to the registration almost complete page
+                    return RedirectToPage("./RegistrationAlmostComplete");
                 }
 
                 foreach (var error in result.Errors)
@@ -131,7 +126,7 @@ namespace Codecamp.Areas.Identity.Pages.Account
                         return RedirectToPage("./Login",
                             new
                             {
-                                ReturnUrl = manageUserPage,
+                                ReturnUrl = "./Manage/Index",
                                 LoginWithRegistration = "Speaker",
                                 Email = Input.Email // pass the email/username for convenience
                             });

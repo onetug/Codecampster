@@ -31,6 +31,7 @@ namespace Codecamp.BusinessLogic
         Task<bool> SpeakerSessionExists(int speakerId, int sessionId);
         Task<bool> UpdateSession(Session session);
         Task<bool> DeleteSession(int sessionId);
+        IQueryable<SessionViewModel> ToSessionViewModel(IQueryable<Session> sessions);
     }
 
     public class SessionBusinessLogic : ISessionBusinessLogic
@@ -313,7 +314,7 @@ namespace Codecamp.BusinessLogic
         /// </summary>
         /// <param name="sessions"></param>
         /// <returns></returns>
-        private IQueryable<SessionViewModel> ToSessionViewModel(IQueryable<Session> sessions)
+        public IQueryable<SessionViewModel> ToSessionViewModel(IQueryable<Session> sessions)
         {
             return from session in sessions
                    join speakerSession in _context.SpeakerSessions on session.SessionId equals speakerSession.SessionId into speakerSessionsGroupJoin
@@ -329,7 +330,7 @@ namespace Codecamp.BusinessLogic
                        Keywords = session.Keywords,
                        IsApproved = session.IsApproved,
                        Speakers = string.Join(",", (from codecampUser in codecampUsersGroupJoin select codecampUser.FullName)),
-                       SpeakerSessions = session.SpeakerSessions,
+                       SpeakerSessions = speakerSessionsGroupJoin.AsQueryable(),
                        EventName = _event.Name
                    };
         }

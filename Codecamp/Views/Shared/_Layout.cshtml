@@ -39,12 +39,13 @@
                     <li><a target="_blank" href="/documents/OrlandoCodeCampSponsorInfo2019.pdf">Sponsors</a></li>
                     @* Not available at this point, details well be fleshed out during development *@
                     @*<li><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
-                    <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contact</a></li>*@
+        <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contact</a></li>*@
 
                     @if (User.IsInRole("Admin"))
                     {
                         <li><a asp-area="" asp-controller="Events" asp-action="Index">Events</a></li>
                     }
+                    <li><a asp-area="" asp-controller="Home" asp-action="Faq">FAQ</a></li>
                 </ul>
                 @await Html.PartialAsync("_LoginPartial")
             </div>

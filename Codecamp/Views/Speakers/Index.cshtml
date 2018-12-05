@@ -22,6 +22,9 @@
         <thead>
             <tr>
                 <th>
+                    @Html.DisplayNameFor(model => model.CodecampUser.FullName)
+                </th>
+                <th>
                     @Html.DisplayNameFor(model => model.CompanyName)
                 </th>
                 <th>
@@ -49,6 +52,9 @@
             @foreach (var item in Model)
             {
                 <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.CodecampUser.FullName)
+                    </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.CompanyName)
                     </td>
