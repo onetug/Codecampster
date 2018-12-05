@@ -58,33 +58,6 @@
             @Html.DisplayFor(model => model.BlogUrl)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.Image)
-        </dt>
-        <dd>
-            <div style="width: 150px; height: 150px; position: relative;">
-                @{
-                    string imgSrc = string.Empty;
-                    if (Model.Image != null && Model.Image.Length != 0)
-                    {
-                        var base64 = Convert.ToBase64String(Model.Image);
-                        imgSrc = String.Format("data:image;base64,{0}", base64);
-                    }
-                    else
-                    {
-                        imgSrc = "/images/default_user_icon.jpg";
-                    }
-                }
-                <img style="max-width: 150px;"
-                        src="@imgSrc"
-                        alt="@(string.Format("{0} {1}", Model.CodecampUser.FirstName, Model.CodecampUser.LastName))" />
-                @if (Model.IsMvp)
-                {
-                    <img style="width: 30px; height: 30px; z-index: 10; position: absolute; right: 20px; bottom: 20px;"
-                            src=@("/images/ms-mvp.jpg") alt=@("Microsoft MVP") />
-                }
-            </div>
-        </dd>
-        <dt>
             @Html.DisplayNameFor(model => model.IsMvp)
         </dt>
         <dd>
@@ -101,6 +74,33 @@
         </dt>
         <dd>
             @Html.DisplayFor(model => model.CodecampUser.TwitterHandle)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Image)
+        </dt>
+        <dd>
+            <div style="max-width: 150px; max-height:150px; position: relative;">
+                @{
+                    string imgSrc = string.Empty;
+                    if (Model.Image != null && Model.Image.Length != 0)
+                    {
+                        var base64 = Convert.ToBase64String(Model.Image);
+                        imgSrc = String.Format("data:image;base64,{0}", base64);
+                    }
+                    else
+                    {
+                        imgSrc = "/images/default_user_icon.jpg";
+                    }
+                }
+                <img style="max-width: 150px;"
+                     src="@imgSrc"
+                     alt="@(string.Format("{0} {1}", Model.CodecampUser.FirstName, Model.CodecampUser.LastName))" />
+                @if (Model.IsMvp)
+                {
+                    <img style="width: 30px; height: 30px; z-index: 10; position: absolute; right: 20px; bottom: 20px;"
+                         src=@("/images/ms-mvp.jpg") alt=@("Microsoft MVP") />
+                }
+            </div>
         </dd>
     </dl>
 </div>

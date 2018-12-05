@@ -38,17 +38,7 @@ namespace Codecamp.Controllers
         // GET: Speakers
         public async Task<IActionResult> Index()
         {
-            List<Speaker> speakers;
-            // Get the speakers for the active event. If there is
-            // no active event, get all speakers for all events.
-            if (User.IsInRole("Admin"))
-            {
-                speakers = await _speakerBL.GetAllSpeakersForActiveEvent();
-            }
-            else
-            {
-                speakers = await _speakerBL.GetAllApprovedSpeakersForActiveEvent();
-            }
+            List<Speaker> speakers = await _speakerBL.GetAllSpeakersForActiveEvent();
 
             // Get the current user, if the user exists.
             var user = await _userManager.GetUserAsync(User);
