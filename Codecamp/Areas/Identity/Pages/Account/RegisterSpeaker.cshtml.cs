@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Codecamp.BusinessLogic;
@@ -8,6 +9,7 @@ using Codecamp.Data;
 using Codecamp.Models;
 using Codecamp.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -46,6 +48,9 @@ namespace Codecamp.Areas.Identity.Pages.Account
         [BindProperty]
         public InputModel Input { get; set; }
 
+        [TempData]
+        public string CaptchaCode { get; set; }
+
         public class InputModel
         {
             [Required]
@@ -63,14 +68,55 @@ namespace Codecamp.Areas.Identity.Pages.Account
             [Display(Name = "Confirm password")]
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
+
+            public string Message { get; set; }
+
+            public string EnteredCaptchaCode { get; set; }
+            
+            public string CaptchaBase64Data { get; set; }
         }
 
-        public void OnGet(string returnUrl = null) { }
+        public async Task<IActionResult> OnGetAsync(string returnUrl = null)
+        {
+            // Get a captcha
+            var captcha = GetCaptcha();
+            Input = new InputModel
+            {
+                CaptchaBase64Data = captcha.CaptchaBase64Data,
+            };
+
+            CaptchaCode = captcha.CaptchaCode;
+
+            return Page();
+        }
+
+        public CaptchaResult GetCaptcha()
+        {
+            int width = 200;
+            int height = 60;
+            var captchaCode = Captcha.GenerateCaptchaCode();
+
+            return Captcha.GenerateCaptchaImage(width, height, captchaCode);
+        }
 
         public async Task<IActionResult> OnPostAsync()
         {
             if (ModelState.IsValid)
             {
+                if (Input.EnteredCaptchaCode != CaptchaCode)
+                {
+                    // Get a new captcha
+                    var captcha1 = GetCaptcha();
+                    Input = new InputModel
+                    {
+                        CaptchaBase64Data = captcha1.CaptchaBase64Data,
+                    };
+
+                    CaptchaCode = captcha1.CaptchaCode;
+
+                    return Page();
+                }
+
                 // Get the current event
                 var theEvent = await _eventBL.GetActiveEvent();
 
@@ -136,7 +182,15 @@ namespace Codecamp.Areas.Identity.Pages.Account
                 }
             }
 
-            // If we got this far, something failed, redisplay form
+            // Get a new captcha
+            var captcha2 = GetCaptcha();
+            Input = new InputModel
+            {
+                CaptchaBase64Data = captcha2.CaptchaBase64Data,
+            };
+
+            CaptchaCode = captcha2.CaptchaCode;
+
             return Page();
         }
     }
