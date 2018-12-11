@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Identity;
 using Codecamp.BusinessLogic;
 using Codecamp.ViewModels;
 using System.IO;
+using System.ComponentModel.DataAnnotations;
 
 namespace Codecamp.Controllers
 {
@@ -35,24 +36,50 @@ namespace Codecamp.Controllers
             _userBL = userBL;
         }
 
+        /// <summary>
+        /// Perform validation on filesize
+        /// </summary>
+        public class FileSizeValidationAttribute : ValidationAttribute
+        {
+            private int _maxFileSize;
+
+            public FileSizeValidationAttribute(int maxFileSize)
+            {
+                _maxFileSize = maxFileSize;
+            }
+
+            protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+            {
+                var imageFile = ((SpeakerViewModel)validationContext.ObjectInstance).ImageFile;
+
+                if (imageFile != null && imageFile.Length > _maxFileSize)
+                {
+                    return new ValidationResult(string.Format("File size limit is {0} KB", (_maxFileSize / 1000)));
+                }
+
+                return ValidationResult.Success;
+            }
+        }
+
         // GET: Speakers
         public async Task<IActionResult> Index()
         {
-            List<Speaker> speakers;
+            List<SpeakerViewModel> speakers;
+
             // Get the speakers for the active event. If there is
             // no active event, get all speakers for all events.
             if (User.IsInRole("Admin"))
             {
-                speakers = await _speakerBL.GetAllSpeakersForActiveEvent();
+                ViewData["Title"] = "All Speakers";
+                // Don't load any images, this is list on the Admin version of this
+                // page.
+                speakers = await _speakerBL.GetAllSpeakersViewModelForActiveEvent(false);
             }
             else
             {
-                speakers = await _speakerBL.GetAllApprovedSpeakersForActiveEvent();
+                ViewData["Title"] = "Speakers";
+                speakers = await _speakerBL.GetAllApprovedSpeakersViewModelForActiveEvent();
             }
-
-            // Get the current user, if the user exists.
-            var user = await _userManager.GetUserAsync(User);
-            ViewData["UserId"] = user != null ? user.Id : string.Empty;
 
             return View(speakers);
         }
@@ -65,7 +92,7 @@ namespace Codecamp.Controllers
                 return NotFound();
 
             // Find the specified speaker
-            var speaker = await _speakerBL.GetSpeaker(id.Value);
+            var speaker = await _speakerBL.GetSpeakerViewModel(id.Value);
 
             // If the speaker is not found, return not found
             if (speaker == null)
@@ -75,29 +102,33 @@ namespace Codecamp.Controllers
             return View(speaker);
         }
 
-        // GET: Speakers/Create
-        public IActionResult Create()
-        {
-            ViewData["CodecampUserId"] = new SelectList(_context.CodecampUsers, "Id", "Id");
-            return View();
-        }
+        #region NOT USED - Create done with user registration
 
-        // POST: Speakers/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("SpeakerId,CompanyName,Bio,WebsiteUrl,BlogUrl,ImageUrl,NoteToOrganizers,IsMvp,LinkedIn,CodecampUserId")] Speaker speaker)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(speaker);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["CodecampUserId"] = new SelectList(_context.CodecampUsers, "Id", "Id", speaker.CodecampUserId);
-            return View(speaker);
-        }
+        //// GET: Speakers/Create
+        //public IActionResult Create()
+        //{
+        //    ViewData["CodecampUserId"] = new SelectList(_context.CodecampUsers, "Id", "Id");
+        //    return View();
+        //}
+
+        //// POST: Speakers/Create
+        //// To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        //// more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Create([Bind("SpeakerId,CompanyName,Bio,WebsiteUrl,BlogUrl,ImageUrl,NoteToOrganizers,IsMvp,LinkedIn,CodecampUserId")] Speaker speaker)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        _context.Add(speaker);
+        //        await _context.SaveChangesAsync();
+        //        return RedirectToAction(nameof(Index));
+        //    }
+        //    ViewData["CodecampUserId"] = new SelectList(_context.CodecampUsers, "Id", "Id", speaker.CodecampUserId);
+        //    return View(speaker);
+        //}
+
+        #endregion
 
         // GET: Speakers/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -107,7 +138,7 @@ namespace Codecamp.Controllers
                 return NotFound();
 
             // Find the specified speaker
-            var speaker = await _speakerBL.GetSpeaker(id.Value);
+            var speaker = await _speakerBL.GetSpeakerViewModel(id.Value);
 
             // If the speaker is not found, return not found
             if (speaker == null)
@@ -115,29 +146,8 @@ namespace Codecamp.Controllers
 
             var user = await _speakerBL.GetUserInfoForSpeaker(speaker.SpeakerId);
 
-            var speakerVM = new SpeakerViewModel
-            {
-                SpeakerId = speaker.SpeakerId,
-                CodecampUserId = user.Id,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                CompanyName = speaker.CompanyName,
-                Image = speaker.Image,
-                Bio = speaker.Bio,
-                WebsiteUrl = speaker.WebsiteUrl,
-                BlogUrl = speaker.BlogUrl,
-                GeographicLocation = user.GeographicLocation,
-                TwitterHandle = user.TwitterHandle,
-                IsVolunteer = user.IsVolunteer,
-                IsMvp = speaker.IsMvp,
-                NoteToOrganizers = speaker.NoteToOrganizers,
-                Email = user.Email,
-                PhoneNumber = user.PhoneNumber,
-                IsApproved = speaker.IsApproved
-            };
-
             // Else return the view with the speaker information
-            return View(speakerVM);
+            return View(speaker);
         }
 
         // POST: Speakers/Edit/5
@@ -146,13 +156,13 @@ namespace Codecamp.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, 
-            [Bind("SpeakerId,CodecampUserId,FirstName,LastName,CompanyName,ImageFile,Image,Bio,WebsiteUrl,BlogUrl,GeographicLocation,TwitterHandle,LinkedIn,IsVolunteer,IsMvp,NoteToOrganizers,Email,PhoneNumber,IsApproved")] SpeakerViewModel speakerVM)
+            [Bind("SpeakerId,CodecampUserId,FirstName,LastName,CompanyName,ImageFile,Bio,WebsiteUrl,BlogUrl,GeographicLocation,TwitterHandle,LinkedIn,IsVolunteer,IsMvp,NoteToOrganizers,Email,PhoneNumber,IsApproved")] SpeakerViewModel speakerVM)
         {
-            if (id != speakerVM.SpeakerId)
-                return NotFound();
-
             if (ModelState.IsValid)
             {
+                if (id != speakerVM.SpeakerId)
+                    return NotFound();
+
                 // Update the speaker information from the page
                 var speaker = new Speaker
                 {
@@ -166,13 +176,13 @@ namespace Codecamp.Controllers
                     IsMvp = speakerVM.IsMvp,
                     LinkedIn = speakerVM.LinkedIn,
                     CodecampUserId = speakerVM.CodecampUserId,
-                    Image = speakerVM.Image
                 };
 
                 // Convert the image to a byte array and store it in the
                 // database
                 if (speakerVM.ImageFile != null &&
-                    speakerVM.ImageFile.ContentType.ToLower().StartsWith("image/"))
+                    speakerVM.ImageFile.ContentType.ToLower().StartsWith("image/")
+                    && speakerVM.ImageFile.Length <= SpeakerViewModel.MaxImageSize)
                 {
                     MemoryStream ms = new MemoryStream();
                     speakerVM.ImageFile.OpenReadStream().CopyTo(ms);

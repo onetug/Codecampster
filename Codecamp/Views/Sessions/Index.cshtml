@@ -1,9 +1,12 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @inject UserManager<CodecampUser> UserManager
-@model IEnumerable<Codecamp.ViewModels.SessionViewModel>
+@model Codecamp.Controllers.SessionsController.PageModel
 
 @{
-    ViewData["Title"] = "Index";
+    if (string.IsNullOrEmpty((string)ViewData["Title"]))
+    {
+        ViewData["Title"] = "Sessions";
+    }
 
     // Determine whether the current user is a speaker
     int? speakerId = null;
@@ -14,80 +17,95 @@
     }
 }
 
-<h2>Index</h2>
+<h2>@ViewData["Title"]</h2>
 
 @* Allow a speaker to create a new session *@
 @if (User.IsInRole("Speaker"))
 {
-    <p>
+    <div>
         <a asp-action="Create">Create New</a>
-    </p>
+    </div>
+
+    <div class="row">
+        <div class="col-md-3">
+            @Html.DropDownListFor(model => model.SelectedUserType,
+                new SelectList(ViewBag.UserTypes, "UserTypeId", "Description"),
+                new { @class = "form-control" })
+        </div>
+    </div>
 }
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Speakers)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.SkillLevel)
-            </th>
-            @* Show the approved column if the user is an admin or speaker *@
-            @if (User.IsInRole("Admin") || User.IsInRole("Speaker"))
-            {
+    <table class="table">
+        <thead>
+            <tr>
                 <th>
-                    @Html.DisplayNameFor(model => model.IsApproved)
+                    @Html.DisplayNameFor(model => model.Sessions[0].Name)
                 </th>
-            }
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Speakers)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SkillLevel)
-            </td>
-            @* Show the approved flag if the user is an Admin or Speaker *@
-            @if (User.IsInRole("Admin") || User.IsInRole("Speaker"))
+                <th>
+                    @Html.DisplayNameFor(model => model.Sessions[0].Description)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Sessions[0].Speakers)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Sessions[0].SkillLevel)
+                </th>
+                @* Show the approved column if the user is an admin or speaker *@
+                @if (User.IsInRole("Admin") || User.IsInRole("Speaker"))
+                {
+                    <th>
+                        @Html.DisplayNameFor(model => model.Sessions[0].IsApproved)
+                    </th>
+                }
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Sessions.Count() > 0)
             {
-                <td>
-                    @Html.DisplayFor(modelItem => item.IsApproved)
-                </td>
+                @foreach (var item in Model.Sessions)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Description)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Speakers)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.SkillLevel)
+                        </td>
+                        @* Show the approved flag if the user is an Admin or Speaker *@
+                        @if (User.IsInRole("Admin") || User.IsInRole("Speaker"))
+                        {
+                            <td>
+                                @Html.DisplayFor(modelItem => item.IsApproved)
+                            </td>
+                        }
+                        <td>
+                            @* Allow admins and speakers to edit the sessions *@
+                            @if (User.IsInRole("Admin") || (User.IsInRole("Speaker")
+                              && speakerId.HasValue && item.SpeakerSessions.Any(s => s.SpeakerId == speakerId.Value)))
+                            {
+                                <a asp-action="Edit" asp-route-id="@item.SessionId">Edit</a><span> | </span>
+                            }
+                            <a asp-action="Details" asp-route-id="@item.SessionId">Details</a>
+                            @* Allow admins and speakers to delete sessions *@
+                            @if (User.IsInRole("Admin") || (User.IsInRole("Speaker")
+                              && speakerId.HasValue && item.SpeakerSessions.Any(s => s.SpeakerId == speakerId.Value)))
+                            {
+                                <span> | </span><a asp-action="Delete" asp-route-id="@item.SessionId">Delete</a>
+                            }
+                        </td>
+                    </tr>
+                }
             }
-            <td>
-                @* Allow admins and speakers to edit the sessions *@
-                @if (User.IsInRole("Admin") || (User.IsInRole("Speaker") 
-                    && speakerId.HasValue && item.SpeakerSessions.Any(s => s.SpeakerId == speakerId.Value)))
-                {
-                    <a asp-action="Edit" asp-route-id="@item.SessionId">Edit</a><span> | </span>
-                }
-                <a asp-action="Details" asp-route-id="@item.SessionId">Details</a>
-                @* Allow admins and speakers to delete sessions *@
-                @if (User.IsInRole("Admin") || (User.IsInRole("Speaker") 
-                    && speakerId.HasValue && item.SpeakerSessions.Any(s => s.SpeakerId == speakerId.Value)))
-                {
-                    <span> | </span><a asp-action="Delete" asp-route-id="@item.SessionId">Delete</a>
-                }
-            </td>
-        </tr>
-        }
-    </tbody>
-</table>
+            else
+            {
+                <td colspan="4">No sessions specified yet...</td>
+            }
+        </tbody>
+    </table>

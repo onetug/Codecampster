@@ -1,9 +1,14 @@
 ﻿@using Microsoft.AspNetCore.Identity
-@model IEnumerable<Codecamp.Models.Speaker>
+@using Codecamp.Controllers
+@model IEnumerable<Codecamp.ViewModels.SpeakerViewModel>
 @inject UserManager<CodecampUser> UserManager
 
 @{
-    ViewData["Title"] = "Speakers";
+    if (string.IsNullOrEmpty((string)ViewData["Title"]))
+    {
+        ViewData["Title"] = "Speakers";
+    }
+
     Layout = "~/Views/Shared/_Layout.cshtml";
     var rowIndex = 1;
 
@@ -13,158 +18,162 @@
         : string.Empty;
 }
 
-<h2>Speakers</h2>
+<h2>@ViewData["Title"]</h2>
 
 @if (User.IsInRole("Admin"))
 {
-    @* This is for the Admins to allow them to edit the speaker *@
-    <table class="table">
-        <thead>
-            <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.CodecampUser.FullName)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.CompanyName)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Bio)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.WebsiteUrl)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.BlogUrl)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.NoteToOrganizers)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.IsMvp)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.IsApproved)
-                </th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
+    @if (Model.Count() > 0)
+    {
+        @* This is for the Admins to allow them to edit the speaker *@
+        <table class="table">
+            <thead>
                 <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.CodecampUser.FullName)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.CompanyName)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Bio)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.WebsiteUrl)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.BlogUrl)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.NoteToOrganizers)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.IsMvp)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.IsApproved)
-                    </td>
-                    <td>
-                        <a asp-action="Edit" asp-route-id="@item.SpeakerId">Edit</a> |
-                        <a asp-action="Details" asp-route-id="@item.SpeakerId">Details</a> |
-                        <a asp-action="Delete" asp-route-id="@item.SpeakerId">Delete</a>
-                    </td>
+                    <th>
+                        @Html.DisplayNameFor(model => model.FullName)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.CompanyName)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Bio)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.WebsiteUrl)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.BlogUrl)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.NoteToOrganizers)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.IsMvp)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.IsApproved)
+                    </th>
+                    <th></th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.FullName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.CompanyName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Bio)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.WebsiteUrl)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.BlogUrl)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.NoteToOrganizers)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.IsMvp)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.IsApproved)
+                        </td>
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@item.SpeakerId">Edit</a> |
+                            <a asp-action="Details" asp-route-id="@item.SpeakerId">Details</a> |
+                            <a asp-action="Delete" asp-route-id="@item.SpeakerId">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div>There are currently no speakers...</div>
+    }
 }
 else
 {
     <div class="row">
-        @foreach (var speaker in Model)
+        @if (Model.Count() > 0)
         {
-            if (rowIndex == 5)
+            @foreach (var speaker in Model)
             {
+                if (rowIndex == 5)
+                {
                 @:</div>
                 @:<div class="row">
                     @* create a new row after four speakers*@
-            rowIndex = 1;
-        }
+                    rowIndex = 1;
+                }
 
-        if (userId == speaker.CodecampUser.Id)
-        {
-            <div class="col-md-3">
-                @* Allow the user to edit themselves via the manage user page *@
-                <a asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">
-                    <div style="text-align:center;">
-                        <div style="width: 150px; height: 150px; margin-left: auto; margin-right: auto">
-                            @{
-                                string imgSrc = string.Empty;
-                                if (speaker.Image != null && speaker.Image.Length != 0)
-                                {
-                                    var base64 = Convert.ToBase64String(speaker.Image);
-                                    imgSrc = String.Format("data:image;base64,{0}", base64);
-                                }
-                                else
-                                {
-                                    imgSrc = "/images/default_user_icon.jpg";
-                                }
-                            }
-                            <img style="max-width: 150px;"
-                                    src="@imgSrc"
-                                    alt="@(string.Format("{0} {1}", speaker.CodecampUser.FirstName, speaker.CodecampUser.LastName))" />
-                            @if (speaker.IsMvp)
-                            {
-                                <img style="width: 30px; height: 30px; z-index: 10; position:absolute; top: 110px; left: 150px;"
-                                        src=@("/images/ms-mvp.jpg") alt=@("Microsoft MVP") />
-                            }
-                        </div>
-                        <h5>@(string.Format("{0} {1}", speaker.CodecampUser.FirstName, speaker.CodecampUser.LastName))</h5>
+                if (userId == speaker.CodecampUserId)
+                {
+                    <div class="col-md-3">
+                        @* Allow the user to edit themselves via the manage user page *@
+                        <a asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">
+                            <div style="text-align:center;">
+                                <div style="width: 150px; height: 150px; margin-left: auto; margin-right: auto">
+                                    @{
+                                        string imgSrc = "/images/default_user_icon.jpg";
+                                        if (!string.IsNullOrEmpty(speaker.Image))
+                                        {
+                                            imgSrc = speaker.Image;
+                                        }
+                                    }
+                                    <img style="max-width: 150px;"
+                                         src="@imgSrc"
+                                         alt="@(string.Format("{0}", speaker.FullName))" />
+                                    @if (speaker.IsMvp)
+                                    {
+                                        <img style="width: 30px; height: 30px; z-index: 10; position:absolute; top: 110px; left: 150px;"
+                                             src=@("/images/ms-mvp.jpg") alt=@("Microsoft MVP") />
+                                    }
+                                </div>
+                                <h5>@(string.Format("{0}", speaker.FullName))</h5>
+                            </div>
+                        </a>
                     </div>
-                </a>
-            </div>
+                }
+                else
+                {
+                    <div class="col-md-3">
+                        <a asp-action="Details" asp-route-id="@(speaker.SpeakerId)">
+                            <div style="text-align:center;">
+                                <div style="width: 150px; height: 150px; margin-left: auto; margin-right: auto;">
+                                    @{
+                                        string imgSrc = "/images/default_user_icon.jpg";
+                                        if (!string.IsNullOrEmpty(speaker.Image))
+                                        {
+                                            imgSrc = speaker.Image;
+                                        }
+                                    }
+                                    <img style="max-width: 150px; max-height:150px;"
+                                         src="@imgSrc"
+                                         alt="@(string.Format("{0}", speaker.FullName))" />
+                                    @if (speaker.IsMvp)
+                                    {
+                                        <img style="width: 30px; height: 30px; z-index: 10; position:absolute; top: 110px; left: 150px;"
+                                             src=@("/images/ms-mvp.jpg") alt=@("Microsoft MVP") />
+                                    }
+                                </div>
+                                <h5>@(string.Format("{0}", speaker.FirstName))</h5>
+                            </div>
+                        </a>
+                    </div>
+                }
+                rowIndex++;
+            }
         }
         else
         {
-            <div class="col-md-3">
-                <a asp-action="Details" asp-route-id="@(speaker.SpeakerId)">
-                    <div style="text-align:center;">
-                        <div style="width: 150px; height: 150px; margin-left: auto; margin-right: auto;">
-                            @{
-                                string imgSrc = string.Empty;
-                                if (speaker.Image != null && speaker.Image.Length != 0)
-                                {
-                                    var base64 = Convert.ToBase64String(speaker.Image);
-                                    imgSrc = String.Format("data:image;base64,{0}", base64);
-                                }
-                                else
-                                {
-                                    imgSrc = "/images/default_user_icon.jpg";
-                                }
-                            }
-                            <img style="max-width: 150px;"
-                                    src="@imgSrc"
-                                    alt="@(string.Format("{0} {1}", speaker.CodecampUser.FirstName, speaker.CodecampUser.LastName))" />
-                            @if (speaker.IsMvp)
-                            {
-                                <img style="width: 30px; height: 30px; z-index: 10; position:absolute; top: 110px; left: 150px;"
-                                        src=@("/images/ms-mvp.jpg") alt=@("Microsoft MVP") />
-                            }
-                        </div>
-                        <h5>@(string.Format("{0} {1}", speaker.CodecampUser.FirstName, speaker.CodecampUser.LastName))</h5>
-                    </div>
-                </a>
-            </div>
-         }
-         rowIndex++;
-    }
+            <div>There are currentnly no speakers...</div>
+        }
     </div>
 }

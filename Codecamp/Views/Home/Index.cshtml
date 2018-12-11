@@ -55,16 +55,24 @@
     <div class="col-md-3 col-lg-offset-1">
         <h3>Action Items</h3>
         <ul>
-            @if (Model != null && Model.IsSpeakerRegistrationOpen)
+            @if (User.Identity.IsAuthenticated)
             {
-                <li>Speakers</li>
-                <ul>
-                    <li>Already have an account? <a asp-area="Identity" asp-page="/Account/Login">Login</a></li>
-                    <li>No account? <a asp-area="Identity" asp-page="/Account/RegisterSpeaker"><button class="btn btn-primary">Register as a Speaker</button></a></li>
-                    <li style="font-size:medium; color: red;"><em style="font-weight: bold;">Note:</em> 2018 or previous years registrations have not been carried over</li>
-                </ul>
-             }
-        </ul>
+                <li><a href="Identity/Account/Manage"><button class="btn btn-primary">Edit Speaker Profile</button></a><br /><br /></li>
+                <li><a asp-controller="Sessions" asp-action="Index"><button class="btn btn-primary">Manage Sessions</button></a><br /><br /></li>
+            }
+            else
+            {
+                @if (Model != null && Model.IsSpeakerRegistrationOpen)
+                {
+                    <li>Speakers</li>
+                    <ul>
+                        <li>Already have an account? <a asp-area="Identity" asp-page="/Account/Login">Login</a></li>
+                        <li>No account? <a asp-area="Identity" asp-page="/Account/RegisterSpeaker"><button class="btn btn-primary">Register as a Speaker</button></a></li>
+                        <li style="font-size:medium; color: red;"><em style="font-weight: bold;">Note:</em> 2018 or previous years registrations have not been carried over</li>
+                    </ul>
+                }
+            }
+            </ul>
     </div>
     <div class="col-md-3">
         <h3>Milestones</h3>

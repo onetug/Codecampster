@@ -69,8 +69,6 @@ namespace Codecamp.Areas.Identity.Pages.Account
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
 
-            public string Message { get; set; }
-
             public string EnteredCaptchaCode { get; set; }
             
             public string CaptchaBase64Data { get; set; }
@@ -85,18 +83,10 @@ namespace Codecamp.Areas.Identity.Pages.Account
                 CaptchaBase64Data = captcha.CaptchaBase64Data,
             };
 
+            // Store for comparison on postback
             CaptchaCode = captcha.CaptchaCode;
 
             return Page();
-        }
-
-        public CaptchaResult GetCaptcha()
-        {
-            int width = 200;
-            int height = 60;
-            var captchaCode = Captcha.GenerateCaptchaCode();
-
-            return Captcha.GenerateCaptchaImage(width, height, captchaCode);
         }
 
         public async Task<IActionResult> OnPostAsync()
@@ -105,13 +95,17 @@ namespace Codecamp.Areas.Identity.Pages.Account
             {
                 if (Input.EnteredCaptchaCode != CaptchaCode)
                 {
-                    // Get a new captcha
+                    // Indicate an invalid CAPTCHA string entered
+                    ModelState.AddModelError(string.Empty, "Invalid CAPTCHA string entered, try again.");
+
+                    // The entered captcha is incorrect, get a new captcha
                     var captcha1 = GetCaptcha();
                     Input = new InputModel
                     {
                         CaptchaBase64Data = captcha1.CaptchaBase64Data,
                     };
 
+                    // Store for comparison on postback
                     CaptchaCode = captcha1.CaptchaCode;
 
                     return Page();
@@ -131,6 +125,7 @@ namespace Codecamp.Areas.Identity.Pages.Account
                         EventId = theEvent != null ? theEvent.EventId : (int?)null
                     };
 
+                // Create a user
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {
@@ -156,6 +151,7 @@ namespace Codecamp.Areas.Identity.Pages.Account
                         values: new { userId = user.Id, code = code },
                         protocol: Request.Scheme);
 
+                    // Generate and send a confirmation email to the user
                     await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
                         $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 
@@ -182,16 +178,27 @@ namespace Codecamp.Areas.Identity.Pages.Account
                 }
             }
 
-            // Get a new captcha
+            // Something failed with the account registration, get a new captcha
             var captcha2 = GetCaptcha();
             Input = new InputModel
             {
                 CaptchaBase64Data = captcha2.CaptchaBase64Data,
             };
 
+            // Store for comparison on postback
             CaptchaCode = captcha2.CaptchaCode;
 
             return Page();
+        }
+
+        // Generate a CAPTCHA
+        public CaptchaResult GetCaptcha()
+        {
+            int width = 200;
+            int height = 60;
+            var captchaCode = Captcha.GenerateCaptchaCode();
+
+            return Captcha.GenerateCaptchaImage(width, height, captchaCode);
         }
     }
 }
