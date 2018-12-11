@@ -80,7 +80,7 @@ namespace Codecamp.Controllers
                 ViewData["Title"] = "Speakers";
                 speakers = await _speakerBL.GetAllApprovedSpeakersViewModelForActiveEvent();
             }
-
+            
             return View(speakers);
         }
 
