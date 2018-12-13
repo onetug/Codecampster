@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
+    <ApplicationInsightsResourceId>/subscriptions/d2e5b259-aee6-42d3-b8d7-2cecd555a8df/resourcegroups/orlandocodecamp2019/providers/microsoft.insights/components/orlandocodecamp2019</ApplicationInsightsResourceId>
+    <ApplicationInsightsAnnotationResourceId>/subscriptions/d2e5b259-aee6-42d3-b8d7-2cecd555a8df/resourcegroups/orlandocodecamp2019/providers/microsoft.insights/components/orlandocodecamp2019</ApplicationInsightsAnnotationResourceId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,6 +15,7 @@
 
   <ItemGroup>
     <PackageReference Include="MailKit" Version="2.0.6" />
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.5" />
     <PackageReference Include="System.Drawing.Common" Version="4.5.1" />
@@ -34,6 +37,10 @@
     <Content Update="wwwroot\documents\OrlandoCodeCampSponsorInfo2019.pdf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services" />
   </ItemGroup>
 
 </Project>
