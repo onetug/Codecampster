@@ -6,6 +6,10 @@
     <ApplicationInsightsAnnotationResourceId>/subscriptions/d2e5b259-aee6-42d3-b8d7-2cecd555a8df/resourcegroups/orlandocodecamp2019/providers/microsoft.insights/components/orlandocodecamp2019</ApplicationInsightsAnnotationResourceId>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
   <ItemGroup>
     <Compile Remove="Migrations\20181025225240_AddFunctionalityForEvents.cs" />
     <Compile Remove="Migrations\20181025225240_AddFunctionalityForEvents.Designer.cs" />

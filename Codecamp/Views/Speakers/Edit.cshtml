@@ -46,22 +46,19 @@
             <div class="form-group">
                 <label asp-for="Image"></label>
                 @{
-                    string imgSrc = string.Empty;
-                    if (Model.Image != null && Model.Image.Length != 0)
+                    string imgSrc = "/images/default_user_icon.jpg";
+                    if (!string.IsNullOrEmpty(Model.Image))
                     {
-                        var base64 = Convert.ToBase64String(Model.Image);
-                        imgSrc = String.Format("data:image;base64,{0}", base64);
-                    }
-                    else
-                    {
-                        imgSrc = "/images/default_user_icon.jpg";
+                        imgSrc = Model.Image;
                     }
                 }
-                <img style="max-width: 150px;"
-                     src="@imgSrc"
-                     alt="@(string.Format("{0} {1}", Model.FirstName, Model.LastName))" />
+                <div class="input-group">
+                    <img style="max-width: 150px;"
+                         src="@imgSrc"
+                         alt="@(string.Format("{0}", Model.FullName))" />
+                </div>
                 <input asp-for="ImageFile" type="file" class="form-control" />
-                <input type="hidden" asp-for="Image" />
+                <span asp-validation-for="ImageFile" class="alert-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Bio" class="control-label"></label>

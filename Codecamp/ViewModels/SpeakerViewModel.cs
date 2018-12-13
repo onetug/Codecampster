@@ -9,6 +9,8 @@ namespace Codecamp.ViewModels
 {
     public class SpeakerViewModel
     {
+        public const int MaxImageSize = 250000;
+
         public int SpeakerId { get; set; }
 
         public string CodecampUserId { get; set; }
@@ -35,7 +37,7 @@ namespace Codecamp.ViewModels
         public IFormFile ImageFile { get; set; }
 
         [Display(Name = "Image")]
-        public byte[] Image { get; set; }
+        public string Image { get; set; }
 
         [DataType(DataType.MultilineText)]
         [Display(Name = "Bio")]
@@ -85,6 +87,6 @@ namespace Codecamp.ViewModels
         public bool IsApproved { get; set; }
 
         [Display(Name = "Sessions")]
-        public IQueryable<SessionViewModel> Sessions { get; set; }
+        public IList<SessionViewModel> Sessions { get; set; }
     }
 }
