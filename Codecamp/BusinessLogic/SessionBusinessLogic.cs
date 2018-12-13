@@ -24,6 +24,8 @@ namespace Codecamp.BusinessLogic
         Task<List<SessionViewModel>> GetAllApprovedSessionsViewModelForActiveEvent();
         Task<List<Session>> GetAllSessionsForSpeakerForActiveEvent(int speakerId);
         Task<List<SessionViewModel>> GetAllSessionsViewModelForSpeakerForActiveEvent(int speakerId);
+        Task<List<Session>> GetAllApprovedSessionsForSpeakerForActiveEvent(int speakerId);
+        Task<List<SessionViewModel>> GetAllApprovedSessionsViewModelForSpeakerForActiveEvent(int speakerId);
         Task<Session> GetSession(int sessionId);
         Task<SessionViewModel> GetSessionViewModel(int sessionId);
         Task<bool> CreateSession(Session session, int speakerId);
@@ -190,6 +192,29 @@ namespace Codecamp.BusinessLogic
                     .ToListAsync();
         }
 
+        public async Task<List<Session>> GetAllApprovedSessionsForSpeakerForActiveEvent(int speakerId)
+        {
+            var activeEvent
+                = await _context.Events
+                .FirstOrDefaultAsync(e => e.IsActive == true);
+
+            if (activeEvent == null)
+                return await _context.Sessions
+                    .Include(s => s.SpeakerSessions)
+                    .Include(s => s.AttendeeSessions)
+                    .Include(s => s.Event)
+                    .Where(s => s.SpeakerSessions.Any(s2 => s2.SpeakerId == speakerId) && s.IsApproved == true)
+                    .ToListAsync();
+            else
+                return await _context.Sessions
+                    .Include(s => s.SpeakerSessions)
+                    .Include(s => s.AttendeeSessions)
+                    .Include(s => s.Event)
+                    .Where(s => s.SpeakerSessions.Any(s2 => s2.SpeakerId == speakerId)
+                        && s.EventId == activeEvent.EventId && s.IsApproved == true)
+                    .ToListAsync();
+        }
+
         public async Task<List<SessionViewModel>> GetAllSessionsViewModelForSpeakerForActiveEvent(int speakerId)
         {
             var activeEvent
@@ -207,6 +232,28 @@ namespace Codecamp.BusinessLogic
                     .ToListAsync();
         }
 
+        public async Task<List<SessionViewModel>> GetAllApprovedSessionsViewModelForSpeakerForActiveEvent(int speakerId)
+        {
+            var activeEvent
+                = await _context.Events
+                .FirstOrDefaultAsync(e => e.IsActive == true);
+
+            if (activeEvent == null)
+                return await ToSessionViewModel(_context.Sessions
+                    .Where(s => s.SpeakerSessions.Any(s2 => s2.SpeakerId == speakerId && s.IsApproved == true)))
+                    .ToListAsync();
+            else
+                return await ToSessionViewModel(_context.Sessions
+                    .Where(s => s.SpeakerSessions.Any(s2 => s2.SpeakerId == speakerId)
+                        && s.EventId == activeEvent.EventId && s.IsApproved == true))
+                    .ToListAsync();
+        }
+
+        /// <summary>
+        /// Get the specified session
+        /// </summary>
+        /// <param name="sessionId">The specified session Id</param>
+        /// <returns>The Session object</returns>
         public async Task<Session> GetSession(int sessionId)
         {
             return await _context.Sessions
@@ -216,12 +263,23 @@ namespace Codecamp.BusinessLogic
                 .FirstOrDefaultAsync(s => s.SessionId == sessionId);
         }
 
+        /// <summary>
+        /// Get the specified session
+        /// </summary>
+        /// <param name="sessionId">The specified session Id</param>
+        /// <returns>The SessionViewModel object</returns>
         public async Task<SessionViewModel> GetSessionViewModel(int sessionId)
         {
             return await ToSessionViewModel(_context.Sessions)
                 .FirstOrDefaultAsync(s => s.SessionId == sessionId);
         }
 
+        /// <summary>
+        /// Create the specified session for the specified speaker
+        /// </summary>
+        /// <param name="session">The session to create</param>
+        /// <param name="speakerId">The speaker Id</param>
+        /// <returns>True/False whether the session was created</returns>
         public async Task<bool> CreateSession(Session session, int speakerId)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
@@ -249,17 +307,33 @@ namespace Codecamp.BusinessLogic
             }
         }
 
+        /// <summary>
+        /// Determines whether the specified session exists
+        /// </summary>
+        /// <param name="sessionId">The speified session Id</param>
+        /// <returns>True/False of whether the sssion exists</returns>
         public async Task<bool> SessionExists(int sessionId)
         {
             return await _context.Sessions.AnyAsync(s => s.SessionId == sessionId);
         }
-
+        
+        /// <summary>
+        /// Determines whether the specified speaker/session exists
+        /// </summary>
+        /// <param name="speakerId">The specified speaker Id</param>
+        /// <param name="sessionId">The specified session Id</param>
+        /// <returns>True/False of whether the speaker/session exists</returns>
         public async Task<bool> SpeakerSessionExists(int speakerId, int sessionId)
         {
             return await _context.SpeakerSessions.AnyAsync(
                 ss => ss.SpeakerId == speakerId && ss.SessionId == sessionId);
         }
 
+        /// <summary>
+        /// Update the specified session
+        /// </summary>
+        /// <param name="session">The Session object with the values to update</param>
+        /// <returns>True/False of whether the update was successsful</returns>
         public async Task<bool> UpdateSession(Session session)
         {
             try
@@ -276,6 +350,11 @@ namespace Codecamp.BusinessLogic
             }
         }
 
+        /// <summary>
+        /// Delete the specified session
+        /// </summary>
+        /// <param name="sessionId">The specified session Id</param>
+        /// <returns>True/False of whether the delete was successful</returns>
         public async Task<bool> DeleteSession(int sessionId)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
@@ -312,8 +391,8 @@ namespace Codecamp.BusinessLogic
         /// <summary>
         /// Convert a Session to a SessionViewModel
         /// </summary>
-        /// <param name="sessions"></param>
-        /// <returns></returns>
+        /// <param name="sessions">IQueryable<Session> object</param>
+        /// <returns>IQueryable<SessionViewModel> object</returns>
         public IQueryable<SessionViewModel> ToSessionViewModel(IQueryable<Session> sessions)
         {
             return from session in sessions

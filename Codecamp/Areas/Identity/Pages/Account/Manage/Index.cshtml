@@ -47,23 +47,21 @@
                         <input asp-for="Input.CompanyName" class="form-control" />
                     </div>
                     <div class="form-group">
-                        <label asp-for="Input.Image"></label>
+                        <label asp-for="Input.Image"></label><label>&nbsp;(note: Image size limit of @ViewData["MaxImageSize"] KB)</label>
                         @{
-                            string imgSrc = string.Empty;
-                            if (Model.Input.Image != null && Model.Input.Image.Length != 0)
+                            string imgSrc = "/images/default_user_icon.jpg";
+                            if (!string.IsNullOrEmpty(Model.Input.Image))
                             {
-                                var base64 = Convert.ToBase64String(Model.Input.Image);
-                                imgSrc = String.Format("data:image;base64,{0}", base64);
-                            }
-                            else
-                            {
-                                imgSrc = "/images/default_user_icon.jpg";
+                                imgSrc = Model.Input.Image;
                             }
                         }
-                        <img style="max-width: 150px;"
-                             src="@imgSrc"
-                             alt="@(string.Format("{0} {1}", Model.Input.FirstName, Model.Input.LastName))" />
+                        <div class="input-group">
+                            <img style="max-width: 150px;"
+                                src="@imgSrc"
+                                alt="@(string.Format("{0} {1}", Model.Input.FirstName, Model.Input.LastName))" />
+                        </div>
                         <input asp-for="Input.ImageFile" type="file" class="form-control" />
+                        <span asp-validation-for="Input.ImageFile" class="text-danger"></span>
                     </div>
                     <div class="form-group">
                         <label asp-for="Input.Bio"></label>

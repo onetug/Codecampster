@@ -35,36 +35,64 @@ namespace Codecamp.Controllers
             _speakerBL = speakerBL;
         }
 
+        public class PageModel
+        {
+            public int SelectedUserType { get; set; }
+            public List<SessionViewModel> Sessions { get; set; }
+        }
+
         // GET: Sessions
         public async Task<IActionResult> Index()
         {
-            List<SessionViewModel> sessions;
+            ViewBag.UserTypes = UserType.GetUserTypes();
+            var pageModel = new PageModel
+            {
+                SelectedUserType = (int)TypesOfUsers.SpecificUser,
+            };
+
             if (User.IsInRole("Admin"))
             {
                 // Get all sessions for the active event for the admin
-                sessions = await _sessionBL.GetAllSessionsViewModelForActiveEvent();
+                pageModel.SelectedUserType = (int)TypesOfUsers.AllUsers;
+                pageModel.Sessions = await _sessionBL.GetAllSessionsViewModelForActiveEvent();
+
+                ViewData["Title"] = "All Sessions";
             }
             else if (User.IsInRole("Speaker"))
             {
+                pageModel.SelectedUserType = (int)TypesOfUsers.SpecificUser;
+
                 var user = await _userManager.GetUserAsync(User);
                 if (user != null && user.SpeakerId.HasValue)
+                {
                     // The user is a speaker and we have access to their speakerId, therefore
                     // get all of the speaker's sessions for the active event.
-                    sessions = await _sessionBL.GetAllSessionsViewModelForSpeakerForActiveEvent(
+                    pageModel.Sessions = await _sessionBL.GetAllSessionsViewModelForSpeakerForActiveEvent(
                         user.SpeakerId.Value);
+
+                    ViewData["Title"] = "Your Sessions";
+                }
                 else
+                {
                     // We can't get the speakerId, s we'll return only approved
                     // speakers for the active event.
-                    sessions = await _sessionBL.GetAllApprovedSessionsViewModelForActiveEvent();
+                    pageModel.SelectedUserType = (int)TypesOfUsers.AllUsers;
+                    pageModel.Sessions = await _sessionBL.GetAllApprovedSessionsViewModelForActiveEvent();
+
+                    ViewData["Title"] = "Sessions";
+                }
             }
             else
             {
                 // The user is an attendee, return all approved sessions for
                 // the active event.
-                sessions = await _sessionBL.GetAllApprovedSessionsViewModelForActiveEvent();
+                pageModel.SelectedUserType = (int)TypesOfUsers.AllUsers;
+                pageModel.Sessions = await _sessionBL.GetAllApprovedSessionsViewModelForActiveEvent();
+
+                ViewData["Title"] = "Sessions";
             }
 
-            return View(sessions);
+            return View(pageModel);
         }
 
         // GET: Sessions/Details/5

@@ -52,6 +52,15 @@ namespace Codecamp.Models
         public virtual List<AttendeeSession> AttendeeSessions { get; set; }
 
         // Get method to generate the user's full name
-        public string FullName { get { return FirstName + " " + LastName; } }
+        public string FullName
+        {
+            get
+            {
+                // No name(s) are specified, indicate so
+                if (string.IsNullOrEmpty(FirstName) && string.IsNullOrEmpty(LastName)) return "No name specified";
+
+                return FirstName + (FirstName.Length > 0 ? " " + LastName : LastName);
+            }
+        }
     }
 }

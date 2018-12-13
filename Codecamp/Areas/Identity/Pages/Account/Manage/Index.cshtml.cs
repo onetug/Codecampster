@@ -9,6 +9,7 @@ using Codecamp.BusinessLogic;
 using Codecamp.Data;
 using Codecamp.Models;
 using Codecamp.Services;
+using Codecamp.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -23,19 +24,22 @@ namespace Codecamp.Areas.Identity.Pages.Account.Manage
         private readonly IEmailSender _emailSender;
         private readonly CodecampDbContext _context;
         private readonly IEventBusinessLogic _eventBL;
+        private readonly ISpeakerBusinessLogic _speakerBL;
 
         public IndexModel(
             UserManager<CodecampUser> userManager,
             SignInManager<CodecampUser> signInManager,
             IEmailSender emailSender,
             CodecampDbContext context,
-            IEventBusinessLogic eventBL)
+            IEventBusinessLogic eventBL,
+            ISpeakerBusinessLogic speakerBL)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
             _context = context;
             _eventBL = eventBL;
+            _speakerBL = speakerBL;
         }
 
         public string Username { get; set; }
@@ -69,11 +73,12 @@ namespace Codecamp.Areas.Identity.Pages.Account.Manage
             [Display(Name = "Company")]
             public string CompanyName { get; set; }
 
+            [FileSizeValidation(SpeakerViewModel.MaxImageSize)]
             [Display(Name = "Image")]
             public IFormFile ImageFile { get; set; }
 
             [Display(Name = "Image")]
-            public byte[] Image { get; set; }
+            public string Image { get; set; }
 
             [DataType(DataType.MultilineText)]
             [Display(Name = "Bio")]
@@ -119,8 +124,35 @@ namespace Codecamp.Areas.Identity.Pages.Account.Manage
             public string PhoneNumber { get; set; }
         }
 
+        /// <summary>
+        /// Perform validation on filesize
+        /// </summary>
+        public class FileSizeValidationAttribute : ValidationAttribute
+        {
+            private int _maxFileSize;
+
+            public FileSizeValidationAttribute(int maxFileSize)
+            {
+                _maxFileSize = maxFileSize;
+            }
+
+            protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+            {
+                var imageFile = ((InputModel)validationContext.ObjectInstance).ImageFile;
+
+                if (imageFile != null && imageFile.Length > _maxFileSize)
+                {
+                    return new ValidationResult(string.Format("File size limit is {0} KB", (_maxFileSize/1000)));
+                }
+
+                return ValidationResult.Success;
+            }
+        }
+
         public async Task<IActionResult> OnGetAsync(string loginWithRegistration = null)
         {
+            ViewData["MaxImageSize"] = SpeakerViewModel.MaxImageSize / 1000;
+
             LoginWithRegistration = loginWithRegistration;
 
             var user = await _userManager.GetUserAsync(User);
@@ -167,12 +199,10 @@ namespace Codecamp.Areas.Identity.Pages.Account.Manage
 
             Username = userName;
 
-            if (IsSpeaker)
+            if (IsSpeaker && user.SpeakerId.HasValue)
             {
                 // Retrieve the associated speaker
-                var speaker = _context.Speakers
-                    .Where(s => s.SpeakerId == user.SpeakerId)
-                    .FirstOrDefault();
+                var speaker = await _speakerBL.GetSpeakerViewModel(user.SpeakerId.Value);
 
                 Input = new InputModel()
                 {
@@ -184,7 +214,7 @@ namespace Codecamp.Areas.Identity.Pages.Account.Manage
                     Email = email,
                     PhoneNumber = phoneNumber,
                     CompanyName = speaker != null ? speaker.CompanyName : string.Empty,
-                    Image = speaker != null ? speaker.Image : null,
+                    Image = speaker != null ? speaker.Image : string.Empty,
                     Bio = speaker != null ? speaker.Bio : string.Empty,
                     WebsiteUrl = speaker != null ? speaker.WebsiteUrl : string.Empty,
                     BlogUrl = speaker != null ? speaker.BlogUrl : string.Empty,
@@ -214,6 +244,10 @@ namespace Codecamp.Areas.Identity.Pages.Account.Manage
 
         public async Task<IActionResult> OnPostAsync()
         {
+            ViewData["MaxImageSize"] = SpeakerViewModel.MaxImageSize;
+
+            IsSpeaker = User.IsInRole("Speaker");
+
             if (!ModelState.IsValid)
             {
                 return Page();
@@ -224,8 +258,6 @@ namespace Codecamp.Areas.Identity.Pages.Account.Manage
             {
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
             }
-
-            IsSpeaker = User.IsInRole("Speaker");
 
             var rolesToAdd = new List<string>();
             var rolesToRemove = new List<string>();
@@ -261,7 +293,8 @@ namespace Codecamp.Areas.Identity.Pages.Account.Manage
                 // Convert the image to a byte array and store it in the
                 // database
                 if (Input.ImageFile != null &&
-                    Input.ImageFile.ContentType.ToLower().StartsWith("image/"))
+                    Input.ImageFile.ContentType.ToLower().StartsWith("image/")
+                    && Input.ImageFile.Length <= SpeakerViewModel.MaxImageSize)
                 {
                     MemoryStream ms = new MemoryStream();
                     Input.ImageFile.OpenReadStream().CopyTo(ms);
@@ -377,6 +410,7 @@ namespace Codecamp.Areas.Identity.Pages.Account.Manage
 
             await _signInManager.RefreshSignInAsync(user);
             StatusMessage = "Your profile has been updated";
+
             return RedirectToPage();
         }
 
