@@ -24,6 +24,7 @@ namespace Codecamp.BusinessLogic
         Task<bool> SpeakerExists(int speakerId);
         Task<bool> UpdateSpeaker(Speaker speaker);
         Task<CodecampUser> GetUserInfoForSpeaker(int speakerId);
+        Task<bool> DeleteSpeaker(int speakerId);
     }
 
     public class SpeakerBusinessLogic : ISpeakerBusinessLogic
@@ -277,6 +278,58 @@ namespace Codecamp.BusinessLogic
                         ? string.Empty : String.Format("data:image;base64,{0}", Convert.ToBase64String(speaker.Image))
                         : string.Empty
                    };
+        }
+
+        public async Task<bool> DeleteSpeaker(int speakerId)
+        {
+            return true;
+
+            //using (var transaction = await _context.Database.BeginTransactionAsync())
+            //{
+            //    // Find the speaker
+            //    var speaker = await _context.Speakers
+            //        .FindAsync(new[] { speakerId });
+
+            //    // Find the association CodecampUser and delete
+            //    var codecampUser = await _context.CodecampUsers
+            //        .FindAsync(new[] { speaker.CodecampUserId });
+
+            //    var speakerSessions = _context.SpeakerSessions
+            //        .Where(ss => ss.SpeakerId == speakerId);
+
+            //    foreach (var speakerSession in speakerSessions)
+            //    {
+            //        // Determine whether the session has additional speakers.  More then
+            //        // one SpeakerSession indicates another speaker, we can't delete
+            //        // the session.
+            //        var otherSpeakersExists
+            //            = _context.SpeakerSessions
+            //            .Count(ss => ss.SessionId == speakerSession.SessionId) > 1;
+
+            //        if (!otherSpeakersExists)
+            //        {
+            //            // No other speakers exist, remove the session
+            //            var session = await _context.Sessions
+            //                .FindAsync(speakerSession.SessionId);
+
+            //            // Since we're deleting the session, remove all associated
+            //            // attendee sessions
+            //            var attendeeSessions
+            //                = _context.AttendeesSessions
+            //                .Where(_as => _as.SessionId == session.SessionId);
+            //            foreach (var attendeeSession in attendeeSessions)
+            //            {
+            //                _context.AttendeesSessions.Remove(attendeeSession);
+            //            }
+
+            //            if (session != null)
+            //                _context.Sessions.Remove(session);
+            //        }
+
+            //        // Remove the speaker session
+            //        _context.SpeakerSessions.Remove(speakerSession);
+            //    }
+            //}
         }
     }
 }

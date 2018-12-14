@@ -51,19 +51,18 @@ namespace Codecamp.Areas.Identity.Pages.Account
         [BindProperty]
         public InputModel Input { get; set; }
 
-        [TempData]
-        public string CaptchaCode
-        {
-            get
-            {
-                return _session.GetString("Captcha");
-            }
-            set
-            {
-                if (value != null)
-                    _session.SetString("Captcha", value);
-            }
-        }
+        //[TempData]
+        //public string CaptchaCode
+        //{
+        //    get
+        //    {
+        //        return _session.GetString("Captcha");
+        //    }
+        //    set
+        //    {
+        //        _session.SetString("Captcha", value);
+        //    }
+        //}
 
         public class InputModel
         {
@@ -90,42 +89,40 @@ namespace Codecamp.Areas.Identity.Pages.Account
 
         public async Task<IActionResult> OnGetAsync(string returnUrl = null)
         {
-            await Task.Run(() => {
-                // Get a captcha
-                var captcha = GetCaptcha();
-                Input = new InputModel
-                {
-                    CaptchaBase64Data = captcha.CaptchaBase64Data,
-                };
+            //// Get a captcha
+            //var captcha = GetCaptcha();
+            //Input = new InputModel
+            //{
+            //    CaptchaBase64Data = captcha.CaptchaBase64Data,
+            //};
 
-                // Store for comparison on postback
-                CaptchaCode = captcha.CaptchaCode;
-            });
+            //// Store for comparison on postback
+            //CaptchaCode = captcha.CaptchaCode;
+
             return Page();
-
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
             if (ModelState.IsValid)
             {
-                if (Input.EnteredCaptchaCode != CaptchaCode)
-                {
-                    // Indicate an invalid CAPTCHA string entered
-                    ModelState.AddModelError(string.Empty, "Invalid CAPTCHA string entered, try again.");
+                //if (Input.EnteredCaptchaCode != CaptchaCode)
+                //{
+                //    // Indicate an invalid CAPTCHA string entered
+                //    ModelState.AddModelError(string.Empty, "Invalid CAPTCHA string entered, try again.");
 
-                    // The entered captcha is incorrect, get a new captcha
-                    var captcha1 = GetCaptcha();
-                    Input = new InputModel
-                    {
-                        CaptchaBase64Data = captcha1.CaptchaBase64Data,
-                    };
+                //    // The entered captcha is incorrect, get a new captcha
+                //    var captcha1 = GetCaptcha();
+                //    Input = new InputModel
+                //    {
+                //        CaptchaBase64Data = captcha1.CaptchaBase64Data,
+                //    };
 
-                    // Store for comparison on postback
-                    CaptchaCode = captcha1.CaptchaCode;
+                //    // Store for comparison on postback
+                //    CaptchaCode = captcha1.CaptchaCode;
 
-                    return Page();
-                }
+                //    return Page();
+                //}
 
                 // Get the current event
                 var theEvent = await _eventBL.GetActiveEvent();
@@ -194,15 +191,15 @@ namespace Codecamp.Areas.Identity.Pages.Account
                 }
             }
 
-            // Something failed with the account registration, get a new captcha
-            var captcha2 = GetCaptcha();
-            Input = new InputModel
-            {
-                CaptchaBase64Data = captcha2.CaptchaBase64Data,
-            };
+            //// Something failed with the account registration, get a new captcha
+            //var captcha2 = GetCaptcha();
+            //Input = new InputModel
+            //{
+            //    CaptchaBase64Data = captcha2.CaptchaBase64Data,
+            //};
 
-            // Store for comparison on postback
-            CaptchaCode = captcha2.CaptchaCode;
+            //// Store for comparison on postback
+            //CaptchaCode = captcha2.CaptchaCode;
 
             return Page();
         }
