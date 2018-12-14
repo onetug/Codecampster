@@ -60,7 +60,8 @@ namespace Codecamp.Areas.Identity.Pages.Account
             }
             set
             {
-                _session.SetString("Captcha", value);
+                if (value != null)
+                    _session.SetString("Captcha", value);
             }
         }
 
@@ -89,17 +90,19 @@ namespace Codecamp.Areas.Identity.Pages.Account
 
         public async Task<IActionResult> OnGetAsync(string returnUrl = null)
         {
-            // Get a captcha
-            var captcha = GetCaptcha();
-            Input = new InputModel
-            {
-                CaptchaBase64Data = captcha.CaptchaBase64Data,
-            };
+            await Task.Run(() => {
+                // Get a captcha
+                var captcha = GetCaptcha();
+                Input = new InputModel
+                {
+                    CaptchaBase64Data = captcha.CaptchaBase64Data,
+                };
 
-            // Store for comparison on postback
-            CaptchaCode = captcha.CaptchaCode;
-
+                // Store for comparison on postback
+                CaptchaCode = captcha.CaptchaCode;
+            });
             return Page();
+
         }
 
         public async Task<IActionResult> OnPostAsync()
