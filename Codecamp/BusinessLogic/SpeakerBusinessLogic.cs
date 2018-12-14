@@ -282,6 +282,9 @@ namespace Codecamp.BusinessLogic
 
         public async Task<bool> DeleteSpeaker(int speakerId)
         {
+            await Task.Run(() => {
+                //do nothing
+            });
             return true;
 
             //using (var transaction = await _context.Database.BeginTransactionAsync())

@@ -89,6 +89,10 @@ namespace Codecamp.Areas.Identity.Pages.Account
 
         public async Task<IActionResult> OnGetAsync(string returnUrl = null)
         {
+            await Task.Run(() =>
+            {
+                // do nothing
+            });
             //// Get a captcha
             //var captcha = GetCaptcha();
             //Input = new InputModel
