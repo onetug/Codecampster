@@ -44,13 +44,17 @@ namespace Codecamp
                 .AddEntityFrameworkStores<CodecampDbContext>()
                 .AddDefaultTokenProviders();
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
+            services.AddMvc()
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
                 .AddRazorPagesOptions(options =>
                 {
                     options.AllowAreas = true;
                     options.Conventions.AuthorizeAreaFolder("Identity", "/Account/Manage");
                     options.Conventions.AuthorizeAreaPage("Identity", "/Account/Logout");
                 });
+
+            services.AddDistributedMemoryCache();
+            services.AddSession();
 
             services.ConfigureApplicationCookie(options =>
             {
@@ -64,6 +68,7 @@ namespace Codecamp
             services.AddTransient<IUserBusinessLogic, UserBusinessLogic>();
             services.AddTransient<IEventBusinessLogic, EventBusinessLogic>();
             services.AddTransient<ISessionBusinessLogic, SessionBusinessLogic>();
+            services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
             // Register the event business logic service
             services.AddTransient<EventBusinessLogic>();
             services.Configure<AuthMessageSenderOptions>(Configuration.GetSection("AppSettings"));
@@ -74,6 +79,8 @@ namespace Codecamp
                 options.AddPolicy("RequireSpeakerRole", policy => policy.RequireRole("Speaker"));
                 options.AddPolicy("RequireVolunteerRole", policy => policy.RequireRole("Volunteer"));
             });
+
+            services.AddSession();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -96,6 +103,8 @@ namespace Codecamp
 
             // Enable and use authentication
             app.UseAuthentication();
+
+            app.UseSession();
 
             app.UseMvc(routes =>
             {

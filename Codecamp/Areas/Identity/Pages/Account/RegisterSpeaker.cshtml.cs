@@ -27,6 +27,8 @@ namespace Codecamp.Areas.Identity.Pages.Account
         private readonly IEmailSender _emailSender;
         private readonly CodecampDbContext _context;
         private readonly IEventBusinessLogic _eventBL;
+        private readonly IHttpContextAccessor _httpAccessor;
+        private ISession _session => _httpAccessor.HttpContext.Session;
 
         public RegisterSpeakerModel(
             UserManager<CodecampUser> userManager,
@@ -34,8 +36,8 @@ namespace Codecamp.Areas.Identity.Pages.Account
             ILogger<RegisterSpeakerModel> logger,
             IEmailSender emailSender,
             CodecampDbContext context,
-            IEventBusinessLogic eventBL
-            )
+            IEventBusinessLogic eventBL,
+            IHttpContextAccessor httpAccessor)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -43,13 +45,24 @@ namespace Codecamp.Areas.Identity.Pages.Account
             _emailSender = emailSender;
             _context = context;
             _eventBL = eventBL;
+            _httpAccessor = httpAccessor;
         }
 
         [BindProperty]
         public InputModel Input { get; set; }
 
         [TempData]
-        public string CaptchaCode { get; set; }
+        public string CaptchaCode
+        {
+            get
+            {
+                return _session.GetString("Captcha");
+            }
+            set
+            {
+                _session.SetString("Captcha", value);
+            }
+        }
 
         public class InputModel
         {
