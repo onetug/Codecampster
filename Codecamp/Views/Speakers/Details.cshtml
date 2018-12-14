@@ -61,7 +61,7 @@
             @Html.DisplayNameFor(model => model.ImageFile)
         </dt>
         <dd>
-            <div style="width: 150px; height: 150px; position: relative;">
+            <div style="max-width: 150px; max-height:150px; position: relative;">
                 @{
                     string imgSrc = "/images/default_user_icon.jpg";
                     if (!string.IsNullOrEmpty(Model.Image))
@@ -75,7 +75,7 @@
                 @if (Model.IsMvp)
                 {
                     <img style="width: 30px; height: 30px; z-index: 10; position: absolute; right: 20px; bottom: 20px;"
-                            src=@("/images/ms-mvp.jpg") alt=@("Microsoft MVP") />
+                         src=@("/images/ms-mvp.jpg") alt=@("Microsoft MVP") />
                 }
             </div>
         </dd>
