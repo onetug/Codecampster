@@ -70,18 +70,18 @@ namespace Codecamp.Controllers
 
             // Get the speakers for the active event. If there is
             // no active event, get all speakers for all events.
-            if (User.IsInRole("Admin"))
-            {
+            //if (User.IsInRole("Admin"))
+            //{
                 ViewData["Title"] = "All Speakers";
                 // Don't load any images, this is list on the Admin version of this
                 // page.
                 speakers = await _speakerBL.GetAllSpeakersViewModelForActiveEvent(false);
-            }
-            else
-            {
-                ViewData["Title"] = "Speakers";
-                speakers = await _speakerBL.GetAllApprovedSpeakersViewModelForActiveEvent(false);
-            }
+            //}
+            //else
+            //{
+            //    ViewData["Title"] = "Speakers";
+            //    speakers = await _speakerBL.GetAllApprovedSpeakersViewModelForActiveEvent();
+            //}
             
             return View(speakers);
         }
