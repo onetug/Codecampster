@@ -4,12 +4,14 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using static Codecamp.Controllers.SpeakersController;
 
 namespace Codecamp.ViewModels
 {
     public class SpeakerViewModel
     {
-        public const int MaxImageSize = 250000;
+        // Lets set the max file size to 20 MB, that is way big enough
+        public const int MaxImageSize = 20000000;
 
         public int SpeakerId { get; set; }
 
@@ -33,11 +35,19 @@ namespace Codecamp.ViewModels
         [Display(Name = "Company")]
         public string CompanyName { get; set; }
 
+        [FileSizeValidation(MaxImageSize)]
         [Display(Name = "Image")]
         public IFormFile ImageFile { get; set; }
 
         [Display(Name = "Image")]
         public string Image { get; set; }
+
+        [Display(Name = "Image Size W x H (pixels)")]
+        public string ImageSizePixels { get; set; }
+
+        public bool IsImageResizable { get; set; }
+
+        public bool ResizeImage { get; set; }
 
         [DataType(DataType.MultilineText)]
         [Display(Name = "Bio")]

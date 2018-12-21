@@ -10,6 +10,7 @@ using Codecamp.Models;
 using Codecamp.BusinessLogic;
 using Microsoft.AspNetCore.Identity;
 using Codecamp.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Codecamp.Controllers
 {
@@ -101,6 +102,9 @@ namespace Codecamp.Controllers
             if (!id.HasValue)
                 return NotFound();
 
+            if (!await _sessionBL.SessionExists(id.Value))
+                return NotFound();
+
             var session = await _sessionBL.GetSessionViewModel(id.Value);
 
             if (session == null)
@@ -109,6 +113,7 @@ namespace Codecamp.Controllers
             return View(session);
         }
 
+        [Authorize]
         // GET: Sessions/Create
         public IActionResult Create()
         {
@@ -120,6 +125,7 @@ namespace Codecamp.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
+        [Authorize]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("SessionId,Name,Description,SkillLevel,Keywords")] Session session)
         {
@@ -169,6 +175,7 @@ namespace Codecamp.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
+        [Authorize]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("SessionId,Name,Description,SkillLevel,Keywords,IsApproved,EventId")] Session session)
         {
@@ -202,6 +209,7 @@ namespace Codecamp.Controllers
 
         // POST: Sessions/Delete/5
         [HttpPost, ActionName("Delete")]
+        [Authorize]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
