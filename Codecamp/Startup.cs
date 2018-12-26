@@ -71,8 +71,7 @@ namespace Codecamp
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
             // Register the event business logic service
             services.AddTransient<EventBusinessLogic>();
-            services.Configure<AuthMessageSenderOptions>(Configuration.GetSection("AppSettings"));
-
+            services.Configure<AppOptions>(Configuration.GetSection("AppSettings"));
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("RequireAdminRole", policy => policy.RequireRole("Admin"));
