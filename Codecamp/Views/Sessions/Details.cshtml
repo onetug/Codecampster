@@ -52,7 +52,8 @@
         </dd>
     </dl>
 </div>
-<div>
+
+<div class="bottom-navigation">
     @if (User.IsInRole("Admin") || (User.IsInRole("Speaker")
         && speakerId.HasValue && Model.SpeakerSessions.Any(s => s.SpeakerId == speakerId.Value)))
     {

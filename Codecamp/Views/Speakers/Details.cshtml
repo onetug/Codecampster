@@ -22,35 +22,31 @@
     <h3>@Model.CompanyName</h3>
 }
 
-<div class="row">
-    <div class="col-md-3">
-        <div style="max-width: 150px; max-height:150px; position: relative;">
-            @{
-                string imgSrc = "/images/default_user_icon.jpg";
-                if (!string.IsNullOrEmpty(Model.Image))
-                {
-                    imgSrc = Model.Image;
-                }
-            }
-            <img style="max-width: 150px;"
-                 src="@imgSrc"
-                 alt="@(string.Format("{0}", Model.FullName))" />
-            @if (Model.IsMvp)
+<div>
+    <div style="max-width: 150px; max-height:150px; position: relative;">
+        @{
+            string imgSrc = "/images/default_user_icon.jpg";
+            if (!string.IsNullOrEmpty(Model.Image))
             {
-                <img style="width: 30px; height: 30px; z-index: 10; position: absolute; right: 20px; bottom: 20px;"
-                     src=@("/images/ms-mvp.jpg") alt=@("Microsoft MVP") />
+                imgSrc = Model.Image;
             }
-        </div>
+        }
+        <img style="max-width: 150px;"
+                src="@imgSrc"
+                alt="@(string.Format("{0}", Model.FullName))" />
+        @if (Model.IsMvp)
+        {
+            <img style="width: 30px; height: 30px; z-index: 10; position: absolute; right: 20px; bottom: 20px;"
+                    src=@("/images/ms-mvp.jpg") alt=@("Microsoft MVP") />
+        }
     </div>
 </div>
 
 @if (!string.IsNullOrEmpty(Model.TwitterHandle))
 {
-    <div class="row">
-        <div class="col-md-2">
-            <span style="font-weight: bold;">@Html.DisplayNameFor(model => model.TwitterHandle):</span>
-        </div>
-        <div class="col-md-3">
+    <div>
+        <span style="font-weight: bold;">@Html.DisplayNameFor(model => model.TwitterHandle):</span>
+        <span>
             @{
                 var twitterHandle
                     = Model.TwitterHandle.StartsWith('@')
@@ -58,17 +54,15 @@
                     : Model.TwitterHandle;
             }
             <a href="https://twitter.com/@twitterHandle">@Model.TwitterHandle</a>
-        </div>
+        </span>
     </div>
 }
 
 @if (!string.IsNullOrEmpty(Model.LinkedIn))
 {
-    <div class="row">
-        <div class="col-md-2">
-            <span style="font-weight: bold;">@Html.DisplayNameFor(model => model.LinkedIn):</span>
-        </div>
-        <div class="col-md-3">
+    <div>
+        <span style="font-weight: bold;">@Html.DisplayNameFor(model => model.LinkedIn):</span>
+        <span>
             @{
                 var linkedInHandle
                 = Model.LinkedIn.StartsWith('@')
@@ -77,17 +71,15 @@
 
             }
             <a href="https://linkedin.com/in/@linkedInHandle">@Model.LinkedIn</a>
-        </div>
+        </span>
     </div>
 }
 
 @if (!string.IsNullOrEmpty(Model.WebsiteUrl))
 {
-    <div class="row">
-        <div class="col-md-2">
-            <span style="font-weight: bold;">@Html.DisplayNameFor(model => model.WebsiteUrl):</span>
-        </div>
-        <div class="col-md-3">
+    <div>
+        <span style="font-weight: bold;">@Html.DisplayNameFor(model => model.WebsiteUrl):</span>
+        <span>
             @{
                 var websiteUrl
                 = !Model.WebsiteUrl.StartsWith("http")
@@ -96,17 +88,15 @@
 
             }
             <a href=@websiteUrl>@Model.WebsiteUrl</a>
-        </div>
+        </span>
     </div>
 }
 
 @if (!string.IsNullOrEmpty(Model.BlogUrl))
 {
-    <div class="row">
-        <div class="col-md-2">
-            <span style="font-weight: bold;">@Html.DisplayNameFor(model => model.BlogUrl):</span>
-        </div>
-        <div class="col-md-3">
+    <div>
+        <span style="font-weight: bold;">@Html.DisplayNameFor(model => model.BlogUrl):</span>
+        <span>
             @{
                 var blogUrl
                     = !Model.BlogUrl.StartsWith("http")
@@ -115,37 +105,35 @@
 
             }
             <a href=@blogUrl>@Model.BlogUrl</a>
-        </div>
+        </span>
     </div>
 }
 
 @if (!string.IsNullOrEmpty(Model.Bio))
 {
-    <div class="row">
-        <div class="col-md-2">
-            <span style="font-weight: bold;">@Html.DisplayNameFor(model => model.Bio):</span>
-        </div>
-        <div class="col-md-3">
+    <div>
+        <span style="font-weight: bold;">@Html.DisplayNameFor(model => model.Bio):</span>
+        <span>
             @Html.DisplayFor(model => model.Bio)
-        </div>
+        </span>
     </div>
 }
 
 <hr />
 
-<h4>Sessions:</h4>
+<h3>Sessions:</h3>
 
 @if (Model.Sessions.Count() > 0)
 {
-    <table class="table">
+    <table class="table-striped">
         <thead>
-            <th>
+            <th class="col-md-3">
                 @Html.DisplayNameFor(model => model.Sessions[0].Name)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Sessions[0].IsApproved)
+            <th class="col-md-3">
+                @Html.DisplayNameFor(model => model.Sessions[0].SkillLevel)
             </th>
-            <th></th>
+            <th class="col-md-2"></th>
         </thead>
         <tbody>
             @foreach (var session in Model.Sessions)
@@ -154,19 +142,19 @@
                     @Html.DisplayFor(item => session.Name)
                 </td>
                 <td>
-                    @Html.DisplayFor(item => session.IsApproved)
+                    @Html.DisplayFor(item => session.SkillLevel)
                 </td>
                 <td>
                     @* Allow admins and speakers to edit the sessions *@
                     @if (User.IsInRole("Admin") || (User.IsInRole("Speaker")
-                  && speakerId.HasValue && session.SpeakerSessions.Any(s => s.SpeakerId == speakerId.Value)))
+                        && speakerId.HasValue && session.SpeakerSessions.Any(s => s.SpeakerId == speakerId.Value)))
                     {
                         <a asp-controller="Sessions" asp-action="Edit" asp-route-id="@session.SessionId">Edit</a><span> | </span>
                     }
                     <a asp-controller="Sessions" asp-action="Details" asp-route-id="@session.SessionId">Details</a>
                     @* Allow admins and speakers to delete sessions *@
                     @if (User.IsInRole("Admin") || (User.IsInRole("Speaker")
-                  && speakerId.HasValue && session.SpeakerSessions.Any(s => s.SpeakerId == speakerId.Value)))
+                        && speakerId.HasValue && session.SpeakerSessions.Any(s => s.SpeakerId == speakerId.Value)))
                     {
                         <span> | </span><a asp-controller="Sessions" asp-action="Delete" asp-route-id="@session.SessionId">Delete</a>
                     }
@@ -177,12 +165,12 @@
 }
 else
 {
-    <div>Not sessions submitted yet...</div>
+    <div>No sessions submitted yet...</div>
 }
 
-<div>
+<div class="bottom-navigation">
     @if (User.IsInRole("Admin") || ((User.IsInRole("Speaker")
-&& speakerId.HasValue && Model.SpeakerId == speakerId)))
+        && speakerId.HasValue && Model.SpeakerId == speakerId)))
     {
         <a asp-action="Edit" asp-route-id="@Model.SpeakerId">Edit</a><span> | </span>
     }

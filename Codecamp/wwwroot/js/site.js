@@ -16,3 +16,17 @@ function setSpeakerImage(img) {
             console.log(err);
         });
 }
+
+function setSponsorImage(img) {
+    let url = location.origin + "/api/Sponsors/image/" + img.id;
+    fetch(url)
+        .then(function (response) {
+            return response.json();
+        })
+        .then(function (data) {
+            img.src = data.imageSrc;
+        })
+        .catch(function (err) {
+            console.log(err);
+        });
+}

@@ -1,0 +1,124 @@
+﻿@model IEnumerable<Codecamp.ViewModels.SponsorViewModel>
+@using Codecamp.ViewModels
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var rowIndex = 1;
+}
+
+<h2>Sponsors</h2>
+
+@if (User.IsInRole("Admin"))
+{
+    <div>
+        <a asp-action="Create">Create New</a>
+    </div>
+
+    @* This page is for Admins *@
+    @if (Model.Count() > 0)
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.CompanyName)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.SponsorLevel)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.PointOfContact)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.EmailAddress)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.PhoneNumber)
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var sponsor in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(item => sponsor.CompanyName)
+                        </td>
+                        <td>
+                            @SponsorLevel.GetSponsorshipLevelDescription(sponsor.SponsorLevel)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(item => sponsor.PointOfContact)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(item => sponsor.EmailAddress)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(item => sponsor.PhoneNumber)
+                        </td>
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@sponsor.SponsorId">Edit</a> |
+                            <a asp-action="Details" asp-route-id="@sponsor.SponsorId">Details</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div>There are currently no sponsors...</div>
+    }
+}
+else
+{
+    <div class="row">
+        @* This page is for everone else *@
+        @if (Model.Count() > 0)
+        {
+            @foreach (var sponsor in Model)
+            {
+                if (rowIndex == 5)
+                {
+                    @:</div>
+                    @:<div class="row">
+                    @* create a new row after four sponsors *@
+                    rowIndex = 1;
+                }
+
+                <div class="col-md-3">
+                    <a asp-action="Details"
+                       asp-route-id="@(sponsor.SponsorId)">
+                        <div style="text-align: center;">
+                            <div style="width: 150px; height: 150px; margin-left: auto; margin-right: auto;">
+                                <img style="max-width: 150px;"
+                                     class="sponsorImage"
+                                     id="@(string.Format("{0}", sponsor.SponsorId))"
+                                     src=@("/images/default_user_icon.jpg")
+                                     alt="@(string.Format("{0}", sponsor.CompanyName))" />
+                            </div>
+                            <span>@(string.Format("{0}", sponsor.CompanyName))</span>
+                        </div>
+                    </a>
+                </div>
+
+                rowIndex++;
+            }
+        }
+        else
+        {
+            <div>There are currently no sponsors...</div>
+        }
+    </div>
+}
+
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.sponsorImage').each(function () {
+                let imageSrc = setSponsorImage(this);
+            });
+        });
+    </script>
+}

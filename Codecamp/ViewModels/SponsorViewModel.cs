@@ -35,7 +35,7 @@ namespace Codecamp.ViewModels
         public string WebsiteUrl { get; set; }
 
         [Display(Name = "Image")]
-        public byte[] Image { get; set; }
+        public string Image { get; set; }
 
         [Display(Name = "Image")]
         public IFormFile ImageFile { get; set; }
@@ -48,5 +48,8 @@ namespace Codecamp.ViewModels
 
         [Display(Name = "Phone Number")]
         public string PhoneNumber { get; set; }
+
+        [Display(Name = "Event Name")]
+        public string EventName { get; set; }
     }
 }

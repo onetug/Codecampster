@@ -1,0 +1,92 @@
+﻿@model Codecamp.ViewModels.SponsorViewModel
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Edit</h2>
+<h3>Sponsor</h3>
+<hr />
+
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="SponsorId" />
+
+            <div class="form-group">
+                <label asp-for="CompanyName" control-label></label>
+                <input asp-for="CompanyName" class="form-control" />
+                <span asp-validation-for="CompanyName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SponsorLevel" class="control-label"></label>
+                @Html.DropDownListFor(model => model.SponsorLevel,
+                    new SelectList(ViewBag.SponsorshipLevels, "SponsorshipLevelId", "Description"),
+                    new { @class = "form-control" })
+                <span asp-validation-for="SponsorLevel" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Image"></label>
+                @{
+                    string imgSrc = "/images/default_user_icon.jpg";
+                    string altText = string.Empty;
+
+                    if (Model != null && !string.IsNullOrEmpty(Model.Image))
+                    {
+                        imgSrc = Model.Image;
+                        altText = Model.CompanyName;
+                    }
+                }
+                <div class="input-group">
+                    <img style="max-width: 150px;"
+                         src="@imgSrc"
+                         alt="@altText" />
+                </div>
+                <input asp-for="ImageFile" type="file" class="form-control" />
+                <span asp-validation-for="ImageFile" class="alert-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Bio" control-label></label>
+                <textarea asp-for="Bio" class="form-control"></textarea>
+                <span asp-validation-for="Bio" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TwitterHandle" control-label></label>
+                <input asp-for="TwitterHandle" class="form-control" />
+                <span asp-validation-for="TwitterHandle" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="WebsiteUrl" control-label></label>
+                <input asp-for="WebsiteUrl" class="form-control" />
+                <span asp-validation-for="WebsiteUrl" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PointOfContact" control-label></label>
+                <input asp-for="PointOfContact" class="form-control" />
+                <span asp-validation-for="PointOfContact" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="EmailAddress" control-label></label>
+                <input asp-for="EmailAddress" class="form-control" />
+                <span asp-validation-for="EmailAddress" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PhoneNumber" control-label></label>
+                <input asp-for="PhoneNumber" class="form-control" />
+                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="bottom-navigation">
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

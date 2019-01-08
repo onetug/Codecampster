@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -34,5 +35,10 @@ namespace Codecamp.Models
 
         [Display(Name = "Phone Number")]
         public string PhoneNumber { get; set; }
+
+        [ForeignKey("Event")]
+        public int? EventId { get; set; }
+
+        public Event Event { get; set; }
     }
 }

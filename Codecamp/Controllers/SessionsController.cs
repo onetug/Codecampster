@@ -43,39 +43,49 @@ namespace Codecamp.Controllers
         }
 
         // GET: Sessions
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? selectedUserType)
         {
             ViewBag.UserTypes = UserType.GetUserTypes();
-            var pageModel = new PageModel
-            {
-                SelectedUserType = (int)TypesOfUsers.SpecificUser,
-            };
+            var pageModel = new PageModel();
 
             if (User.IsInRole("Admin"))
             {
                 // Get all sessions for the active event for the admin
-                pageModel.SelectedUserType = (int)TypesOfUsers.AllUsers;
+                pageModel.SelectedUserType = (int)TypesOfUsers.AllUsers; // JTL, I don't think this is actually necessary
                 pageModel.Sessions = await _sessionBL.GetAllSessionsViewModelForActiveEvent();
 
                 ViewData["Title"] = "All Sessions";
             }
             else if (User.IsInRole("Speaker"))
             {
-                pageModel.SelectedUserType = (int)TypesOfUsers.SpecificUser;
+                pageModel.SelectedUserType
+                    = selectedUserType.HasValue // If specified, use it
+                    ? selectedUserType.Value
+                    : (int)TypesOfUsers.SpecificUser; // otherwise, set to specific user
 
                 var user = await _userManager.GetUserAsync(User);
                 if (user != null && user.SpeakerId.HasValue)
                 {
-                    // The user is a speaker and we have access to their speakerId, therefore
-                    // get all of the speaker's sessions for the active event.
-                    pageModel.Sessions = await _sessionBL.GetAllSessionsViewModelForSpeakerForActiveEvent(
-                        user.SpeakerId.Value);
+                    if (pageModel.SelectedUserType == (int)TypesOfUsers.SpecificUser)
+                    {
+                        // The user is a speaker and we have access to their speakerId, therefore
+                        // get all of the speaker's sessions for the active event.
+                        pageModel.Sessions = await _sessionBL.GetAllSessionsViewModelForSpeakerForActiveEvent(
+                            user.SpeakerId.Value);
 
-                    ViewData["Title"] = "Your Sessions";
+                        ViewData["Title"] = "Your Sessions";
+                    }
+                    else
+                    {
+                        // The user desires to see all approved sessions for the event
+                        pageModel.Sessions = await _sessionBL.GetAllApprovedSessionsViewModelForActiveEvent();
+
+                        ViewData["Title"] = "Sessions";
+                    }
                 }
                 else
                 {
-                    // We can't get the speakerId, s we'll return only approved
+                    // We can't get the speakerId, so we'll return only approved
                     // speakers for the active event.
                     pageModel.SelectedUserType = (int)TypesOfUsers.AllUsers;
                     pageModel.Sessions = await _sessionBL.GetAllApprovedSessionsViewModelForActiveEvent();
@@ -87,7 +97,7 @@ namespace Codecamp.Controllers
             {
                 // The user is an attendee, return all approved sessions for
                 // the active event.
-                pageModel.SelectedUserType = (int)TypesOfUsers.AllUsers;
+                pageModel.SelectedUserType = (int)TypesOfUsers.AllUsers; // JTL, I don't think this is actually necessary
                 pageModel.Sessions = await _sessionBL.GetAllApprovedSessionsViewModelForActiveEvent();
 
                 ViewData["Title"] = "Sessions";

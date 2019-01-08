@@ -19,45 +19,47 @@
 
 <h2>@ViewData["Title"]</h2>
 
-@* Allow a speaker to create a new session *@
-@if (User.IsInRole("Speaker"))
-{
-    <div>
-        <a asp-action="Create">Create New</a>
-    </div>
-
-    <div class="row">
-        <div class="col-md-3">
-            @Html.DropDownListFor(model => model.SelectedUserType,
-                new SelectList(ViewBag.UserTypes, "UserTypeId", "Description"),
-                new { @class = "form-control" })
+<form asp-action="Index" id="SessionIndex" asp-route-id="@(Model.SelectedUserType)">
+    @* Allow a speaker to create a new session *@
+    @if (User.IsInRole("Speaker"))
+    {
+        <div>
+            <a asp-action="Create">Create New</a>
         </div>
-    </div>
-}
 
-    <table class="table">
+        <div class="row">
+            <div class="col-md-3">
+                <label class="control-label">Sessions to show:</label>
+                @Html.DropDownListFor(model => model.SelectedUserType,
+                    new SelectList(ViewBag.UserTypes, "UserTypeId", "Description"),
+                    new { @id = "SelectedUserType", @class = "form-control", @onchange = "selectedUserTypeChanged();" })
+            </div>
+        </div>
+    }
+
+    <table class="table-striped">
         <thead>
             <tr>
-                <th>
+                <th class="col-md-3">
                     @Html.DisplayNameFor(model => model.Sessions[0].Name)
                 </th>
-                <th>
+                <th class="col-md-3">
                     @Html.DisplayNameFor(model => model.Sessions[0].Description)
                 </th>
-                <th>
+                <th class="col-md-2">
                     @Html.DisplayNameFor(model => model.Sessions[0].Speakers)
                 </th>
-                <th>
+                <th class="col-md-2">
                     @Html.DisplayNameFor(model => model.Sessions[0].SkillLevel)
                 </th>
                 @* Show the approved column if the user is an admin or speaker *@
                 @if (User.IsInRole("Admin") || User.IsInRole("Speaker"))
                 {
-                    <th>
+                    <th class="col-md-1">
                         @Html.DisplayNameFor(model => model.Sessions[0].IsApproved)
                     </th>
                 }
-                <th></th>
+                <th class="col-md-1"></th>
             </tr>
         </thead>
         <tbody>
@@ -81,21 +83,21 @@
                         @* Show the approved flag if the user is an Admin or Speaker *@
                         @if (User.IsInRole("Admin") || User.IsInRole("Speaker"))
                         {
-                            <td>
+                            <td align="center">
                                 @Html.DisplayFor(modelItem => item.IsApproved)
                             </td>
                         }
                         <td>
                             @* Allow admins and speakers to edit the sessions *@
                             @if (User.IsInRole("Admin") || (User.IsInRole("Speaker")
-                              && speakerId.HasValue && item.SpeakerSessions.Any(s => s.SpeakerId == speakerId.Value)))
+                               && speakerId.HasValue && item.SpeakerSessions.Any(s => s.SpeakerId == speakerId.Value)))
                             {
                                 <a asp-action="Edit" asp-route-id="@item.SessionId">Edit</a><span> | </span>
                             }
                             <a asp-action="Details" asp-route-id="@item.SessionId">Details</a>
                             @* Allow admins and speakers to delete sessions *@
                             @if (User.IsInRole("Admin") || (User.IsInRole("Speaker")
-                              && speakerId.HasValue && item.SpeakerSessions.Any(s => s.SpeakerId == speakerId.Value)))
+                               && speakerId.HasValue && item.SpeakerSessions.Any(s => s.SpeakerId == speakerId.Value)))
                             {
                                 <span> | </span><a asp-action="Delete" asp-route-id="@item.SessionId">Delete</a>
                             }
@@ -105,7 +107,18 @@
             }
             else
             {
-                <td colspan="4">No sessions specified yet...</td>
+            <td colspan="4">No sessions specified yet...</td>
             }
         </tbody>
     </table>
+</form>
+
+@section Scripts {
+    <script type="text/javascript">
+        // Submit the form
+        function selectedUserTypeChanged() {
+            $('#SessionIndex').submit();
+        }
+    </script>
+}
+

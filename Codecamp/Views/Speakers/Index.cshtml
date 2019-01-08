@@ -112,7 +112,7 @@ else
                                              src=@("/images/ms-mvp.jpg") alt=@("Microsoft MVP") />
                                     }
                                 </div>
-                                <h5>@(string.Format("{0}", speaker.FullName))</h5>
+                                @(string.Format("{0}", speaker.FullName))
                             </div>
                         </a>
                     </div>
@@ -134,7 +134,7 @@ else
                                              src=@("/images/ms-mvp.jpg") alt=@("Microsoft MVP") />
                                     }
                                 </div>
-                                <h5>@(string.Format("{0}", speaker.FirstName))</h5>
+                                <span>@(string.Format("{0}", speaker.FullName))</span>
                             </div>
                         </a>
                     </div>

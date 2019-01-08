@@ -1,0 +1,62 @@
+﻿@using Codecamp.ViewModels
+@model Codecamp.ViewModels.SponsorViewModel
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>@(string.Format("{0} ({1})", Model.CompanyName, SponsorLevel.GetSponsorshipLevelDescription(Model.SponsorLevel)))</h2>
+
+<div class="row">
+    <div class="col-md-4">
+        @if (!string.IsNullOrEmpty(Model.Image))
+        {
+            <div>
+                <img style="max-width: 150px;"
+                     src="@Model.Image"
+                     alt="@Model.CompanyName" />
+            </div>
+        }
+
+        @if (!string.IsNullOrEmpty(Model.TwitterHandle))
+        {
+            <div>
+                @{
+                    var twitterHandle
+                        = Model.TwitterHandle.StartsWith('@')
+                        ? Model.TwitterHandle.Substring(1)
+                        : Model.TwitterHandle;
+                }
+
+                <a href="https://twitter.com/@twitterHandle">@Model.TwitterHandle</a>
+            </div>
+        }
+
+        @if (!string.IsNullOrEmpty(Model.WebsiteUrl))
+        {
+            <div>
+                @{
+                    var websiteUrl
+                    = !Model.WebsiteUrl.StartsWith("http")
+                    ? "http://" + Model.WebsiteUrl
+                    : Model.WebsiteUrl;
+                }
+
+                <a href=@websiteUrl>@Model.WebsiteUrl</a>
+            </div>
+        }
+
+        @if (!string.IsNullOrEmpty(Model.Bio))
+        {
+            <span>@Html.DisplayFor(model => model.Bio)</span>
+        }
+    </div>
+</div>
+
+<div class="bottom-navigation">
+    @if (User.IsInRole("Admin"))
+    {
+        <a asp-action="Edit" asp-route-id="@Model.SponsorId">Edit</a><span> | </span>
+    }
+    <a asp-action="Index">Back to List</a>
+</div>
