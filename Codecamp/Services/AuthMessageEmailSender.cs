@@ -10,12 +10,12 @@ namespace Codecamp.Services
 {
     public class AuthMessageEmailSender : IEmailSender
     {
-        public AuthMessageEmailSender(IOptions<AuthMessageSenderOptions> options)
+        public AuthMessageEmailSender(IOptions<AppOptions> options)
         {
             Options = options.Value;
         }
 
-        public AuthMessageSenderOptions Options { get; }
+        public AppOptions Options { get; }
 
         public Task SendEmailAsync(string emailAddress, string subject, string message)
         {
