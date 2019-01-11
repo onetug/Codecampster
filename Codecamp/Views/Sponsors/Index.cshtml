@@ -117,7 +117,7 @@ else
     <script type="text/javascript">
         $(document).ready(function () {
             $('.sponsorImage').each(function () {
-                let imageSrc = setSponsorImage(this);
+                setSponsorImage(this, this.id);
             });
         });
     </script>

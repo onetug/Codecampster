@@ -4,14 +4,16 @@ using Codecamp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Codecamp.Migrations
 {
     [DbContext(typeof(CodecampDbContext))]
-    partial class CodecampDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190111121151_AdditionOfAnnouncements")]
+    partial class AdditionOfAnnouncements
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -25,7 +27,7 @@ namespace Codecamp.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<DateTime?>("ExpiresOn");
+                    b.Property<DateTime>("ExpiresOn");
 
                     b.Property<string>("Message");
 

@@ -399,7 +399,6 @@ namespace Codecamp.BusinessLogic
                    join speakerSession in _context.SpeakerSessions on session.SessionId equals speakerSession.SessionId into speakerSessionsGroupJoin
                    join _event in _context.Events on session.EventId equals _event.EventId
                    from _speakerSession in speakerSessionsGroupJoin
-                   join codecampUser in _context.CodecampUsers on _speakerSession.SpeakerId equals codecampUser.SpeakerId into codecampUsersGroupJoin
                    select new SessionViewModel
                    {
                        SessionId = session.SessionId,
@@ -408,11 +407,9 @@ namespace Codecamp.BusinessLogic
                        SkillLevel = SkillLevel.GetSkillLevelDescription(session.SkillLevel),
                        Keywords = session.Keywords,
                        IsApproved = session.IsApproved,
-                       Speakers = string.Join(",", (from codecampUser in codecampUsersGroupJoin select codecampUser.FullName)),
                        SpeakerSessions = speakerSessionsGroupJoin.AsQueryable(),
                        EventName = _event.Name
                    };
         }
-
     }
 }

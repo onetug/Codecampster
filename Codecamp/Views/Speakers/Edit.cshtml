@@ -44,17 +44,12 @@
                 <span asp-validation-for="CompanyName" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Image"></label>
-                @{
-                    string imgSrc = "/images/default_user_icon.jpg";
-                    if (!string.IsNullOrEmpty(Model.Image))
-                    {
-                        imgSrc = Model.Image;
-                    }
-                }
+                <label asp-for="ImageFile"></label>
                 <div class="input-group">
                     <img style="max-width: 150px;"
-                         src="@imgSrc"
+                         class="speakerImage"
+                         id="@(string.Format("{0}", Model.SpeakerId))"
+                         src=@("/images/default_user_icon.jpg")
                          alt="@(string.Format("{0}", Model.FullName))" />
                 </div>
                 @if (User.IsInRole("Admin"))
@@ -146,4 +141,13 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.speakerImage').each(function () {
+                setSpeakerImage(this, this.id);
+            });
+        });
+    </script>
+
 }

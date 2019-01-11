@@ -75,7 +75,7 @@ namespace Codecamp.Controllers
                 ViewData["Title"] = "All Speakers";
                 // Don't load any images, this is list on the Admin version of this
                 // page.
-                speakers = await _speakerBL.GetAllSpeakersViewModelForActiveEvent(false);
+                speakers = await _speakerBL.GetAllSpeakersViewModelForActiveEvent();
             //}
             //else
             //{
@@ -142,20 +142,18 @@ namespace Codecamp.Controllers
                 if (id != speakerVM.SpeakerId)
                     return NotFound();
 
+                var speaker = await _speakerBL.GetSpeaker(id);
+
                 // Update the speaker information from the page
-                var speaker = new Speaker
-                {
-                    SpeakerId = speakerVM.SpeakerId,
-                    CompanyName = speakerVM.CompanyName,
-                    Bio = speakerVM.Bio,
-                    WebsiteUrl = speakerVM.WebsiteUrl,
-                    BlogUrl = speakerVM.BlogUrl,
-                    NoteToOrganizers = speakerVM.NoteToOrganizers,
-                    IsApproved = speakerVM.IsApproved,
-                    IsMvp = speakerVM.IsMvp,
-                    LinkedIn = speakerVM.LinkedIn,
-                    CodecampUserId = speakerVM.CodecampUserId,
-                };
+                speaker.CompanyName = speakerVM.CompanyName;
+                speaker.Bio = speakerVM.Bio;
+                speaker.WebsiteUrl = speakerVM.WebsiteUrl;
+                speaker.BlogUrl = speakerVM.BlogUrl;
+                speaker.NoteToOrganizers = speakerVM.NoteToOrganizers;
+                speaker.IsApproved = speakerVM.IsApproved;
+                speaker.IsMvp = speakerVM.IsMvp;
+                speaker.LinkedIn = speakerVM.LinkedIn;
+                speaker.CodecampUserId = speakerVM.CodecampUserId;
 
                 // Convert the image to a byte array, reduce the size to 300px x 300px
                 // and store it in the database

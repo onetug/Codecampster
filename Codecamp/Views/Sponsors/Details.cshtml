@@ -9,14 +9,13 @@
 
 <div class="row">
     <div class="col-md-4">
-        @if (!string.IsNullOrEmpty(Model.Image))
-        {
-            <div>
-                <img style="max-width: 150px;"
-                     src="@Model.Image"
-                     alt="@Model.CompanyName" />
-            </div>
-        }
+        <div>
+            <img style="max-width: 150px;"
+                 class="sponsorImage"
+                 id="@(string.Format("{0}", Model.SponsorId))"
+                 src=@("/images/default_user_icon.jpg")
+                 alt="@(string.Format("{0}", Model.CompanyName))" />
+        </div>
 
         @if (!string.IsNullOrEmpty(Model.TwitterHandle))
         {
@@ -60,3 +59,15 @@
     }
     <a asp-action="Index">Back to List</a>
 </div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.sponsorImage').each(function () {
+                setSpeakerImage(this, this.id);
+            });
+        });
+    </script>
+}

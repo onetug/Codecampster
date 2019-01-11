@@ -28,20 +28,12 @@
             </div>
             <div class="form-group">
                 <label asp-for="Image"></label>
-                @{
-                    string imgSrc = "/images/default_user_icon.jpg";
-                    string altText = string.Empty;
-
-                    if (Model != null && !string.IsNullOrEmpty(Model.Image))
-                    {
-                        imgSrc = Model.Image;
-                        altText = Model.CompanyName;
-                    }
-                }
                 <div class="input-group">
                     <img style="max-width: 150px;"
-                         src="@imgSrc"
-                         alt="@altText" />
+                         class="sponsorImage"
+                         id="@(string.Format("{0}", Model.SponsorId))"
+                         src=@("/images/default_user_icon.jpg")
+                         alt="@(string.Format("{0}", Model.CompanyName))" />
                 </div>
                 <input asp-for="ImageFile" type="file" class="form-control" />
                 <span asp-validation-for="ImageFile" class="alert-danger"></span>
@@ -89,4 +81,12 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.sponsorImage').each(function () {
+                setSpeakerImage(this, this.id);
+            });
+        });
+    </script>
 }

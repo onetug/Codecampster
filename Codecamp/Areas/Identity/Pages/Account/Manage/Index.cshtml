@@ -47,18 +47,13 @@
                         <input asp-for="Input.CompanyName" class="form-control" />
                     </div>
                     <div class="form-group">
-                        <label asp-for="Input.Image"></label><label>&nbsp;(note: Image size limit of @ViewData["MaxImageSize"] KB)</label>
-                        @{
-                            string imgSrc = "/images/default_user_icon.jpg";
-                            if (!string.IsNullOrEmpty(Model.Input.Image))
-                            {
-                                imgSrc = Model.Input.Image;
-                            }
-                        }
+                        <label asp-for="Input.ImageFile"></label><label>&nbsp;(note: Image size limit of @ViewData["MaxImageSize"] KB)</label>
                         <div class="input-group">
                             <img style="max-width: 150px;"
-                                src="@imgSrc"
-                                alt="@(string.Format("{0} {1}", Model.Input.FirstName, Model.Input.LastName))" />
+                                 class="speakerImage"
+                                 id="@(string.Format("{0}", Model.Input.SpeakerId))"
+                                 src=@("/images/default_user_icon.jpg")
+                                 alt="@(string.Format("{0} {1}", Model.Input.FirstName, Model.Input.LastName))" />
                         </div>
                         <input asp-for="Input.ImageFile" type="file" class="form-control" />
                         <span asp-validation-for="Input.ImageFile" class="alert-danger"></span>
@@ -165,4 +160,12 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.speakerImage').each(function () {
+                setSpeakerImage(this, this.id);
+            });
+        });
+    </script>
 }

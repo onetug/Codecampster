@@ -120,6 +120,9 @@ namespace Codecamp.Controllers
             if (session == null)
                 return NotFound();
 
+            // Now retrieve the speaker's information for the session
+            session.Speakers = _speakerBL.GetSpeakersForSession(id.Value);
+
             return View(session);
         }
 

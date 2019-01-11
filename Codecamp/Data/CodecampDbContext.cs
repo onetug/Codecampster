@@ -33,6 +33,8 @@ namespace Codecamp.Data
 
         public DbSet<Sponsor> Sponsors { get; set; }
 
+        public DbSet<Announcement> Announcements { get; set; }
+
         public CodecampDbContext(DbContextOptions<CodecampDbContext> options)
             : base(options)
         {
