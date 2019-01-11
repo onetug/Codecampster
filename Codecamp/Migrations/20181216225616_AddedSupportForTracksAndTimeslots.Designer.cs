@@ -4,14 +4,16 @@ using Codecamp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Codecamp.Migrations
 {
     [DbContext(typeof(CodecampDbContext))]
-    partial class CodecampDbContextModelSnapshot : ModelSnapshot
+    [Migration("20181216225616_AddedSupportForTracksAndTimeslots")]
+    partial class AddedSupportForTracksAndTimeslots
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -215,39 +217,6 @@ namespace Codecamp.Migrations
                     b.ToTable("SpeakerSessions");
                 });
 
-            modelBuilder.Entity("Codecamp.Models.Sponsor", b =>
-                {
-                    b.Property<int>("SponsorId")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Bio");
-
-                    b.Property<string>("CompanyName");
-
-                    b.Property<string>("EmailAddress");
-
-                    b.Property<int?>("EventId");
-
-                    b.Property<byte[]>("Image");
-
-                    b.Property<string>("PhoneNumber");
-
-                    b.Property<string>("PointOfContact");
-
-                    b.Property<int>("SponsorLevel");
-
-                    b.Property<string>("TwitterHandle");
-
-                    b.Property<string>("WebsiteUrl");
-
-                    b.HasKey("SponsorId");
-
-                    b.HasIndex("EventId");
-
-                    b.ToTable("Sponsors");
-                });
-
             modelBuilder.Entity("Codecamp.Models.Timeslot", b =>
                 {
                     b.Property<int>("TimeslotId")
@@ -264,7 +233,7 @@ namespace Codecamp.Migrations
 
                     b.HasKey("TimeslotId");
 
-                    b.ToTable("Timeslots");
+                    b.ToTable("Timeslot");
                 });
 
             modelBuilder.Entity("Codecamp.Models.Track", b =>
@@ -281,7 +250,7 @@ namespace Codecamp.Migrations
 
                     b.HasKey("TrackId");
 
-                    b.ToTable("Tracks");
+                    b.ToTable("Track");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -455,13 +424,6 @@ namespace Codecamp.Migrations
                         .WithMany("SpeakerSessions")
                         .HasForeignKey("SpeakerId")
                         .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("Codecamp.Models.Sponsor", b =>
-                {
-                    b.HasOne("Codecamp.Models.Event", "Event")
-                        .WithMany()
-                        .HasForeignKey("EventId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

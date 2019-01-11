@@ -33,5 +33,15 @@ namespace Codecamp.Models
         public int? EventId { get; set; }
 
         public virtual Event Event { get; set; }
+
+        [ForeignKey("TrackId")]
+        public int? TrackId { get; set; }
+
+        public virtual Track Track { get; set; }
+
+        [ForeignKey("TimeslotId")]
+        public int? TimeslotId { get; set; }
+
+        public virtual Timeslot Timeslot { get; set; }
     }
 }

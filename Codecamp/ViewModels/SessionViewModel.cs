@@ -11,6 +11,7 @@ namespace Codecamp.ViewModels
     {
         public int SessionId { get; set; }
 
+        [Display(Name = "Title")]
         public string Name { get; set; }
 
         public string Description { get; set; }

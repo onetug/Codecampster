@@ -12,6 +12,7 @@ using Codecamp.BusinessLogic;
 using Codecamp.ViewModels;
 using System.IO;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Codecamp.Controllers
 {
@@ -48,7 +49,8 @@ namespace Codecamp.Controllers
                 _maxFileSize = maxFileSize;
             }
 
-            protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+            protected override ValidationResult IsValid(
+                object value, ValidationContext validationContext)
             {
                 var imageFile = ((SpeakerViewModel)validationContext.ObjectInstance).ImageFile;
 
@@ -91,6 +93,9 @@ namespace Codecamp.Controllers
             if (id == null)
                 return NotFound();
 
+            if (!await _speakerBL.SpeakerExists(id.Value))
+                return NotFound();
+
             // Find the specified speaker
             var speaker = await _speakerBL.GetSpeakerViewModel(id.Value);
 
@@ -100,6 +105,99 @@ namespace Codecamp.Controllers
 
             // Else return the view with the speaker information
             return View(speaker);
+        }
+
+        // GET: Speakers/Edit/5
+        public async Task<IActionResult> Edit(int? id)
+        {
+            // If no id specified, return not found
+            if (id == null)
+                return NotFound();
+
+            if (!await _speakerBL.SpeakerExists(id.Value))
+                return NotFound();
+
+            // Find the specified speaker
+            var speaker = await _speakerBL.GetSpeakerViewModel(id.Value);
+
+            // If the speaker is not found, return not found
+            if (speaker == null)
+                return NotFound();
+
+            // Else return the view with the speaker information
+            return View(speaker);
+        }
+
+        // POST: Speakers/Edit/5
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
+        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public async Task<IActionResult> Edit(int id, 
+            [Bind("SpeakerId,CodecampUserId,FirstName,LastName,CompanyName,ImageFile,ResizeImage,Bio,WebsiteUrl,BlogUrl,GeographicLocation,TwitterHandle,LinkedIn,IsVolunteer,IsMvp,NoteToOrganizers,Email,PhoneNumber,IsApproved")] SpeakerViewModel speakerVM)
+        {
+            if (ModelState.IsValid)
+            {
+                if (id != speakerVM.SpeakerId)
+                    return NotFound();
+
+                // Update the speaker information from the page
+                var speaker = new Speaker
+                {
+                    SpeakerId = speakerVM.SpeakerId,
+                    CompanyName = speakerVM.CompanyName,
+                    Bio = speakerVM.Bio,
+                    WebsiteUrl = speakerVM.WebsiteUrl,
+                    BlogUrl = speakerVM.BlogUrl,
+                    NoteToOrganizers = speakerVM.NoteToOrganizers,
+                    IsApproved = speakerVM.IsApproved,
+                    IsMvp = speakerVM.IsMvp,
+                    LinkedIn = speakerVM.LinkedIn,
+                    CodecampUserId = speakerVM.CodecampUserId,
+                };
+
+                // Convert the image to a byte array, reduce the size to 300px x 300px
+                // and store it in the database
+                if (speakerVM.ImageFile != null &&
+                    speakerVM.ImageFile.ContentType.ToLower().StartsWith("image/")
+                    && speakerVM.ImageFile.Length <= SpeakerViewModel.MaxImageSize)
+                {
+                    MemoryStream ms = new MemoryStream();
+                    speakerVM.ImageFile.OpenReadStream().CopyTo(ms);
+
+                    speaker.Image 
+                        = _speakerBL.ResizeImage(ms.ToArray());
+                }
+
+                if (speakerVM.ImageFile == null && speakerVM.ResizeImage == true)
+                {
+                    // Resize the image to be no greater than 300px x 300px
+                    speaker.Image = _speakerBL.ResizeImage(speaker.SpeakerId);
+                }
+
+                var result = await _speakerBL.UpdateSpeaker(speaker);
+
+                var user = await _userBL.GetUser(speakerVM.CodecampUserId);
+
+                // Update the user information from the page
+                user.FirstName = speakerVM.FirstName;
+                user.LastName = speakerVM.LastName;
+                user.GeographicLocation = speakerVM.GeographicLocation;
+                user.TwitterHandle = speakerVM.TwitterHandle;
+                user.IsVolunteer = speakerVM.IsVolunteer;
+                user.Email = speakerVM.Email;
+                user.PhoneNumber = speakerVM.PhoneNumber;
+
+                result &= await _userBL.UpdateUser(user);
+
+                if (result == false)
+                    return NotFound();
+                else
+                    return RedirectToAction(nameof(Index));
+            }
+
+            return View(speakerVM);
         }
 
         #region NOT USED - Create done with user registration
@@ -128,120 +226,40 @@ namespace Codecamp.Controllers
         //    return View(speaker);
         //}
 
+        //// GET: Speakers/Delete/5
+        //public async Task<IActionResult> Delete(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    // Find the specified speaker
+        //    var speaker = await _speakerBL.GetSpeakerViewModel(id.Value);
+
+        //    if (speaker == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    return View(speaker);
+        //}
+
+        //// POST: Speakers/Delete/5
+        //[HttpPost, ActionName("Delete")]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> DeleteConfirmed(int id)
+        //{
+        //    // This delete code will not work, there are relationships.
+        //    // We will not be allowing deleting of speakers.  We can use
+        //    // approve and disapprove to not show speakers.
+        //    var speaker = await _context.Speakers.FindAsync(id);
+        //    _context.Speakers.Remove(speaker);
+        //    await _context.SaveChangesAsync();
+        //    return RedirectToAction(nameof(Index));
+        //}
+
         #endregion
 
-        // GET: Speakers/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            // If no id specified, return not found
-            if (id == null)
-                return NotFound();
-
-            // Find the specified speaker
-            var speaker = await _speakerBL.GetSpeakerViewModel(id.Value);
-
-            // If the speaker is not found, return not found
-            if (speaker == null)
-                return NotFound();
-
-            var user = await _speakerBL.GetUserInfoForSpeaker(speaker.SpeakerId);
-
-            // Else return the view with the speaker information
-            return View(speaker);
-        }
-
-        // POST: Speakers/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, 
-            [Bind("SpeakerId,CodecampUserId,FirstName,LastName,CompanyName,ImageFile,Bio,WebsiteUrl,BlogUrl,GeographicLocation,TwitterHandle,LinkedIn,IsVolunteer,IsMvp,NoteToOrganizers,Email,PhoneNumber,IsApproved")] SpeakerViewModel speakerVM)
-        {
-            if (ModelState.IsValid)
-            {
-                if (id != speakerVM.SpeakerId)
-                    return NotFound();
-
-                // Update the speaker information from the page
-                var speaker = new Speaker
-                {
-                    SpeakerId = speakerVM.SpeakerId,
-                    CompanyName = speakerVM.CompanyName,
-                    Bio = speakerVM.Bio,
-                    WebsiteUrl = speakerVM.WebsiteUrl,
-                    BlogUrl = speakerVM.BlogUrl,
-                    NoteToOrganizers = speakerVM.NoteToOrganizers,
-                    IsApproved = speakerVM.IsApproved,
-                    IsMvp = speakerVM.IsMvp,
-                    LinkedIn = speakerVM.LinkedIn,
-                    CodecampUserId = speakerVM.CodecampUserId,
-                };
-
-                // Convert the image to a byte array and store it in the
-                // database
-                if (speakerVM.ImageFile != null &&
-                    speakerVM.ImageFile.ContentType.ToLower().StartsWith("image/")
-                    && speakerVM.ImageFile.Length <= SpeakerViewModel.MaxImageSize)
-                {
-                    MemoryStream ms = new MemoryStream();
-                    speakerVM.ImageFile.OpenReadStream().CopyTo(ms);
-
-                    speaker.Image = ms.ToArray();
-                }
-
-                var result = await _speakerBL.UpdateSpeaker(speaker);
-
-                var user = await _userBL.GetUser(speakerVM.CodecampUserId);
-
-                // Update the user information from the page
-                user.FirstName = speakerVM.FirstName;
-                user.LastName = speakerVM.LastName;
-                user.GeographicLocation = speakerVM.GeographicLocation;
-                user.TwitterHandle = speakerVM.TwitterHandle;
-                user.IsVolunteer = speakerVM.IsVolunteer;
-                user.Email = speakerVM.Email;
-                user.PhoneNumber = speakerVM.PhoneNumber;
-
-                result &= await _userBL.UpdateUser(user);
-
-                if (result == false)
-                    return NotFound();
-                else
-                    return RedirectToAction(nameof(Index));
-            }
-
-            return View(speakerVM);
-        }
-
-        // GET: Speakers/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var speaker = await _context.Speakers
-                .Include(s => s.CodecampUser)
-                .FirstOrDefaultAsync(m => m.SpeakerId == id);
-            if (speaker == null)
-            {
-                return NotFound();
-            }
-
-            return View(speaker);
-        }
-
-        // POST: Speakers/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var speaker = await _context.Speakers.FindAsync(id);
-            _context.Speakers.Remove(speaker);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
     }
 }

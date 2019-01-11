@@ -61,7 +61,7 @@
                                 alt="@(string.Format("{0} {1}", Model.Input.FirstName, Model.Input.LastName))" />
                         </div>
                         <input asp-for="Input.ImageFile" type="file" class="form-control" />
-                        <span asp-validation-for="Input.ImageFile" class="text-danger"></span>
+                        <span asp-validation-for="Input.ImageFile" class="alert-danger"></span>
                     </div>
                     <div class="form-group">
                         <label asp-for="Input.Bio"></label>

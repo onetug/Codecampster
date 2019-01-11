@@ -1,4 +1,4 @@
-﻿@model Codecamp.Models.Speaker
+﻿@model Codecamp.ViewModels.SpeakerViewModel
 
 @{
     ViewData["Title"] = "Delete";
@@ -37,10 +37,26 @@
             @Html.DisplayFor(model => model.BlogUrl)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.Image)
+            @Html.DisplayNameFor(model => model.ImageFile)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Image)
+            <div style="max-width: 150px; max-height:150px; position: relative;">
+                @{
+                    string imgSrc = "/images/default_user_icon.jpg";
+                    if (!string.IsNullOrEmpty(Model.Image))
+                    {
+                        imgSrc = Model.Image;
+                    }
+                }
+                <img style="max-width: 150px;"
+                     src="@imgSrc"
+                     alt="@(string.Format("{0}", Model.FullName))" />
+                @if (Model.IsMvp)
+                {
+                    <img style="width: 30px; height: 30px; z-index: 10; position: absolute; right: 20px; bottom: 20px;"
+                         src=@("/images/ms-mvp.jpg") alt=@("Microsoft MVP") />
+                }
+            </div>
         </dd>
         <dt>
             @Html.DisplayNameFor(model => model.NoteToOrganizers)
@@ -59,12 +75,6 @@
         </dt>
         <dd>
             @Html.DisplayFor(model => model.LinkedIn)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.CodecampUser)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.CodecampUser.Id)
         </dd>
     </dl>
     

@@ -27,6 +27,12 @@ namespace Codecamp.Data
 
         public DbSet<SpeakerSession> SpeakerSessions { get; set; }
 
+        public DbSet<Timeslot> Timeslots { get; set; }
+
+        public DbSet<Track> Tracks { get; set; }
+
+        public DbSet<Sponsor> Sponsors { get; set; }
+
         public CodecampDbContext(DbContextOptions<CodecampDbContext> options)
             : base(options)
         {
