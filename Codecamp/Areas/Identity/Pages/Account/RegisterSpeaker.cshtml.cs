@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Codecamp.Areas.Identity.Pages.Account
 {
@@ -28,6 +29,7 @@ namespace Codecamp.Areas.Identity.Pages.Account
         private readonly CodecampDbContext _context;
         private readonly IEventBusinessLogic _eventBL;
         private readonly IHttpContextAccessor _httpAccessor;
+        private readonly IOptions<AppOptions> _options;
         private ISession _session => _httpAccessor.HttpContext.Session;
 
         public RegisterSpeakerModel(
@@ -37,7 +39,8 @@ namespace Codecamp.Areas.Identity.Pages.Account
             IEmailSender emailSender,
             CodecampDbContext context,
             IEventBusinessLogic eventBL,
-            IHttpContextAccessor httpAccessor)
+            IHttpContextAccessor httpAccessor,
+            IOptions<AppOptions> options)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -46,6 +49,7 @@ namespace Codecamp.Areas.Identity.Pages.Account
             _context = context;
             _eventBL = eventBL;
             _httpAccessor = httpAccessor;
+            _options = options;
         }
 
         [BindProperty]
@@ -85,24 +89,19 @@ namespace Codecamp.Areas.Identity.Pages.Account
             public string EnteredCaptchaCode { get; set; }
             
             public string CaptchaBase64Data { get; set; }
+
+            public string CaptchaKey { get; set; }
         }
 
         public async Task<IActionResult> OnGetAsync(string returnUrl = null)
         {
-            await Task.Run(() =>
+            await   Task.Run(() =>
             {
-                // do nothing
+                Input = new InputModel
+                {
+                    CaptchaKey = _options.Value.CaptchaKey
+                };
             });
-            //// Get a captcha
-            //var captcha = GetCaptcha();
-            //Input = new InputModel
-            //{
-            //    CaptchaBase64Data = captcha.CaptchaBase64Data,
-            //};
-
-            //// Store for comparison on postback
-            //CaptchaCode = captcha.CaptchaCode;
-
             return Page();
         }
 
@@ -110,23 +109,6 @@ namespace Codecamp.Areas.Identity.Pages.Account
         {
             if (ModelState.IsValid)
             {
-                //if (Input.EnteredCaptchaCode != CaptchaCode)
-                //{
-                //    // Indicate an invalid CAPTCHA string entered
-                //    ModelState.AddModelError(string.Empty, "Invalid CAPTCHA string entered, try again.");
-
-                //    // The entered captcha is incorrect, get a new captcha
-                //    var captcha1 = GetCaptcha();
-                //    Input = new InputModel
-                //    {
-                //        CaptchaBase64Data = captcha1.CaptchaBase64Data,
-                //    };
-
-                //    // Store for comparison on postback
-                //    CaptchaCode = captcha1.CaptchaCode;
-
-                //    return Page();
-                //}
 
                 // Get the current event
                 var theEvent = await _eventBL.GetActiveEvent();

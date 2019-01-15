@@ -16,11 +16,12 @@
               asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
         <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
     </environment>
+    <script src='https://www.google.com/recaptcha/api.js'></script>
     @Html.Raw(JavaScriptSnippet.FullScript)
 </head>
 <body>
-    <nav class="navbar navbar-inverse navbar-fixed-top" style="background-image:url('/images/CodeCampHeaderLogo.png');background-repeat: no-repeat;background-size: 170px 53px;">
-        <div class="container" style="margin-left:15%;">
+    <nav class="navbar navbar-inverse navbar-fixed-top" style="font-size: medium;">
+        <div class="container">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
                     <span class="sr-only">Toggle navigation</span>
@@ -28,17 +29,18 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-
-                @* Not available at this point, details well be fleshed out during development *@
-                @*<a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">Codecamp</a>*@
-
+                <a asp-area="" asp-controller="Home" asp-action="Index" 
+                    class="navbar-brand">
+                    <img src="/images/CodeCampHeaderLogo.png" style="width: 170px; height: 53px; margin-top: -12px;" />
+                </a>
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
-                    @*<li><a asp-area="" asp-controller="Speakers" asp-action="Index">Speakers</a></li>*@
+                    <li><a asp-area="" asp-controller="Sponsors" asp-action="Index">Sponsors</a></li>
+                    <li><a asp-area="" asp-controller="Speakers" asp-action="Index">Speakers</a></li>
                     <li><a asp-area="" asp-controller="Sessions" asp-action="Index">Sessions</a></li>
-                    <li><a target="_blank" href="/documents/OrlandoCodeCampSponsorInfo2019.pdf">Sponsors</a></li>
+                    <li><a target="_blank" href="/documents/OrlandoCodeCampSponsorInfo2019.pdf">Sponsor Info</a></li>
                     @* Not available at this point, details well be fleshed out during development *@
                     @*<li><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
         <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contact</a></li>*@
@@ -60,7 +62,7 @@
         @RenderBody()
         <hr />
         <footer>
-            <p>&copy; 2018 - Codecamp</p>
+            <p>&copy; 2018 - Orlando .NET User Group and Orlando Codecamp</p>
         </footer>
     </div>
 

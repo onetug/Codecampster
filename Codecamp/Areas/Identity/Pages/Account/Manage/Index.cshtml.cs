@@ -59,6 +59,9 @@ namespace Codecamp.Areas.Identity.Pages.Account.Manage
 
         public class InputModel
         {
+            // Lets set the max file size to 20 MB, that is way big enough
+            public const int MaxImageSize = 20000000;
+
             [Required]
             [DataType(DataType.Text)]
             [Display(Name = "First Name")]
@@ -73,7 +76,7 @@ namespace Codecamp.Areas.Identity.Pages.Account.Manage
             [Display(Name = "Company")]
             public string CompanyName { get; set; }
 
-            [FileSizeValidation(SpeakerViewModel.MaxImageSize)]
+            [FileSizeValidation(MaxImageSize)]
             [Display(Name = "Image")]
             public IFormFile ImageFile { get; set; }
 
@@ -136,13 +139,14 @@ namespace Codecamp.Areas.Identity.Pages.Account.Manage
                 _maxFileSize = maxFileSize;
             }
 
-            protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+            protected override ValidationResult IsValid(
+                object value, ValidationContext validationContext)
             {
                 var imageFile = ((InputModel)validationContext.ObjectInstance).ImageFile;
 
                 if (imageFile != null && imageFile.Length > _maxFileSize)
                 {
-                    return new ValidationResult(string.Format("File size limit is {0} KB", (_maxFileSize/1000)));
+                    return new ValidationResult(string.Format("File size limit is {0} KB", (_maxFileSize / 1000)));
                 }
 
                 return ValidationResult.Success;
@@ -299,7 +303,8 @@ namespace Codecamp.Areas.Identity.Pages.Account.Manage
                     MemoryStream ms = new MemoryStream();
                     Input.ImageFile.OpenReadStream().CopyTo(ms);
 
-                    speaker.Image = ms.ToArray();
+                    speaker.Image 
+                        = _speakerBL.ResizeImage(ms.ToArray());
                 }
 
                 if (Input.Bio != speaker.Bio)

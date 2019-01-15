@@ -68,11 +68,11 @@ namespace Codecamp
             services.AddTransient<IUserBusinessLogic, UserBusinessLogic>();
             services.AddTransient<IEventBusinessLogic, EventBusinessLogic>();
             services.AddTransient<ISessionBusinessLogic, SessionBusinessLogic>();
+            services.AddTransient<ISponsorBusinessLogic, SponsorBusinessLogic>();
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
             // Register the event business logic service
             services.AddTransient<EventBusinessLogic>();
-            services.Configure<AuthMessageSenderOptions>(Configuration.GetSection("AppSettings"));
-
+            services.Configure<AppOptions>(Configuration.GetSection("AppSettings"));
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("RequireAdminRole", policy => policy.RequireRole("Admin"));

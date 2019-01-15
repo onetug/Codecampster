@@ -4,6 +4,10 @@ using Codecamp.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -24,7 +28,8 @@ namespace Codecamp.BusinessLogic
         Task<bool> SpeakerExists(int speakerId);
         Task<bool> UpdateSpeaker(Speaker speaker);
         Task<CodecampUser> GetUserInfoForSpeaker(int speakerId);
-        Task<bool> DeleteSpeaker(int speakerId);
+        byte[] ResizeImage(int speakerId);
+        byte[] ResizeImage(byte[] originalImage);
     }
 
     public class SpeakerBusinessLogic : ISpeakerBusinessLogic
@@ -185,15 +190,30 @@ namespace Codecamp.BusinessLogic
         /// <returns>The SpeakerViewModel object</returns>
         public async Task<SpeakerViewModel> GetSpeakerViewModel(int speakerId, bool onlyApprovedSessions = false)
         {
-            var speaker = await ToSpeakerViewModel(_context.Speakers.Include(s => s.CodecampUser)
-                .Where(s => s.SpeakerId == speakerId)).FirstOrDefaultAsync();
+            var speaker = _context.Speakers.Include(s => s.CodecampUser)
+                .FirstOrDefault(s => s.SpeakerId == speakerId);
+            var speakerViewModel = ToSpeakerViewModel(speaker);
 
             if (onlyApprovedSessions == false)
-                speaker.Sessions = await _sessionBL.GetAllSessionsViewModelForSpeakerForActiveEvent(speaker.SpeakerId);
+                speakerViewModel.Sessions = await _sessionBL.GetAllSessionsViewModelForSpeakerForActiveEvent(speakerViewModel.SpeakerId);
             else
-                speaker.Sessions = await _sessionBL.GetAllApprovedSessionsViewModelForSpeakerForActiveEvent(speaker.SpeakerId);
+                speakerViewModel.Sessions = await _sessionBL.GetAllApprovedSessionsViewModelForSpeakerForActiveEvent(speakerViewModel.SpeakerId);
 
-            return speaker;
+            // Get the image size for display
+            var imageArray = speaker != null ? speaker.Image : null;
+            if (imageArray != null)
+            {
+                MemoryStream imageStream = new MemoryStream(imageArray);                
+                using (var image = new Bitmap(imageStream))
+                {
+                    speakerViewModel.ImageSizePixels
+                        = image.Width + " pixels x " + image.Height + " pixels";
+
+                    speakerViewModel.IsImageResizable = (image.Width > 300 || image.Height > 300) ? true : false;
+                }
+            }
+
+            return speakerViewModel;
         }
 
         /// <summary>
@@ -251,88 +271,167 @@ namespace Codecamp.BusinessLogic
         /// <returns>IQueryable<SpeakerViewModel> object</returns>
         private IQueryable<SpeakerViewModel> ToSpeakerViewModel(IQueryable<Speaker> speakers, bool loadImages = true)
         {
-            return from speaker in speakers
-                   join codecampUser in _context.CodecampUsers on speaker.CodecampUserId equals codecampUser.Id
-                   select new SpeakerViewModel
-                   {
-                       SpeakerId = speaker.SpeakerId,
-                       CodecampUserId = speaker.CodecampUserId,
-                       FirstName = codecampUser.FirstName,
-                       LastName = codecampUser.LastName,
-                       FullName = codecampUser.FullName,
-                       CompanyName = speaker.CompanyName,
-                       Bio = speaker.Bio,
-                       WebsiteUrl = speaker.WebsiteUrl,
-                       BlogUrl = speaker.BlogUrl,
-                       GeographicLocation = codecampUser.GeographicLocation,
-                       TwitterHandle = codecampUser.TwitterHandle,
-                       LinkedIn = speaker.LinkedIn,
-                       IsVolunteer = codecampUser.IsVolunteer,
-                       IsMvp = speaker.IsMvp,
-                       NoteToOrganizers = speaker.NoteToOrganizers,
-                       Email = codecampUser.Email,
-                       PhoneNumber = codecampUser.PhoneNumber,
-                       IsApproved = speaker.IsApproved,
-                       Image = loadImages == true
-                        ? speaker.Image == null || (speaker.Image != null && speaker.Image.Length > SpeakerViewModel.MaxImageSize)
-                        ? string.Empty : String.Format("data:image;base64,{0}", Convert.ToBase64String(speaker.Image))
-                        : string.Empty
-                   };
+            IQueryable<SpeakerViewModel> resultingSpeakers;
+
+            if (loadImages == true)
+            {
+                resultingSpeakers = from speaker in speakers
+                                    join codecampUser in _context.CodecampUsers on speaker.CodecampUserId equals codecampUser.Id
+                                    select new SpeakerViewModel
+                                    {
+                                        SpeakerId = speaker.SpeakerId,
+                                        CodecampUserId = speaker.CodecampUserId,
+                                        FirstName = codecampUser.FirstName,
+                                        LastName = codecampUser.LastName,
+                                        FullName = codecampUser.FullName,
+                                        CompanyName = speaker.CompanyName,
+                                        Bio = speaker.Bio,
+                                        WebsiteUrl = speaker.WebsiteUrl,
+                                        BlogUrl = speaker.BlogUrl,
+                                        GeographicLocation = codecampUser.GeographicLocation,
+                                        TwitterHandle = codecampUser.TwitterHandle,
+                                        LinkedIn = speaker.LinkedIn,
+                                        IsVolunteer = codecampUser.IsVolunteer,
+                                        IsMvp = speaker.IsMvp,
+                                        NoteToOrganizers = speaker.NoteToOrganizers,
+                                        Email = codecampUser.Email,
+                                        PhoneNumber = codecampUser.PhoneNumber,
+                                        IsApproved = speaker.IsApproved,
+                                        Image = speaker.Image != null && speaker.Image.Length > 0 
+                                            ? String.Format("data:image;base64,{0}", Convert.ToBase64String(speaker.Image)) 
+                                            : string.Empty
+                                    };
+            }
+            else
+            {
+                resultingSpeakers = from speaker in speakers
+                                    join codecampUser in _context.CodecampUsers on speaker.CodecampUserId equals codecampUser.Id
+                                    select new SpeakerViewModel
+                                    {
+                                        SpeakerId = speaker.SpeakerId,
+                                        CodecampUserId = speaker.CodecampUserId,
+                                        FirstName = codecampUser.FirstName,
+                                        LastName = codecampUser.LastName,
+                                        FullName = codecampUser.FullName,
+                                        CompanyName = speaker.CompanyName,
+                                        Bio = speaker.Bio,
+                                        WebsiteUrl = speaker.WebsiteUrl,
+                                        BlogUrl = speaker.BlogUrl,
+                                        GeographicLocation = codecampUser.GeographicLocation,
+                                        TwitterHandle = codecampUser.TwitterHandle,
+                                        LinkedIn = speaker.LinkedIn,
+                                        IsVolunteer = codecampUser.IsVolunteer,
+                                        IsMvp = speaker.IsMvp,
+                                        NoteToOrganizers = speaker.NoteToOrganizers,
+                                        Email = codecampUser.Email,
+                                        PhoneNumber = codecampUser.PhoneNumber,
+                                        IsApproved = speaker.IsApproved
+                                    };
+            }
+
+            return resultingSpeakers;
         }
 
-        public async Task<bool> DeleteSpeaker(int speakerId)
+        private SpeakerViewModel ToSpeakerViewModel(Speaker speaker)
         {
-            await Task.Run(() => {
-                //do nothing
-            });
-            return true;
+            var codecampUser = _context.CodecampUsers.Find(speaker.CodecampUserId);
+            var result = new SpeakerViewModel
+            {
+                SpeakerId = speaker.SpeakerId,
+                CodecampUserId = speaker.CodecampUserId,
+                FirstName = codecampUser.FirstName,
+                LastName = codecampUser.LastName,
+                FullName = codecampUser.FullName,
+                CompanyName = speaker.CompanyName,
+                Bio = speaker.Bio,
+                WebsiteUrl = speaker.WebsiteUrl,
+                BlogUrl = speaker.BlogUrl,
+                GeographicLocation = codecampUser.GeographicLocation,
+                TwitterHandle = codecampUser.TwitterHandle,
+                LinkedIn = speaker.LinkedIn,
+                IsVolunteer = codecampUser.IsVolunteer,
+                IsMvp = speaker.IsMvp,
+                NoteToOrganizers = speaker.NoteToOrganizers,
+                Email = codecampUser.Email,
+                PhoneNumber = codecampUser.PhoneNumber,
+                IsApproved = speaker.IsApproved,
+                Image = speaker.Image != null && speaker.Image.Length > 0
+                    ? String.Format("data:image;base64,{0}", Convert.ToBase64String(speaker.Image))
+                    : string.Empty
+            };
 
-            //using (var transaction = await _context.Database.BeginTransactionAsync())
-            //{
-            //    // Find the speaker
-            //    var speaker = await _context.Speakers
-            //        .FindAsync(new[] { speakerId });
+            return result;
+        }
 
-            //    // Find the association CodecampUser and delete
-            //    var codecampUser = await _context.CodecampUsers
-            //        .FindAsync(new[] { speaker.CodecampUserId });
+        /// <summary>
+        /// Resize the image of the speaker Id to 300px X 300px
+        /// </summary>
+        /// <param name="speakerId">The desired speaker's Id</param>
+        /// <returns>The resized image byte[]</returns>
+        public byte[] ResizeImage(int speakerId)
+        {
+            var speaker = _context.Speakers.AsNoTracking().Include(s => s.CodecampUser)
+                .FirstOrDefault(s => s.SpeakerId == speakerId);
 
-            //    var speakerSessions = _context.SpeakerSessions
-            //        .Where(ss => ss.SpeakerId == speakerId);
+            // Get the image size for display
+            var imageArray = speaker != null ? speaker.Image : null;
 
-            //    foreach (var speakerSession in speakerSessions)
-            //    {
-            //        // Determine whether the session has additional speakers.  More then
-            //        // one SpeakerSession indicates another speaker, we can't delete
-            //        // the session.
-            //        var otherSpeakersExists
-            //            = _context.SpeakerSessions
-            //            .Count(ss => ss.SessionId == speakerSession.SessionId) > 1;
+            return ResizeImage(imageArray);
+        }
 
-            //        if (!otherSpeakersExists)
-            //        {
-            //            // No other speakers exist, remove the session
-            //            var session = await _context.Sessions
-            //                .FindAsync(speakerSession.SessionId);
+        /// <summary>
+        /// Resize the supplied image file byte[] to 300px X 300px
+        /// </summary>
+        /// <param name="originalImage">The original image byte[]</param>
+        /// <returns>The resized image byte[]</returns>
+        public byte[] ResizeImage(byte[] originalImage)
+        {
+            const int size = 300; // max size in pixels
 
-            //            // Since we're deleting the session, remove all associated
-            //            // attendee sessions
-            //            var attendeeSessions
-            //                = _context.AttendeesSessions
-            //                .Where(_as => _as.SessionId == session.SessionId);
-            //            foreach (var attendeeSession in attendeeSessions)
-            //            {
-            //                _context.AttendeesSessions.Remove(attendeeSession);
-            //            }
+            if (originalImage != null)
+            {
+                MemoryStream imageStream = new MemoryStream(originalImage);
+                using (var image = new Bitmap(imageStream))
+                {
+                    if (image.Width < size && image.Height < size)
+                        return originalImage;
 
-            //            if (session != null)
-            //                _context.Sessions.Remove(session);
-            //        }
+                    int width, height;
+                    if (image.Width > image.Height)
+                    {
+                        width = size;
+                        height = Convert.ToInt32(image.Height * size / (double)image.Width);
+                    }
+                    else
+                    {
+                        width = Convert.ToInt32(image.Width * size / (double)image.Height);
+                        height = size;
+                    }
 
-            //        // Remove the speaker session
-            //        _context.SpeakerSessions.Remove(speakerSession);
-            //    }
-            //}
+                    var resized = new Bitmap(width, height);
+                    using (var graphics = Graphics.FromImage(resized))
+                    {
+                        graphics.CompositingQuality = CompositingQuality.HighSpeed;
+                        graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                        graphics.CompositingMode = CompositingMode.SourceCopy;
+                        graphics.DrawImage(image, 0, 0, width, height);
+
+                        using (var ms = new MemoryStream())
+                        {
+                            var qualityParamId = Encoder.Quality;
+                            var encoderParameters = new EncoderParameters(1);
+                            encoderParameters.Param[0] = new EncoderParameter(qualityParamId, 100L);
+                            var codec = ImageCodecInfo.GetImageDecoders()
+                                .FirstOrDefault(c => c.FormatID == ImageFormat.Jpeg.Guid);
+                            resized.Save(ms, codec, encoderParameters);
+
+                            return ms.ToArray();
+                        }
+                    }
+                }
+            }
+
+            return null;
         }
     }
 }

@@ -35,15 +35,6 @@
                         @Html.DisplayNameFor(model => model.CompanyName)
                     </th>
                     <th>
-                        @Html.DisplayNameFor(model => model.Bio)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.WebsiteUrl)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.BlogUrl)
-                    </th>
-                    <th>
                         @Html.DisplayNameFor(model => model.NoteToOrganizers)
                     </th>
                     <th>
@@ -66,15 +57,6 @@
                             @Html.DisplayFor(modelItem => item.CompanyName)
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => item.Bio)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.WebsiteUrl)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.BlogUrl)
-                        </td>
-                        <td>
                             @Html.DisplayFor(modelItem => item.NoteToOrganizers)
                         </td>
                         <td>
@@ -85,8 +67,7 @@
                         </td>
                         <td>
                             <a asp-action="Edit" asp-route-id="@item.SpeakerId">Edit</a> |
-                            <a asp-action="Details" asp-route-id="@item.SpeakerId">Details</a> |
-                            <a asp-action="Delete" asp-route-id="@item.SpeakerId">Delete</a>
+                            <a asp-action="Details" asp-route-id="@item.SpeakerId">Details</a>
                         </td>
                     </tr>
                 }
@@ -120,15 +101,10 @@ else
                         <a asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">
                             <div style="text-align:center;">
                                 <div style="width: 150px; height: 150px; margin-left: auto; margin-right: auto">
-                                    @{
-                                        string imgSrc = "/images/default_user_icon.jpg";
-                                        if (!string.IsNullOrEmpty(speaker.Image))
-                                        {
-                                            imgSrc = speaker.Image;
-                                        }
-                                    }
                                     <img style="max-width: 150px;"
-                                         src="@imgSrc"
+                                         class="speakerImage"
+                                         id="@(string.Format("{0}", speaker.SpeakerId))"
+                                         src=@("/images/default_user_icon.jpg")
                                          alt="@(string.Format("{0}", speaker.FullName))" />
                                     @if (speaker.IsMvp)
                                     {
@@ -136,7 +112,7 @@ else
                                              src=@("/images/ms-mvp.jpg") alt=@("Microsoft MVP") />
                                     }
                                 </div>
-                                <h5>@(string.Format("{0}", speaker.FullName))</h5>
+                                @(string.Format("{0}", speaker.FullName))
                             </div>
                         </a>
                     </div>
@@ -147,15 +123,10 @@ else
                         <a asp-action="Details" asp-route-id="@(speaker.SpeakerId)">
                             <div style="text-align:center;">
                                 <div style="width: 150px; height: 150px; margin-left: auto; margin-right: auto;">
-                                    @{
-                                        string imgSrc = "/images/default_user_icon.jpg";
-                                        if (!string.IsNullOrEmpty(speaker.Image))
-                                        {
-                                            imgSrc = speaker.Image;
-                                        }
-                                    }
-                                    <img style="max-width: 150px; max-height:150px;"
-                                         src="@imgSrc"
+                                    <img style="max-width: 150px;"
+                                         class="speakerImage"
+                                         id="@(string.Format("{0}", speaker.SpeakerId))"
+                                         src=@("/images/default_user_icon.jpg")
                                          alt="@(string.Format("{0}", speaker.FullName))" />
                                     @if (speaker.IsMvp)
                                     {
@@ -163,7 +134,7 @@ else
                                              src=@("/images/ms-mvp.jpg") alt=@("Microsoft MVP") />
                                     }
                                 </div>
-                                <h5>@(string.Format("{0}", speaker.FirstName))</h5>
+                                <span>@(string.Format("{0}", speaker.FullName))</span>
                             </div>
                         </a>
                     </div>
@@ -176,4 +147,14 @@ else
             <div>There are currentnly no speakers...</div>
         }
     </div>
+}
+
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.speakerImage').each(function () {
+                let imageSrc = setSpeakerImage(this);
+            });
+        });
+    </script>
 }
