@@ -4,25 +4,30 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Codecamp.Models
+namespace Codecamp.ViewModels
 {
-    public class Announcement
+    public class AnnouncementViewModel
     {
         public int AnnouncementId { get; set; }
 
-        public int? EventId { get; set; }
-
+        [Required]
+        [DataType(DataType.Text)]
+        [Display(Name = "Message")]
         public string Message { get; set; }
 
         [Display(Name = "Display Order")]
         public int Rank { get; set; }
 
-        [Display(Name = "Publish On")]
+        [Required]
         [DataType(DataType.Date)]
+        [Display(Name = "Publish Date")]
         public DateTime PublishOn { get; set; }
 
-        [Display(Name = "Expires On")]
         [DataType(DataType.Date)]
+        [Display(Name = "Expiration Date")]
         public DateTime? ExpiresOn { get; set; }
+
+        [Display(Name = "Event Name")]
+        public string EventName { get; set; }
     }
 }

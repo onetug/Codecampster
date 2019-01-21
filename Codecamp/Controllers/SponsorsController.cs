@@ -34,15 +34,9 @@ namespace Codecamp.Controllers
         // GET: Sponsors
         public async Task<IActionResult> Index()
         {
-            List<SponsorViewModel> sponsorsVM;
-
-            ViewData["Title"] = "Sponsors";
-
-            if (User.IsInRole("Admin"))
-                // Don't load images for the admin page
-                sponsorsVM = await _sponsorBL.GetAllSponsorsViewModel(false);
-            else
-                sponsorsVM = await _sponsorBL.GetAllSponsorsViewModel();
+            var sponsorsVM 
+                = await _sponsorBL
+                .GetSponsorsViewModelForActiveEvent();
 
             return View(sponsorsVM);
         }

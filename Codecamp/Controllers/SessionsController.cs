@@ -43,6 +43,7 @@ namespace Codecamp.Controllers
         }
 
         // GET: Sessions
+        [HttpGet]
         public async Task<IActionResult> Index(int? selectedUserType)
         {
             ViewBag.UserTypes = UserType.GetUserTypes();
@@ -107,6 +108,7 @@ namespace Codecamp.Controllers
         }
 
         // GET: Sessions/Details/5
+        [HttpGet]
         public async Task<IActionResult> Details(int? id)
         {
             if (!id.HasValue)
@@ -126,6 +128,7 @@ namespace Codecamp.Controllers
             return View(session);
         }
 
+        [HttpGet]
         [Authorize]
         // GET: Sessions/Create
         public IActionResult Create()
