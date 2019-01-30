@@ -14,6 +14,7 @@ using Newtonsoft.Json;
 using Swashbuckle.AspNetCore.Swagger;
 using System;
 using System.Threading.Tasks;
+using Codecamp.BusinessLogic.Api;
 
 namespace Codecamp
 {
@@ -67,14 +68,21 @@ namespace Codecamp
             });
 
             services.AddSingleton<IEmailSender, AuthMessageEmailSender>();
+
             services.AddTransient<ISpeakerBusinessLogic, SpeakerBusinessLogic>();
             services.AddTransient<IUserBusinessLogic, UserBusinessLogic>();
             services.AddTransient<IEventBusinessLogic, EventBusinessLogic>();
             services.AddTransient<ISessionBusinessLogic, SessionBusinessLogic>();
             services.AddTransient<ISponsorBusinessLogic, SponsorBusinessLogic>();
+
+            services.AddTransient<IEventsApiBusinessLogic, EventsApiBusinessLogic>();
+            services.AddTransient<ISpeakersApiBusinessLogic, SpeakersApiBusinessLogic>();
+
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
+
             // Register the event business logic service
             services.AddTransient<EventBusinessLogic>();
+
             services.Configure<AppOptions>(Configuration.GetSection("AppSettings"));
             services.AddAuthorization(options =>
             {
