@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace Codecamp.Models
 {
+    [DebuggerDisplay("{" + nameof(DebuggerDisplay) + ",nq}")]
     public class Speaker
     {
         public int SpeakerId { get; set; }
@@ -46,5 +44,9 @@ namespace Codecamp.Models
         public int? EventId { get; set; }
 
         public Event Event { get; set; }
+
+        private string DebuggerDisplay =>
+            $"{SpeakerId} - " +
+            (CodecampUser?.FullName ?? CodecampUser?.Email ?? "User name not available");
     }
 }
