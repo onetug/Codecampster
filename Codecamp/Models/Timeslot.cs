@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Threading.Tasks;
 
 namespace Codecamp.Models
@@ -11,13 +13,15 @@ namespace Codecamp.Models
         public int TimeslotId { get; set; }
 
         [Required]
+        [DataType(DataType.Time)]
         [Display(Name = "Start Time")]
-        [DisplayFormat(DataFormatString = "{HH:mm}")]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:HH:mm}")]
         public DateTime StartTime { get; set; }
 
         [Required]
+        [DataType(DataType.Time)]
         [Display(Name = "End Time")]
-        [DisplayFormat(DataFormatString = "{HH:mm}")]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:HH:mm}")]
         public DateTime EndTime { get; set; }
 
         /// <summary>
@@ -28,6 +32,11 @@ namespace Codecamp.Models
         public bool ContainsNoSessions { get; set; }
 
         public string Name { get; set; }
+
+        [ForeignKey("Event")]
+        public int? EventId { get; set; }
+
+        public Event Event { get; set; }
 
         public virtual List<Session> Sessions { get; set; }
     }

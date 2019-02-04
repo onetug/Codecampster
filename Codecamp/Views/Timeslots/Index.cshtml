@@ -1,0 +1,63 @@
+﻿@model IEnumerable<Codecamp.Models.Timeslot>
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Timeslots</h2>
+
+<div>
+    <a asp-action="Create">Create New</a>
+</div>
+
+<table class="table">
+    <thead>
+        <th class="col-md-1">
+            @Html.DisplayNameFor(model => model.StartTime)
+        </th>
+        <th class="col-md-1">
+            @Html.DisplayNameFor(model => model.EndTime)
+        </th>
+        <th class="col-md-2">
+            @Html.DisplayNameFor(model => model.ContainsNoSessions)
+        </th>
+        <th class="col-md-4">
+            @Html.DisplayNameFor(model => model.Name)
+        </th>
+        <th></th>
+    </thread>
+    <tbody>
+        @if (Model != null && Model.Count() > 0)
+        {
+        @foreach (var timeslot in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => timeslot.StartTime)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => timeslot.EndTime)
+                    </td>
+                    <td align="center">
+                        @Html.DisplayFor(modelItem => timeslot.ContainsNoSessions)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => timeslot.Name)
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@timeslot.TimeslotId">Edit</a> |
+                        <a asp-action="Delete" asp-route-id="@timeslot.TimeslotId">Delete</a>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="5">
+                    No timeslots exist...
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

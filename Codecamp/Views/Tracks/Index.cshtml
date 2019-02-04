@@ -1,0 +1,51 @@
+﻿@model IEnumerable<Codecamp.Models.Track>
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Tracks</h2>
+
+<div>
+    <a asp-action="Create">Create New</a>
+</div>
+
+<table class="table">
+    <thead>
+    <th class="col-md-1">
+        @Html.DisplayNameFor(model => model.Name)
+    </th>
+    <th class="col-md-1">
+        @Html.DisplayNameFor(model => model.RoomNumber)
+    </th>
+    <th></th>
+    </thread>
+    <tbody>
+        @if (Model != null && Model.Count() > 0)
+        {
+            @foreach (var timeslot in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => timeslot.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => timeslot.RoomNumber)
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@timeslot.TrackId">Edit</a> |
+                        <a asp-action="Delete" asp-route-id="@timeslot.TrackId">Delete</a>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="5">
+                    No tracks exist...
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

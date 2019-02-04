@@ -3,11 +3,6 @@
 @model Codecamp.Controllers.SessionsController.PageModel
 
 @{
-    if (string.IsNullOrEmpty((string)ViewData["Title"]))
-    {
-        ViewData["Title"] = "Sessions";
-    }
-
     // Determine whether the current user is a speaker
     int? speakerId = null;
     var user = await UserManager.GetUserAsync(User);
@@ -17,7 +12,7 @@
     }
 }
 
-<h2>@ViewData["Title"]</h2>
+<h2>Session</h2>
 
 <form asp-action="Index" id="SessionIndex" asp-route-id="@(Model.SelectedUserType)">
     @* Allow a speaker to create a new session *@
@@ -75,7 +70,10 @@
                             @Html.DisplayFor(modelItem => item.Description)
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => item.Speakers)
+                            @foreach (var speakerSession in item.SpeakerSessions)
+                            {
+                                <div>@Html.DisplayFor(modelItem => speakerSession.Speaker.CodecampUser.FullName)</div>
+                            }
                         </td>
                         <td>
                             @Html.DisplayFor(modelItem => item.SkillLevel)

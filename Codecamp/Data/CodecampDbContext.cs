@@ -35,6 +35,8 @@ namespace Codecamp.Data
 
         public DbSet<Announcement> Announcements { get; set; }
 
+        public DbSet<Schedule> CodecampSchedule { get; set; }
+
         public CodecampDbContext(DbContextOptions<CodecampDbContext> options)
             : base(options)
         {
@@ -74,6 +76,10 @@ namespace Codecamp.Data
                 .HasOne(_as => _as.Session)
                 .WithMany(_as => _as.AttendeeSessions)
                 .HasForeignKey(_as => _as.SessionId);
+
+            builder.Entity<Schedule>()
+                .HasKey(s => new { s.SessionId,
+                    s.TrackId, s.TimeslotId });
         }
     }
 }

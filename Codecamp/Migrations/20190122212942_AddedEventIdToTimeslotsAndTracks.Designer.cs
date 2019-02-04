@@ -4,14 +4,16 @@ using Codecamp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Codecamp.Migrations
 {
     [DbContext(typeof(CodecampDbContext))]
-    partial class CodecampDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190122212942_AddedEventIdToTimeslotsAndTracks")]
+    partial class AddedEventIdToTimeslotsAndTracks
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -151,23 +153,6 @@ namespace Codecamp.Migrations
                     b.HasKey("EventId");
 
                     b.ToTable("Events");
-                });
-
-            modelBuilder.Entity("Codecamp.Models.Schedule", b =>
-                {
-                    b.Property<int>("SessionId");
-
-                    b.Property<int>("TrackId");
-
-                    b.Property<int>("TimeslotId");
-
-                    b.HasKey("SessionId", "TrackId", "TimeslotId");
-
-                    b.HasIndex("TimeslotId");
-
-                    b.HasIndex("TrackId");
-
-                    b.ToTable("CodecampSchedule");
                 });
 
             modelBuilder.Entity("Codecamp.Models.Session", b =>
@@ -462,24 +447,6 @@ namespace Codecamp.Migrations
                     b.HasOne("Codecamp.Models.Speaker", "Speaker")
                         .WithMany()
                         .HasForeignKey("SpeakerId");
-                });
-
-            modelBuilder.Entity("Codecamp.Models.Schedule", b =>
-                {
-                    b.HasOne("Codecamp.Models.Session", "Session")
-                        .WithMany()
-                        .HasForeignKey("SessionId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Codecamp.Models.Timeslot", "Timeslot")
-                        .WithMany()
-                        .HasForeignKey("TimeslotId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Codecamp.Models.Track", "Track")
-                        .WithMany()
-                        .HasForeignKey("TrackId")
-                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Codecamp.Models.Session", b =>

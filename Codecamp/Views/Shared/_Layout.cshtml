@@ -48,8 +48,15 @@
                     <li><a asp-area="" asp-controller="Sessions" asp-action="Index">Sessions</a></li>
                     @if (User.IsInRole("Admin"))
                     {
-                        <li><a asp-area="" asp-controller="Events" asp-action="Index">Events</a></li>
-                        <li><a asp-area="" asp-controller="Announcements" asp-action="Index">Announcements</a></li>
+                        <li>
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Administration <b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <li><a asp-area="" asp-controller="Events" asp-action="Index">Events</a></li>
+                                <li><a asp-area="" asp-controller="Announcements" asp-action="Index">Announcements</a></li>
+                                <li><a asp-area="" asp-controller="Timeslots" asp-action="Index">Timeslots</a></li>
+                                <li><a asp-area="" asp-controller="Tracks" asp-action="Index">Tracks</a></li>
+                            </ul>
+                        </li>
                     }
                     <li><a asp-area="" asp-controller="Home" asp-action="Faq">FAQ</a></li>
                 </ul>

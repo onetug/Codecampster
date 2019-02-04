@@ -16,26 +16,28 @@
 
 <h2><span style="font-weight: bold;">Title:&nbsp;</span>@Model.Name</h2>
 
-<div>
+<div style="margin-bottom: 40px;">
     @foreach (var speaker in Model.Speakers)
     {
         <div style="max-width: 150px; max-height:150px; position: relative; margin-right: 25px;">
-            <img style="max-width: 150px;"
-                 class="speakerImage"
-                 id="@(string.Format("{0}", speaker.SpeakerId))"
-                 src=@("/images/default_user_icon.jpg")
-                 alt="@(string.Format("{0}", speaker.FullName))" />
-            @if (speaker.IsMvp)
-            {
-                <img style="width: 30px; height: 30px; z-index: 10; position: absolute; right: 20px; bottom: 20px;"
-                     src=@("/images/ms-mvp.jpg") alt=@("Microsoft MVP") />
-            }
+            <a asp-controller="Speakers" asp-action="Details" asp-route-id="@speaker.SpeakerId">
+                <img style="max-width: 150px;"
+                     class="speakerImage"
+                     id="@(string.Format("{0}", speaker.SpeakerId))"
+                     src=@("/images/default_user_icon.jpg")
+                     alt="@(string.Format("{0}", speaker.FullName))" />
+                @if (speaker.IsMvp)
+                {
+                    <img style="width: 30px; height: 30px; z-index: 10; position: absolute; right: 20px; bottom: 20px;"
+                         src=@("/images/ms-mvp.jpg") alt=@("Microsoft MVP") />
+                }
+                <h5>@speaker.FullName</h5>
+            </a>
         </div>
     }
 </div>
 
 <div>
-    <h4>Session</h4>
     <hr />
     <dl class="dl-horizontal">
         <dt>

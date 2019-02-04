@@ -94,6 +94,6 @@ namespace Codecamp.ViewModels
         public bool IsApproved { get; set; }
 
         [Display(Name = "Sessions")]
-        public IList<SessionViewModel> Sessions { get; set; }
+        public List<SessionViewModel> Sessions { get; set; }
     }
 }

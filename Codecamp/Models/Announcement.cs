@@ -17,12 +17,14 @@ namespace Codecamp.Models
         [Display(Name = "Display Order")]
         public int Rank { get; set; }
 
-        [Display(Name = "Publish On")]
         [DataType(DataType.Date)]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy-MM-dd}")]
+        [Display(Name = "Publish On")]
         public DateTime PublishOn { get; set; }
 
-        [Display(Name = "Expires On")]
         [DataType(DataType.Date)]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy-MM-dd}")]
+        [Display(Name = "Expires On")]
         public DateTime? ExpiresOn { get; set; }
     }
 }

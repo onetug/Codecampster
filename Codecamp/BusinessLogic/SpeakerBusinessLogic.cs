@@ -28,11 +28,11 @@ namespace Codecamp.BusinessLogic
         Task<bool> SpeakerExists(int speakerId);
         Task<bool> UpdateSpeaker(Speaker speaker);
         Task<CodecampUser> GetUserInfoForSpeaker(int speakerId);
-        IQueryable<SpeakerViewModel> ToSpeakerViewModel(IQueryable<Speaker> speakers);
+        List<SpeakerViewModel> ToSpeakerViewModel(List<Speaker> speakers);
         SpeakerViewModel ToSpeakerViewModel(Speaker speaker);
         byte[] ResizeImage(int speakerId);
         byte[] ResizeImage(byte[] originalImage);
-        IQueryable<SpeakerViewModel> GetSpeakersForSession(int sessionId);
+        Task<List<SpeakerViewModel>> GetSpeakersForSession(int sessionId);
 
     }
 
@@ -66,8 +66,8 @@ namespace Codecamp.BusinessLogic
         /// <returns>List of SpeakerViewModel objects</returns>
         public async Task<List<SpeakerViewModel>> GetAllSpeakersViewModel()
         {
-            return await ToSpeakerViewModel(
-                _context.Speakers).ToListAsync();
+            return ToSpeakerViewModel(
+                await _context.Speakers.ToListAsync());
         }
 
         /// <summary>
@@ -102,13 +102,11 @@ namespace Codecamp.BusinessLogic
                 .FirstOrDefaultAsync(e => e.IsActive == true);
 
             if (activeEvent == null)
-                return await ToSpeakerViewModel(_context.Speakers.Include(s => s.CodecampUser))
-                    .ToListAsync();
+                return ToSpeakerViewModel(await _context.Speakers.Include(s => s.CodecampUser).ToListAsync());
             else
-                return await ToSpeakerViewModel(_context.Speakers.Include(s => s.CodecampUser)
+                return ToSpeakerViewModel(await _context.Speakers.Include(s => s.CodecampUser)
                     .Where(s => s.CodecampUser.EventId == activeEvent.EventId
-                    && s.IsApproved == true))
-                    .ToListAsync();
+                    && s.IsApproved == true).ToListAsync());
         }
 
         /// <summary>
@@ -131,9 +129,8 @@ namespace Codecamp.BusinessLogic
         /// <returns>List of SpeakerViewModel objects</returns>
         public async Task<List<SpeakerViewModel>> GetAllSpeakersViewModel(int eventId)
         {
-            return await ToSpeakerViewModel(_context.Speakers.Include(s => s.CodecampUser)
-                .Where(s => s.CodecampUser.EventId == eventId))
-                .ToListAsync();
+            return ToSpeakerViewModel(await _context.Speakers.Include(s => s.CodecampUser)
+                .Where(s => s.CodecampUser.EventId == eventId).ToListAsync());
         }
 
         /// <summary>
@@ -167,12 +164,10 @@ namespace Codecamp.BusinessLogic
                 .FirstOrDefaultAsync(e => e.IsActive == true);
 
             if (activeEvent == null)
-                return await ToSpeakerViewModel(_context.Speakers.Include(s => s.CodecampUser))
-                    .ToListAsync();
+                return ToSpeakerViewModel(await _context.Speakers.Include(s => s.CodecampUser).ToListAsync());
             else
-                return await ToSpeakerViewModel(_context.Speakers.Include(s => s.CodecampUser)
-                    .Where(s => s.CodecampUser.EventId == activeEvent.EventId))
-                    .ToListAsync();
+                return ToSpeakerViewModel(await _context.Speakers.Include(s => s.CodecampUser)
+                    .Where(s => s.CodecampUser.EventId == activeEvent.EventId).ToListAsync());
         }
 
         /// <summary>
@@ -273,11 +268,11 @@ namespace Codecamp.BusinessLogic
         /// <param name="speakers">The IQueryable<Speaker> object</param>
         /// <param name="loadImages">Indicates whether to load the Speaker image in the results</param>
         /// <returns>IQueryable<SpeakerViewModel> object</returns>
-        public IQueryable<SpeakerViewModel> ToSpeakerViewModel(IQueryable<Speaker> speakers)
+        public List<SpeakerViewModel> ToSpeakerViewModel(List<Speaker> speakers)
         {
-            IQueryable<SpeakerViewModel> resultingSpeakers;
+            List<SpeakerViewModel> resultingSpeakers;
 
-            resultingSpeakers = from speaker in speakers
+            resultingSpeakers = (from speaker in speakers
                                 join codecampUser in _context.CodecampUsers on speaker.CodecampUserId equals codecampUser.Id
                                 select new SpeakerViewModel
                                 {
@@ -299,7 +294,7 @@ namespace Codecamp.BusinessLogic
                                     Email = codecampUser.Email,
                                     PhoneNumber = codecampUser.PhoneNumber,
                                     IsApproved = speaker.IsApproved,
-                                };
+                                }).ToList();
 
             return resultingSpeakers;
         }
@@ -403,14 +398,14 @@ namespace Codecamp.BusinessLogic
             return null;
         }
 
-        public IQueryable<SpeakerViewModel> GetSpeakersForSession(int sessionId)
+        public async Task<List<SpeakerViewModel>> GetSpeakersForSession(int sessionId)
         {
             var speakers = ToSpeakerViewModel(
-                _context.Speakers
+                await _context.Speakers
                 .Where(s => _context.SpeakerSessions
                 .Where(ss => ss.SessionId == sessionId)
                 .Select(s2 => s2.SpeakerId)
-                .Contains(s.SpeakerId)));
+                .Contains(s.SpeakerId)).ToListAsync());
 
             return speakers;
         }

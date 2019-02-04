@@ -20,10 +20,12 @@ namespace Codecamp.ViewModels
 
         [Required]
         [DataType(DataType.Date)]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy-MM-dd}")]
         [Display(Name = "Publish Date")]
         public DateTime PublishOn { get; set; }
 
         [DataType(DataType.Date)]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy-MM-dd}")]
         [Display(Name = "Expiration Date")]
         public DateTime? ExpiresOn { get; set; }
 

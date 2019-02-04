@@ -3,15 +3,18 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using Codecamp.BusinessLogic;
 using Codecamp.Data;
 using Codecamp.Models;
 using Codecamp.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Codecamp.Areas.Identity.Pages.Account
 {
@@ -23,19 +26,29 @@ namespace Codecamp.Areas.Identity.Pages.Account
         private readonly ILogger<RegisterAttendeeModel> _logger;
         private readonly IEmailSender _emailSender;
         private readonly CodecampDbContext _context;
+        private readonly IEventBusinessLogic _eventBL;
+        private readonly IHttpContextAccessor _httpAccessor;
+        private readonly IOptions<AppOptions> _options;
+        private ISession _session => _httpAccessor.HttpContext.Session;
 
         public RegisterAttendeeModel(
             UserManager<CodecampUser> userManager,
             SignInManager<CodecampUser> signInManager,
             ILogger<RegisterAttendeeModel> logger,
             IEmailSender emailSender,
-            CodecampDbContext context)
+            CodecampDbContext context,
+            IEventBusinessLogic eventBL,
+            IHttpContextAccessor httpAccessor,
+            IOptions<AppOptions> options)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
             _context = context;
+            _eventBL = eventBL;
+            _httpAccessor = httpAccessor;
+            _options = options;
         }
 
         [BindProperty]
@@ -58,23 +71,37 @@ namespace Codecamp.Areas.Identity.Pages.Account
             [Display(Name = "Confirm password")]
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
+
+            public string CaptchaKey { get; set; }
         }
 
-        public void OnGet(string returnUrl = null) { }
+        public async Task<IActionResult> OnGetAsync(string returnUrl = null)
+        {
+            await Task.Run(() =>
+            {
+                Input = new InputModel
+                {
+                    CaptchaKey = _options.Value.CaptchaKey
+                };
+            });
+            return Page();
+        }
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
-            var manageUserPage = Url.Content("./Manage/Index");
-
             if (ModelState.IsValid)
             {
+                // Get the current event
+                var theEvent = await _eventBL.GetActiveEvent();
+
                 var user
                     = new CodecampUser
                     {
                         IsAttending = true,
                         IsSpeaker = false,
                         UserName = Input.Email,
-                        Email = Input.Email
+                        Email = Input.Email,
+                        EventId = theEvent != null ? theEvent.EventId : (int?)null
                     };
 
                 var result = await _userManager.CreateAsync(user, Input.Password);
@@ -94,14 +121,12 @@ namespace Codecamp.Areas.Identity.Pages.Account
                         values: new { userId = user.Id, code = code },
                         protocol: Request.Scheme);
 
+                    // Generate and send a confirmation email to the user
                     await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
                         $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 
-                    // await _signInManager.SignInAsync(user, isPersistent: false);
-
-                    // Redirect to the manage user page so the speaker can add
-                    // additional information
-                    return RedirectToPage(manageUserPage, new { LoginWithRegistration = "Attendee" });
+                    // Redirect to the registration almost complete page
+                    return RedirectToPage("./RegistrationAlmostComplete");
                 }
 
                 foreach (var error in result.Errors)
@@ -113,7 +138,7 @@ namespace Codecamp.Areas.Identity.Pages.Account
                         return RedirectToPage("./Login",
                             new
                             {
-                                ReturnUrl = manageUserPage,
+                                ReturnUrl = "./Manage/Index",
                                 LoginWithRegistration = "Attendee",
                                 Email = Input.Email // pass the email/username for convenience
                             });
