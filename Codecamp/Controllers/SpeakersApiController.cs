@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Codecamp.BusinessLogic;
@@ -25,7 +26,7 @@ namespace Codecamp.Controllers
             _speakerBL = speakerBL;
         }
 
-        [Produces("application/json")]
+        [Produces("application/octet-stream")]
         [HttpGet("image/{speakerId}")]
         public async Task<IActionResult> GetSpeakerImage(int speakerId)
         {
@@ -36,15 +37,7 @@ namespace Codecamp.Controllers
             if (speaker == null)
                 return NotFound();
 
-            if (speaker.Image.Length > 0)
-            {
-                return new JsonResult(new { imageSrc = String.Format("data:image;base64,{0}",
-                    Convert.ToBase64String(speaker.Image)) });
-            }
-            else
-            {
-                return new JsonResult(new { imageSrc = "/images/default_user_icon.jpg" });
-            }
+            return File(new MemoryStream(speaker.Image), "application/octet-stream");
         }
     }
 }

@@ -153,7 +153,7 @@ else
     <script type="text/javascript">
         $(document).ready(function () {
             $('.speakerImage').each(function () {
-                let imageSrc = setSpeakerImage(this);
+                setSpeakerImage(this, this.id);
             });
         });
     </script>

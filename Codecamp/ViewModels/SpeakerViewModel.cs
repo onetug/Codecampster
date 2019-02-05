@@ -39,9 +39,6 @@ namespace Codecamp.ViewModels
         [Display(Name = "Image")]
         public IFormFile ImageFile { get; set; }
 
-        [Display(Name = "Image")]
-        public string Image { get; set; }
-
         [Display(Name = "Image Size W x H (pixels)")]
         public string ImageSizePixels { get; set; }
 
@@ -97,6 +94,6 @@ namespace Codecamp.ViewModels
         public bool IsApproved { get; set; }
 
         [Display(Name = "Sessions")]
-        public IList<SessionViewModel> Sessions { get; set; }
+        public List<SessionViewModel> Sessions { get; set; }
     }
 }

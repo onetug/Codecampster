@@ -1,0 +1,70 @@
+﻿@model IEnumerable<Codecamp.ViewModels.AnnouncementViewModel>
+
+@{ 
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Announcements</h2>
+
+@if (User.IsInRole("Admin"))
+{
+    @* This is for admins to create new announcements *@
+    <div>
+        <a asp-action="Create">Create New</a>
+    </div>
+}
+
+@if (User.IsInRole("Admin"))
+{
+    @* This is to allow admins to manage the site's announcements *@
+    @if (Model.Count() > 0)
+    {
+        <table class="table">
+            <thead>
+                <th>
+                    @Html.DisplayNameFor(model => model.Message)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Rank)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.PublishOn)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ExpiresOn)
+                </th>
+                <th></th>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Message)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Rank)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.PublishOn)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ExpiresOn)
+                        </td>
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@item.AnnouncementId">Edit</a><span> | </span>
+                            <a asp-action="Delete" asp-route-id="@item.AnnouncementId">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div>There are currenly no announcements...</div>
+    }
+}
+else
+{
+}

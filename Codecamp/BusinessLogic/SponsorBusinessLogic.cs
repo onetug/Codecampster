@@ -16,7 +16,11 @@ namespace Codecamp.BusinessLogic
     public interface ISponsorBusinessLogic
     {
         Task<List<Sponsor>> GetAllSponsors();
-        Task<List<SponsorViewModel>> GetAllSponsorsViewModel(bool loadImages = true);
+        Task<List<Sponsor>> GetSponsorsForEvent(int _eventId);
+        Task<List<Sponsor>> GetSponsorsForActiveEvent();
+        Task<List<SponsorViewModel>> GetAllSponsorsViewModel();
+        Task<List<SponsorViewModel>> GetSponsorsViewModelForEvent(int _eventId);
+        Task<List<SponsorViewModel>> GetSponsorsViewModelForActiveEvent();
         Task<Sponsor> GetSponsor(int sponsorId);
         Task<SponsorViewModel> GetSponsorViewModel(int sponsorId);
         Task<bool> SponsorExists(int sponsorId);
@@ -24,6 +28,7 @@ namespace Codecamp.BusinessLogic
         Task<bool> UpdateSponsor(Sponsor sponsor);
         Task<bool> DeleteSponsor(int sponsorId);
         byte[] ResizeImage(byte[] originalImage);
+        Task<SponsorViewModel> GetRandomSponsor();
     }
 
     public class SponsorBusinessLogic : ISponsorBusinessLogic
@@ -41,16 +46,89 @@ namespace Codecamp.BusinessLogic
         /// <param name="context">List of Sponsor objects</param>
         public async Task<List<Sponsor>> GetAllSponsors()
         {
-            return await _context.Sponsors.ToListAsync();
+            return await _context
+                .Sponsors
+                .OrderByDescending(s => s.EventId)
+                .ThenBy(s => s.CompanyName)
+                .ToListAsync();
+        }
+
+        /// <summary>
+        /// Get sponsors for the specified event
+        /// </summary>
+        /// <param name="_eventId">The event Id to retrieve the sponsors for</param>
+        /// <returns>The collection of Sponsor objects</returns>
+        public async Task<List<Sponsor>> GetSponsorsForEvent(int _eventId)
+        {
+            return await _context
+                .Sponsors.Where(s => s.EventId == _eventId)
+                .OrderBy(s => s.CompanyName)
+                .ToListAsync();
+        }
+
+        /// <summary>
+        /// Get sponsors for the active event
+        /// </summary>
+        /// <returns>The collection of Sponsor objects</returns>
+        public async Task<List<Sponsor>> GetSponsorsForActiveEvent()
+        {
+            var activeEvent = _context.Events.FirstOrDefault(e => e.IsActive == true);
+
+            if (activeEvent != null)
+                return await _context
+                    .Sponsors.Where(
+                    s => s.EventId == activeEvent.EventId)
+                    .OrderBy(s => s.CompanyName)
+                    .ToListAsync();
+            else
+                return new List<Sponsor>();
         }
 
         /// <summary>
         /// Get all SponsorViewModels
         /// </summary>
         /// <returns>List of SponsorViewModel objects</returns>
-        public async Task<List<SponsorViewModel>> GetAllSponsorsViewModel(bool loadImages = true)
+        public async Task<List<SponsorViewModel>> GetAllSponsorsViewModel()
         {
-            return await ToSponsorViewModel(_context.Sponsors, loadImages).ToListAsync();
+            return await ToSponsorViewModel(_context
+                .Sponsors
+                .OrderByDescending(s => s.EventId)
+                .ThenBy(s => s.CompanyName))
+                .ToListAsync();
+        }
+
+        /// <summary>
+        /// Get sponsors for the specified event
+        /// </summary>
+        /// <param name="_eventId">The desired event to retrieve sponsors for</param>
+        /// <returns>The collection of SponsorViewModel objects</returns>
+        public async Task<List<SponsorViewModel>> GetSponsorsViewModelForEvent(int _eventId)
+        {
+            return await ToSponsorViewModel(
+                _context
+                .Sponsors
+                .Where(s => s.EventId == _eventId)
+                .OrderBy(s => s.CompanyName))
+                .ToListAsync();
+        }
+
+        /// <summary>
+        /// Get the sponsors for the active event
+        /// </summary>
+        /// <returns>The collection of SponsorViewModel objects</returns>
+        public async Task<List<SponsorViewModel>> GetSponsorsViewModelForActiveEvent()
+        {
+            var activeEvent = _context.Events.FirstOrDefault(e => e.IsActive == true);
+
+            if (activeEvent != null)
+                return await ToSponsorViewModel(
+                    _context
+                    .Sponsors
+                    .Where(s => s.EventId == activeEvent.EventId)
+                    .OrderBy(s => s.CompanyName))
+                    .ToListAsync();
+            else
+                return new List<SponsorViewModel>();
         }
 
         /// <summary>
@@ -71,7 +149,7 @@ namespace Codecamp.BusinessLogic
         /// <returns>The SponsorViewModel object</returns>
         public async Task<SponsorViewModel> GetSponsorViewModel(int sponsorId)
         {
-            return ToSponsorViewModel(await _context.Sponsors.FirstAsync(s => s.SponsorId == sponsorId));
+            return ToSponsorViewModel(await _context.Sponsors.FindAsync(sponsorId));
         }
 
         /// <summary>
@@ -207,34 +285,9 @@ namespace Codecamp.BusinessLogic
             return null;
         }
 
-        private IQueryable<SponsorViewModel> ToSponsorViewModel(IQueryable<Sponsor> sponsors, bool loadImages = true)
+        private IQueryable<SponsorViewModel> ToSponsorViewModel(IQueryable<Sponsor> sponsors)
         {
-            IQueryable<SponsorViewModel> resultingSponsors;
-
-            if (loadImages == true)
-            {
-                resultingSponsors = from sponsor in sponsors
-                                    join _event in _context.Events on sponsor.EventId equals _event.EventId
-                                    select new SponsorViewModel
-                                    {
-                                        SponsorId = sponsor.SponsorId,
-                                        CompanyName = sponsor.CompanyName,
-                                        SponsorLevel = sponsor.SponsorLevel,
-                                        Bio = sponsor.Bio,
-                                        TwitterHandle = sponsor.TwitterHandle,
-                                        WebsiteUrl = sponsor.WebsiteUrl,
-                                        PointOfContact = sponsor.PointOfContact,
-                                        EmailAddress = sponsor.EmailAddress,
-                                        PhoneNumber = sponsor.PhoneNumber,
-                                        Image = sponsor.Image != null && sponsor.Image.Length > 0
-                                            ? string.Format("data:image;base64,{0}", Convert.ToBase64String(sponsor.Image))
-                                            : string.Empty,
-                                        EventName = _event.Name
-                                    };
-            }
-            else
-            {
-                resultingSponsors = from sponsor in sponsors
+            var resultingSponsors = from sponsor in sponsors
                                     join _event in _context.Events on sponsor.EventId equals _event.EventId
                                     select new SponsorViewModel
                                     {
@@ -249,7 +302,6 @@ namespace Codecamp.BusinessLogic
                                         PhoneNumber = sponsor.PhoneNumber,
                                         EventName = _event.Name
                                     };
-            }
 
             return resultingSponsors;
         }
@@ -269,13 +321,20 @@ namespace Codecamp.BusinessLogic
                 PointOfContact = sponsor.PointOfContact,
                 EmailAddress = sponsor.EmailAddress,
                 PhoneNumber = sponsor.PhoneNumber,
-                Image = sponsor.Image != null && sponsor.Image.Length > 0
-                    ? String.Format("data:image;base64,{0}", Convert.ToBase64String(sponsor.Image))
-                    : string.Empty,
                 EventName = _event != null ? _event.Name : string.Empty
             };
 
             return result;
+        }
+
+        /// <summary>
+        /// Get a random sponsor from the database
+        /// </summary>
+        /// <returns>SponsorVieWModel</returns>
+        public async Task<SponsorViewModel> GetRandomSponsor()
+        {
+            return ToSponsorViewModel(await _context.Sponsors.OrderBy(
+                s => Guid.NewGuid()).FirstOrDefaultAsync());
         }
     }
 }

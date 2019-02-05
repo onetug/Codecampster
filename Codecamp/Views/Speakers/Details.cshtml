@@ -24,20 +24,15 @@
 
 <div>
     <div style="max-width: 150px; max-height:150px; position: relative;">
-        @{
-            string imgSrc = "/images/default_user_icon.jpg";
-            if (!string.IsNullOrEmpty(Model.Image))
-            {
-                imgSrc = Model.Image;
-            }
-        }
         <img style="max-width: 150px;"
-                src="@imgSrc"
-                alt="@(string.Format("{0}", Model.FullName))" />
+             class="speakerImage"
+             id="@(string.Format("{0}", Model.SpeakerId))"
+             src=@("/images/default_user_icon.jpg")
+             alt="@(string.Format("{0}", Model.FullName))" />
         @if (Model.IsMvp)
         {
             <img style="width: 30px; height: 30px; z-index: 10; position: absolute; right: 20px; bottom: 20px;"
-                    src=@("/images/ms-mvp.jpg") alt=@("Microsoft MVP") />
+                 src=@("/images/ms-mvp.jpg") alt=@("Microsoft MVP") />
         }
     </div>
 </div>
@@ -127,52 +122,62 @@
 {
     <table class="table-striped">
         <thead>
-            <th class="col-md-3">
-                @Html.DisplayNameFor(model => model.Sessions[0].Name)
-            </th>
-            <th class="col-md-3">
-                @Html.DisplayNameFor(model => model.Sessions[0].SkillLevel)
-            </th>
-            <th class="col-md-2"></th>
+        <th class="col-md-3">
+            @Html.DisplayNameFor(model => model.Sessions[0].Name)
+        </th>
+        <th class="col-md-3">
+            @Html.DisplayNameFor(model => model.Sessions[0].SkillLevel)
+        </th>
+        <th class="col-md-2"></th>
         </thead>
         <tbody>
             @foreach (var session in Model.Sessions)
             {
-                <td>
-                    @Html.DisplayFor(item => session.Name)
-                </td>
-                <td>
-                    @Html.DisplayFor(item => session.SkillLevel)
-                </td>
-                <td>
-                    @* Allow admins and speakers to edit the sessions *@
-                    @if (User.IsInRole("Admin") || (User.IsInRole("Speaker")
-                        && speakerId.HasValue && session.SpeakerSessions.Any(s => s.SpeakerId == speakerId.Value)))
-                    {
-                        <a asp-controller="Sessions" asp-action="Edit" asp-route-id="@session.SessionId">Edit</a><span> | </span>
-                    }
-                    <a asp-controller="Sessions" asp-action="Details" asp-route-id="@session.SessionId">Details</a>
-                    @* Allow admins and speakers to delete sessions *@
-                    @if (User.IsInRole("Admin") || (User.IsInRole("Speaker")
-                        && speakerId.HasValue && session.SpeakerSessions.Any(s => s.SpeakerId == speakerId.Value)))
-                    {
-                        <span> | </span><a asp-controller="Sessions" asp-action="Delete" asp-route-id="@session.SessionId">Delete</a>
-                    }
-                </td>
-            }
-        </tbody>
-    </table>
-}
-else
-{
-    <div>No sessions submitted yet...</div>
-}
+            <td>
+                @Html.DisplayFor(item => session.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(item => session.SkillLevel)
+            </td>
+            <td>
+                @* Allow admins and speakers to edit the sessions *@
+                @if (User.IsInRole("Admin") || (User.IsInRole("Speaker")
+                   && speakerId.HasValue && session.SpeakerSessions.Any(s => s.SpeakerId == speakerId.Value)))
+                {
+                    <a asp-controller="Sessions" asp-action="Edit" asp-route-id="@session.SessionId">Edit</a><span> | </span>
+                }
+                <a asp-controller="Sessions" asp-action="Details" asp-route-id="@session.SessionId">Details</a>
+                @* Allow admins and speakers to delete sessions *@
+                @if (User.IsInRole("Admin") || (User.IsInRole("Speaker")
+                   && speakerId.HasValue && session.SpeakerSessions.Any(s => s.SpeakerId == speakerId.Value)))
+                {
+                    <span> | </span><a asp-controller="Sessions" asp-action="Delete" asp-route-id="@session.SessionId">Delete</a>
+                }
+            </td>
+        }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div>No sessions submitted yet...</div>
+    }
 
 <div class="bottom-navigation">
     @if (User.IsInRole("Admin") || ((User.IsInRole("Speaker")
-        && speakerId.HasValue && Model.SpeakerId == speakerId)))
+       && speakerId.HasValue && Model.SpeakerId == speakerId)))
     {
         <a asp-action="Edit" asp-route-id="@Model.SpeakerId">Edit</a><span> | </span>
     }
     <a asp-action="Index">Back to List</a>
 </div>
+
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.speakerImage').each(function () {
+                setSpeakerImage(this, this.id);
+            });
+        });
+    </script>
+}

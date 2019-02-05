@@ -43,7 +43,8 @@ namespace Codecamp.Controllers
         }
 
         // GET: Sessions
-        public async Task<IActionResult> Index(int? selectedUserType)
+        [HttpGet]
+        public async Task<IActionResult> Index()
         {
             ViewBag.UserTypes = UserType.GetUserTypes();
             var pageModel = new PageModel();
@@ -58,10 +59,69 @@ namespace Codecamp.Controllers
             }
             else if (User.IsInRole("Speaker"))
             {
-                pageModel.SelectedUserType
-                    = selectedUserType.HasValue // If specified, use it
-                    ? selectedUserType.Value
-                    : (int)TypesOfUsers.SpecificUser; // otherwise, set to specific user
+                pageModel.SelectedUserType = (int)TypesOfUsers.SpecificUser;
+
+                var user = await _userManager.GetUserAsync(User);
+                if (user != null && user.SpeakerId.HasValue)
+                {
+                    if (pageModel.SelectedUserType == (int)TypesOfUsers.SpecificUser)
+                    {
+                        // The user is a speaker and we have access to their speakerId, therefore
+                        // get all of the speaker's sessions for the active event.
+                        pageModel.Sessions = await _sessionBL.GetAllSessionsViewModelForSpeakerForActiveEvent(
+                            user.SpeakerId.Value);
+
+                        ViewData["Title"] = "Your Sessions";
+                    }
+                    else
+                    {
+                        // The user desires to see all approved sessions for the event
+                        pageModel.Sessions = await _sessionBL.GetAllApprovedSessionsViewModelForActiveEvent();
+
+                        ViewData["Title"] = "Sessions";
+                    }
+                }
+                else
+                {
+                    // We can't get the speakerId, so we'll return only approved
+                    // speakers for the active event.
+                    pageModel.SelectedUserType = (int)TypesOfUsers.AllUsers;
+                    pageModel.Sessions = await _sessionBL.GetAllApprovedSessionsViewModelForActiveEvent();
+
+                    ViewData["Title"] = "Sessions";
+                }
+            }
+            else
+            {
+                // The user is an attendee, return all approved sessions for
+                // the active event.
+                pageModel.SelectedUserType = (int)TypesOfUsers.AllUsers; // JTL, I don't think this is actually necessary
+                pageModel.Sessions = await _sessionBL.GetAllApprovedSessionsViewModelForActiveEvent();
+
+                ViewData["Title"] = "Sessions";
+            }
+
+            return View(pageModel);
+        }
+
+        // POST: Sessions/1
+        [HttpPost]
+        public async Task<IActionResult> Index(int selectedUserType)
+        {
+            ViewBag.UserTypes = UserType.GetUserTypes();
+            var pageModel = new PageModel();
+
+            if (User.IsInRole("Admin"))
+            {
+                // Get all sessions for the active event for the admin
+                pageModel.SelectedUserType = (int)TypesOfUsers.AllUsers; // JTL, I don't think this is actually necessary
+                pageModel.Sessions = await _sessionBL.GetAllSessionsViewModelForActiveEvent();
+
+                ViewData["Title"] = "All Sessions";
+            }
+            else if (User.IsInRole("Speaker"))
+            {
+                pageModel.SelectedUserType = selectedUserType;
 
                 var user = await _userManager.GetUserAsync(User);
                 if (user != null && user.SpeakerId.HasValue)
@@ -107,6 +167,7 @@ namespace Codecamp.Controllers
         }
 
         // GET: Sessions/Details/5
+        [HttpGet]
         public async Task<IActionResult> Details(int? id)
         {
             if (!id.HasValue)
@@ -120,9 +181,13 @@ namespace Codecamp.Controllers
             if (session == null)
                 return NotFound();
 
+            // Now retrieve the speaker's information for the session
+            session.Speakers = await _speakerBL.GetSpeakersForSession(id.Value);
+
             return View(session);
         }
 
+        [HttpGet]
         [Authorize]
         // GET: Sessions/Create
         public IActionResult Create()
