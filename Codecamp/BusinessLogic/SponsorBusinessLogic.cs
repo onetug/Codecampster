@@ -308,6 +308,9 @@ namespace Codecamp.BusinessLogic
 
         private SponsorViewModel ToSponsorViewModel(Sponsor sponsor)
         {
+            if (sponsor == null)
+                return null;
+
             var _event = _context.Events.FirstOrDefault(e => e.EventId == sponsor.EventId);
 
             var result = new SponsorViewModel

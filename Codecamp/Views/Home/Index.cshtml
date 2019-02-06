@@ -100,19 +100,29 @@
         </ul>
     </div>
     <div class="col-md-3">
-        <h3>Featured Sponsor</h3>
-        <a target="_blank" href="@(Model.FeaturedSponsor.WebsiteUrl)">
-            <img style="max-width: 150px;"
-                 class="sponsorImage"
-                 id="@(string.Format("{0}", Model.FeaturedSponsor.SponsorId))"
-                 src=@("/images/default_user_icon.jpg")
-                 alt="@(string.Format("{0}", Model.FeaturedSponsor.CompanyName))" />
-        </a>
+        @if (Model.FeaturedSponsor != null)
+        {
+            <h3>Featured Sponsor</h3>
+            <a target="_blank" href="@(Model.FeaturedSponsor.WebsiteUrl)">
+                <img style="max-width: 150px;"
+                     class="sponsorImage"
+                     id="@(string.Format("{0}", Model.FeaturedSponsor.SponsorId))"
+                     src=@("/images/default_user_icon.jpg")
+                     alt="@(string.Format("{0}", Model.FeaturedSponsor.CompanyName))" />
+            </a>
+        }
         <h3>Announcements</h3>
         <ul>
-            @foreach (var announcement in Model.Announcements)
+            @if (Model.Announcements.Any())
             {
-                <li>@Html.Raw(announcement.Message)</li>
+                @foreach (var announcement in Model.Announcements)
+                {
+                    <li>@Html.Raw(announcement.Message)</li>
+                }
+            }
+            else
+            {
+                <li>There are currently no announcements</li>
             }
         </ul>
     </div>
@@ -130,7 +140,7 @@
     <script type="text/javascript">
         $(document).ready(function () {
             $('.sponsorImage').each(function () {
-                setSpeakerImage(this, this.id);
+                setSponsorImage(this, this.id);
             });
         });
     </script>
