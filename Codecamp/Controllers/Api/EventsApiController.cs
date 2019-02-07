@@ -1,11 +1,13 @@
 ﻿using Codecamp.BusinessLogic.Api;
+using Codecamp.Models.Api;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace Codecamp.Controllers.Api
 {
     [Route("api/events")]
-    public class EventsApiController : ControllerBase //: ApiController
+    [ApiExplorerSettings(GroupName = "Events")]
+    public class EventsApiController : ControllerBase
     {
         public EventsApiController(IEventsApiBusinessLogic logic)
         {
@@ -15,20 +17,20 @@ namespace Codecamp.Controllers.Api
         private IEventsApiBusinessLogic BusinessLogic { get; }
 
         [HttpGet]
-        [Produces("application/json")]
-        public async Task<IActionResult> GetEventsList()
+        [Produces("application/json", Type = typeof(List<ApiEvent>))]
+        public IActionResult GetEventsList()
         {
-            var apiEventsList = await BusinessLogic.GetEventsList();
+            var apiEventsList = BusinessLogic.GetEventsList();
             var jsonEventsList = new JsonResult(apiEventsList);
 
             return jsonEventsList;
         }
 
         [HttpGet("{eventId}")]
-        [Produces("application/json")]
-        public async Task<IActionResult> GetEvent(int eventId)
+        [Produces("application/json", Type = typeof(ApiEvent))]
+        public IActionResult GetEvent(int eventId)
         {
-            var apiEvent = await BusinessLogic.GetEvent(eventId);
+            var apiEvent = BusinessLogic.GetEvent(eventId);
 
             if (apiEvent == null)
                 return NotFound();

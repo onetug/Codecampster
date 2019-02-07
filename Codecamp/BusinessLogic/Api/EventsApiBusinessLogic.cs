@@ -1,17 +1,15 @@
 using Codecamp.Data;
 using Codecamp.Models.Api;
-using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Codecamp.BusinessLogic.Api
 {
     public interface IEventsApiBusinessLogic
     {
-        Task<List<ApiEvent>> GetEventsList();
+        List<ApiEvent> GetEventsList();
 
-        Task<ApiEvent> GetEvent(int eventId);
+        ApiEvent GetEvent(int eventId);
     }
 
     public class EventsApiBusinessLogic : ApiBusinessLogic, IEventsApiBusinessLogic
@@ -20,19 +18,20 @@ namespace Codecamp.BusinessLogic.Api
         {
         }
 
-        public async Task<List<ApiEvent>> GetEventsList()
+        public List<ApiEvent> GetEventsList()
         {
             // Get list of web events as API events and convert to JSON
-            var apiEventsList =
-                await Context.Events.Select(e => new ApiEvent(e)).ToListAsync();
+            var apiEventsList = Context.Events
+                .Select(e => new ApiEvent(e))
+                .ToList();
 
             return apiEventsList;
         }
 
-        public async Task<ApiEvent> GetEvent(int eventId)
+        public ApiEvent GetEvent(int eventId)
         {
             // Get web event as API event and convert to JSON
-            var webEvent = await Context.Events.FindAsync(eventId);
+            var webEvent = Context.Events.Find(eventId);
 
             if (webEvent == null)
                 return null;
