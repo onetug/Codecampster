@@ -1,4 +1,5 @@
-﻿using Codecamp.BusinessLogic;
+using Codecamp.BusinessLogic;
+using Codecamp.BusinessLogic.Api;
 using Codecamp.Data;
 using Codecamp.Models;
 using Codecamp.Services;
@@ -13,8 +14,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Swashbuckle.AspNetCore.Swagger;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using Codecamp.BusinessLogic.Api;
 
 namespace Codecamp
 {
@@ -93,9 +94,14 @@ namespace Codecamp
 
             services.AddSession();
 
-            services.AddSwaggerGen(setup => {
-                setup.SwaggerDoc("v1",
+            services.AddSwaggerGen(options => {
+                options.SwaggerDoc("v1",
                     new Info { Title = "Orlando Code Camp API", Version = "v1"});
+
+                options.DocInclusionPredicate((_, api) =>
+                    !string.IsNullOrWhiteSpace(api.GroupName));
+
+                options.TagActionsBy(api => new List<string> {api.GroupName});
             });
         }
 
