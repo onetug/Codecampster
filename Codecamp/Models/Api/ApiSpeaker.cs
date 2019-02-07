@@ -6,25 +6,20 @@ namespace Codecamp.Models.Api
 {
     [DebuggerDisplay("{" + nameof(DebuggerDisplay) + ",nq}")]
     [JsonObject("speaker")]
-    public class ApiSpeaker : Speaker
+    public class ApiSpeaker
     {
-        public ApiSpeaker(Speaker webSpeaker) :
-            this(webSpeaker, null, false)
-        {
-
-        }
-
-        public ApiSpeaker(Speaker webSpeaker, Uri imageUrl,  bool includeDetails = false)
+        public ApiSpeaker(Speaker webSpeaker, Uri imageUrl = null,
+            bool includeDetails = false)
         {
             if (webSpeaker == null)
                 return;
 
-            SpeakerId = webSpeaker.SpeakerId;
+            Id = webSpeaker.SpeakerId;
 
             ImageUrl = imageUrl;
-            ApiUser = (webSpeaker.CodecampUser == null)
+            User = (webSpeaker.CodecampUser == null)
                 ? null
-                : new ApiUser(webSpeaker.CodecampUser);
+                : new ApiUser(webSpeaker.CodecampUser, includeDetails);
 
             IsMvp = webSpeaker.IsMvp;
             IsApproved = webSpeaker.IsApproved;
@@ -42,12 +37,40 @@ namespace Codecamp.Models.Api
             LinkedIn = webSpeaker.LinkedIn;
         }
 
+        #region Summary
+
+        public int Id { get; }
+
         [JsonProperty("user")]
-        public ApiUser ApiUser { get; }
+        public ApiUser User { get; }
+
+        public string Name => User?.FullNameOrEmailAddress;
 
         public Uri ImageUrl { get; }
 
-        private string DebuggerDisplay =>
-            $"{SpeakerId} - {ApiUser.FullNameOrEmailAddress}";
+        public bool IsMvp { get; }
+
+        public bool IsApproved { get; }
+
+        // TODO Future
+        //public int? EventId { get; }
+
+        #endregion
+
+        #region Details
+
+        public string CompanyName { get; }
+
+        public string Bio { get; }
+
+        public string WebsiteUrl { get; }
+
+        public string BlogUrl { get; }
+
+        public string LinkedIn { get; }
+
+        #endregion
+
+        private string DebuggerDisplay => $"{Id} - {Name}";
     }
 }

@@ -1,11 +1,13 @@
 ﻿using Codecamp.BusinessLogic.Api;
+using Codecamp.Models.Api;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace Codecamp.Controllers.Api
 {
     [Route("api/speakers")]
-    public class SpeakersApiController : ControllerBase //: ApiController
+    [ApiExplorerSettings(GroupName = "Speakers")]
+    public class SpeakersApiController : ControllerBase
     {
         public SpeakersApiController(ISpeakersApiBusinessLogic logic)
         {
@@ -15,21 +17,22 @@ namespace Codecamp.Controllers.Api
         private ISpeakersApiBusinessLogic BusinessLogic { get; }
 
         [HttpGet]
-        [Produces("application/json")]
-        public async Task<IActionResult> GetSpeakersList()
+        [Produces("application/json", Type = typeof(List<ApiSpeaker>))]
+        public IActionResult GetSpeakersList(bool includeDetails = false)
         {
-            var apiSpeakersList = await BusinessLogic.GetSpeakersList();
+            var apiSpeakersList = BusinessLogic.GetSpeakersList(includeDetails);
+
             var jsonSpeakersList = new JsonResult(apiSpeakersList);
 
             return jsonSpeakersList;
         }
 
         [HttpGet("{speakerId}")]
-        [Produces("application/json")]
-        public async Task<IActionResult> GetSpeaker(int speakerId,
+        [Produces("application/json", Type = typeof(ApiSpeaker))]
+        public IActionResult GetSpeaker(int speakerId,
             bool includeDetails = false)
         {
-            var apiSpeaker = await BusinessLogic.GetApiSpeaker(speakerId, includeDetails);
+            var apiSpeaker = BusinessLogic.GetApiSpeaker(speakerId, includeDetails);
 
             if (apiSpeaker == null)
                 return NotFound();
@@ -41,10 +44,10 @@ namespace Codecamp.Controllers.Api
 
         // TODO Support JPEG?
         [HttpGet("{speakerId}/image")]
-        [Produces("image/png")]
-        public async Task<IActionResult> GetSpeakerImage(int speakerId)
+        [Produces("image/png", Type = typeof(FileResult))]
+        public IActionResult GetSpeakerImage(int speakerId)
         {
-            var webSpeaker = await BusinessLogic.GetWebSpeaker(speakerId);
+            var webSpeaker = BusinessLogic.GetWebSpeaker(speakerId);
 
             if (webSpeaker == null)
                 // TODO return contents of "/images/default_user_icon.jpg" instead?

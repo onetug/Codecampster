@@ -2,20 +2,20 @@
 using Codecamp.Models;
 using Codecamp.Models.Api;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Codecamp.BusinessLogic.Api
 {
     public interface ISpeakersApiBusinessLogic
     {
-        Task<List<ApiSpeaker>> GetSpeakersList();
+        List<ApiSpeaker> GetSpeakersList(bool includeDetails = false);
 
-        Task<ApiSpeaker> GetApiSpeaker(int speakerId,
+        ApiSpeaker GetApiSpeaker(int speakerId,
             bool includeDetails = false);
 
-        Task<Speaker> GetWebSpeaker(int speakerId);
+        Speaker GetWebSpeaker(int speakerId);
     }
 
     public class SpeakersApiBusinessLogic : ApiBusinessLogic, ISpeakersApiBusinessLogic
@@ -25,27 +25,23 @@ namespace Codecamp.BusinessLogic.Api
         {
         }
 
-        public async Task<List<ApiSpeaker>> GetSpeakersList()
+        public List<ApiSpeaker> GetSpeakersList(bool includeDetails = false)
         {
-            var apiSpeakerList =
-                await Context.Speakers
-                    .OrderBy(speaker => speaker.SpeakerId)
-                    .Include(speaker => speaker.CodecampUser)
-                    .Select(speaker =>
-                        new ApiSpeaker(speaker,
-                            GetImageUrl(speaker.SpeakerId),
-                            false))
-                    .ToListAsync();
+            var apiSpeakerList = GetWebSpeakers()
+                .Select(speaker =>
+                    new ApiSpeaker(speaker,
+                        GetImageUrl(speaker.SpeakerId),
+                        includeDetails))
+                .ToList();
 
             return apiSpeakerList;
         }
 
-        public async Task<ApiSpeaker> GetApiSpeaker(int speakerId,
+        public ApiSpeaker GetApiSpeaker(int speakerId,
             bool includeDetails = false)
         {
-            var webSpeaker = await Context.Speakers
-                .Include(speaker => speaker.CodecampUser)
-                .FirstOrDefaultAsync(speaker => speaker.SpeakerId == speakerId);
+            var webSpeaker = GetWebSpeakers()
+                .FirstOrDefault(speaker => speaker.SpeakerId == speakerId);
 
             if (webSpeaker == null)
                 return null;
@@ -56,11 +52,20 @@ namespace Codecamp.BusinessLogic.Api
             return apiSpeaker;
         }
 
-        public async Task<Speaker> GetWebSpeaker(int speakerId)
+        public Speaker GetWebSpeaker(int speakerId)
         {
-            var webSpeaker = await Context.Speakers.FindAsync(speakerId);
+            var webSpeaker = Context.Speakers.Find(speakerId);
 
             return webSpeaker;
+        }
+
+        private IIncludableQueryable<Speaker, CodecampUser> GetWebSpeakers()
+        {
+            var webSpeakersList = Context.Speakers
+                .OrderBy(speaker => speaker.SpeakerId)
+                .Include(speaker => speaker.CodecampUser);
+
+            return webSpeakersList;
         }
     }
 }
