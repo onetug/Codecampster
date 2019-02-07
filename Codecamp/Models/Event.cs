@@ -15,9 +15,13 @@ namespace Codecamp.Models
         [Display(Name = "Social Media Hashtag")]
         public string SocialMediaHashtag { get; set; }
 
+        [DataType(DataType.Date)]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy-MM-dd}")]
         [Display(Name = "Start Date")]
         public DateTime StartDateTime { get; set; }
 
+        [DataType(DataType.Date)]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy-MM-dd}")]
         [Display(Name = "End Date")]
         public DateTime EndDateTime { get; set; }
 

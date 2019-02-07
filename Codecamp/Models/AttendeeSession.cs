@@ -14,11 +14,11 @@ namespace Codecamp.Models
         [ForeignKey("CodecampUser")]
         public string CodecampUserId { get; set; }
 
-        public CodecampUser CodecampUser { get; set; }
+        public virtual CodecampUser CodecampUser { get; set; }
 
         [ForeignKey("Session")]
         public int SessionId { get; set; }
 
-        public Session Session { get; set; }
+        public virtual Session Session { get; set; }
     }
 }

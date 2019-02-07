@@ -55,19 +55,6 @@ namespace Codecamp.Areas.Identity.Pages.Account
         [BindProperty]
         public InputModel Input { get; set; }
 
-        //[TempData]
-        //public string CaptchaCode
-        //{
-        //    get
-        //    {
-        //        return _session.GetString("Captcha");
-        //    }
-        //    set
-        //    {
-        //        _session.SetString("Captcha", value);
-        //    }
-        //}
-
         public class InputModel
         {
             [Required]
@@ -85,10 +72,6 @@ namespace Codecamp.Areas.Identity.Pages.Account
             [Display(Name = "Confirm password")]
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
-
-            public string EnteredCaptchaCode { get; set; }
-            
-            public string CaptchaBase64Data { get; set; }
 
             public string CaptchaKey { get; set; }
         }
@@ -109,7 +92,6 @@ namespace Codecamp.Areas.Identity.Pages.Account
         {
             if (ModelState.IsValid)
             {
-
                 // Get the current event
                 var theEvent = await _eventBL.GetActiveEvent();
 
@@ -177,27 +159,8 @@ namespace Codecamp.Areas.Identity.Pages.Account
                 }
             }
 
-            //// Something failed with the account registration, get a new captcha
-            //var captcha2 = GetCaptcha();
-            //Input = new InputModel
-            //{
-            //    CaptchaBase64Data = captcha2.CaptchaBase64Data,
-            //};
-
-            //// Store for comparison on postback
-            //CaptchaCode = captcha2.CaptchaCode;
-
+            // If we got this far, something failed, redisplay form
             return Page();
-        }
-
-        // Generate a CAPTCHA
-        public CaptchaResult GetCaptcha()
-        {
-            int width = 200;
-            int height = 60;
-            var captchaCode = Captcha.GenerateCaptchaCode();
-
-            return Captcha.GenerateCaptchaImage(width, height, captchaCode);
         }
     }
 }

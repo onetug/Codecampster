@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Codecamp.BusinessLogic;
@@ -24,7 +25,7 @@ namespace Codecamp.Controllers
             _sponsorBL = sponsorBL;
         }
 
-        [Produces("application/json")]
+        [Produces("application/octet-stream")]
         [HttpGet("image/{sponsorId}")]
         public async Task<IActionResult> GetSponsorImage(int sponsorId)
         {
@@ -35,16 +36,7 @@ namespace Codecamp.Controllers
             if (sponsor == null)
                 return NotFound();
 
-            if (sponsor.Image.Length > 0)
-            {
-                return new JsonResult(new { imageSrc = string.Format(
-                    "data:image;base64,{0}",
-                    Convert.ToBase64String(sponsor.Image))});
-            }
-            else
-            {
-                return new JsonResult(new { imageSrc = "/images/default_user_icon.jpg" });
-            }
+            return File(new MemoryStream(sponsor.Image), "application/octet-stream");
         }
     }
 }

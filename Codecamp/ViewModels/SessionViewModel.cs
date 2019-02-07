@@ -26,9 +26,9 @@ namespace Codecamp.ViewModels
         public bool IsApproved { get; set; }
 
         // Session speakers
-        public string Speakers { get; set; }
+        public List<SpeakerViewModel> Speakers { get; set; }
 
-        public virtual IQueryable<SpeakerSession> SpeakerSessions { get; set; }
+        public virtual List<SpeakerSession> SpeakerSessions { get; set; }
 
         [Display(Name = "Event Name")]
         public string EventName { get; set; }

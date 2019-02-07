@@ -35,9 +35,6 @@ namespace Codecamp.ViewModels
         public string WebsiteUrl { get; set; }
 
         [Display(Name = "Image")]
-        public string Image { get; set; }
-
-        [Display(Name = "Image")]
         public IFormFile ImageFile { get; set; }
 
         [Display(Name = "Point Of Contact")]

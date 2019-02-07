@@ -41,15 +41,10 @@
         </dt>
         <dd>
             <div style="max-width: 150px; max-height:150px; position: relative;">
-                @{
-                    string imgSrc = "/images/default_user_icon.jpg";
-                    if (!string.IsNullOrEmpty(Model.Image))
-                    {
-                        imgSrc = Model.Image;
-                    }
-                }
                 <img style="max-width: 150px;"
-                     src="@imgSrc"
+                     class="speakerImage"
+                     id="@(string.Format("{0}", Model.SpeakerId))"
+                     src=@("/images/default_user_icon.jpg")
                      alt="@(string.Format("{0}", Model.FullName))" />
                 @if (Model.IsMvp)
                 {
@@ -77,10 +72,20 @@
             @Html.DisplayFor(model => model.LinkedIn)
         </dd>
     </dl>
-    
+
     <form asp-action="Delete">
         <input type="hidden" asp-for="SpeakerId" />
         <input type="submit" value="Delete" class="btn btn-default" /> |
         <a asp-action="Index">Back to List</a>
     </form>
 </div>
+
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.speakerImage').each(function () {
+                setSpeakerImage(this, this.id);
+            });
+        });
+    </script>
+}

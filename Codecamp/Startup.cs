@@ -75,6 +75,10 @@ namespace Codecamp
             services.AddTransient<IEventBusinessLogic, EventBusinessLogic>();
             services.AddTransient<ISessionBusinessLogic, SessionBusinessLogic>();
             services.AddTransient<ISponsorBusinessLogic, SponsorBusinessLogic>();
+            services.AddTransient<IAnnouncementBusinessLogic, AnnouncementBusinessLogic>();
+            services.AddTransient<ITimeslotBusinessLogic, TimeslotBusinessLogic>();
+            services.AddTransient<ITrackBusinessLogic, TrackBusinessLogic>();
+            services.AddTransient<IScheduleBusinessLogic, ScheduleBusinessLogic>();
 
             services.AddTransient<IEventsApiBusinessLogic, EventsApiBusinessLogic>();
             services.AddTransient<ISpeakersApiBusinessLogic, SpeakersApiBusinessLogic>();

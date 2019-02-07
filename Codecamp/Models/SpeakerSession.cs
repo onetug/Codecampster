@@ -10,9 +10,9 @@ namespace Codecamp.Models
     {
         [ForeignKey("Speaker")]
         public int SpeakerId { get; set; }
-        public Speaker Speaker { get; set; }
+        public virtual Speaker Speaker { get; set; }
         [ForeignKey("Session")]
         public int SessionId { get; set; }
-        public Session Session { get; set; }
+        public virtual Session Session { get; set; }
     }
 }

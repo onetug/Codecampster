@@ -19,6 +19,27 @@ namespace Codecamp.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+            modelBuilder.Entity("Codecamp.Models.Announcement", b =>
+                {
+                    b.Property<int>("AnnouncementId")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("EventId");
+
+                    b.Property<DateTime?>("ExpiresOn");
+
+                    b.Property<string>("Message");
+
+                    b.Property<DateTime>("PublishOn");
+
+                    b.Property<int>("Rank");
+
+                    b.HasKey("AnnouncementId");
+
+                    b.ToTable("Announcements");
+                });
+
             modelBuilder.Entity("Codecamp.Models.AttendeeSession", b =>
                 {
                     b.Property<string>("CodecampUserId");
@@ -130,6 +151,23 @@ namespace Codecamp.Migrations
                     b.HasKey("EventId");
 
                     b.ToTable("Events");
+                });
+
+            modelBuilder.Entity("Codecamp.Models.Schedule", b =>
+                {
+                    b.Property<int>("SessionId");
+
+                    b.Property<int>("TrackId");
+
+                    b.Property<int>("TimeslotId");
+
+                    b.HasKey("SessionId", "TrackId", "TimeslotId");
+
+                    b.HasIndex("TimeslotId");
+
+                    b.HasIndex("TrackId");
+
+                    b.ToTable("CodecampSchedule");
                 });
 
             modelBuilder.Entity("Codecamp.Models.Session", b =>
@@ -258,11 +296,15 @@ namespace Codecamp.Migrations
 
                     b.Property<DateTime>("EndTime");
 
+                    b.Property<int?>("EventId");
+
                     b.Property<string>("Name");
 
                     b.Property<DateTime>("StartTime");
 
                     b.HasKey("TimeslotId");
+
+                    b.HasIndex("EventId");
 
                     b.ToTable("Timeslots");
                 });
@@ -273,6 +315,8 @@ namespace Codecamp.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<int?>("EventId");
+
                     b.Property<string>("Name")
                         .IsRequired();
 
@@ -280,6 +324,8 @@ namespace Codecamp.Migrations
                         .IsRequired();
 
                     b.HasKey("TrackId");
+
+                    b.HasIndex("EventId");
 
                     b.ToTable("Tracks");
                 });
@@ -418,6 +464,24 @@ namespace Codecamp.Migrations
                         .HasForeignKey("SpeakerId");
                 });
 
+            modelBuilder.Entity("Codecamp.Models.Schedule", b =>
+                {
+                    b.HasOne("Codecamp.Models.Session", "Session")
+                        .WithMany()
+                        .HasForeignKey("SessionId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Codecamp.Models.Timeslot", "Timeslot")
+                        .WithMany()
+                        .HasForeignKey("TimeslotId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Codecamp.Models.Track", "Track")
+                        .WithMany()
+                        .HasForeignKey("TrackId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("Codecamp.Models.Session", b =>
                 {
                     b.HasOne("Codecamp.Models.Event", "Event")
@@ -458,6 +522,20 @@ namespace Codecamp.Migrations
                 });
 
             modelBuilder.Entity("Codecamp.Models.Sponsor", b =>
+                {
+                    b.HasOne("Codecamp.Models.Event", "Event")
+                        .WithMany()
+                        .HasForeignKey("EventId");
+                });
+
+            modelBuilder.Entity("Codecamp.Models.Timeslot", b =>
+                {
+                    b.HasOne("Codecamp.Models.Event", "Event")
+                        .WithMany()
+                        .HasForeignKey("EventId");
+                });
+
+            modelBuilder.Entity("Codecamp.Models.Track", b =>
                 {
                     b.HasOne("Codecamp.Models.Event", "Event")
                         .WithMany()

@@ -9,30 +9,50 @@ using Microsoft.AspNetCore.Authorization;
 using Codecamp.Data;
 using Microsoft.AspNetCore.Identity;
 using Codecamp.BusinessLogic;
+using Codecamp.ViewModels;
 
 namespace Codecamp.Controllers
 {
+    public class HomePageViewModel
+    {
+        public Event Event { get; set; }
+        public List<AnnouncementViewModel> Announcements { get; set; }
+        public SponsorViewModel FeaturedSponsor { get;set; }
+    }
+
     public class HomeController : Controller
     {
         private readonly CodecampDbContext _context;
         private readonly UserManager<CodecampUser> _userManager;
         private readonly IEventBusinessLogic _eventBL;
+        private readonly IAnnouncementBusinessLogic _announcementBL;
+        private readonly ISponsorBusinessLogic _sponsorBL;
+
 
         public HomeController(
             CodecampDbContext context,
             UserManager<CodecampUser> userManager,
-            IEventBusinessLogic eventBL)
+            IEventBusinessLogic eventBL,
+            IAnnouncementBusinessLogic announcementBL,
+            ISponsorBusinessLogic sponsorBL)
         {
             _context = context;
             _userManager = userManager;
             _eventBL = eventBL;
+            _announcementBL = announcementBL;
+            _sponsorBL = sponsorBL;
         }
 
         public async Task<IActionResult> Index()
         {
-            var theEvent = await _eventBL.GetActiveEvent();
+            var viewModel = new HomePageViewModel
+            {
+                Event = await _eventBL.GetActiveEvent(),
+                Announcements = await _announcementBL.GetActiveAnnouncementsViewModelForActiveEvent(),
+                FeaturedSponsor = await _sponsorBL.GetRandomSponsor()
+            };
 
-            return View(theEvent);
+            return View(viewModel);
         }
 
         [Authorize]

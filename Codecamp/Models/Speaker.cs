@@ -33,7 +33,7 @@ namespace Codecamp.Models
         // The CodecampUser associated with the speaker
         [ForeignKey("CodecampUser")]
         public string CodecampUserId { get; set; }
-        public CodecampUser CodecampUser { get; set; }
+        public virtual CodecampUser CodecampUser { get; set; }
 
         public bool IsApproved { get; set; }
 

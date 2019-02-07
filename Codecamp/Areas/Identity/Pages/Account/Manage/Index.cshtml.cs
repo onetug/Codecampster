@@ -62,6 +62,8 @@ namespace Codecamp.Areas.Identity.Pages.Account.Manage
             // Lets set the max file size to 20 MB, that is way big enough
             public const int MaxImageSize = 20000000;
 
+            public int SpeakerId { get; set; }
+
             [Required]
             [DataType(DataType.Text)]
             [Display(Name = "First Name")]
@@ -79,9 +81,6 @@ namespace Codecamp.Areas.Identity.Pages.Account.Manage
             [FileSizeValidation(MaxImageSize)]
             [Display(Name = "Image")]
             public IFormFile ImageFile { get; set; }
-
-            [Display(Name = "Image")]
-            public string Image { get; set; }
 
             [DataType(DataType.MultilineText)]
             [Display(Name = "Bio")]
@@ -210,6 +209,7 @@ namespace Codecamp.Areas.Identity.Pages.Account.Manage
 
                 Input = new InputModel()
                 {
+                    SpeakerId = speaker.SpeakerId,
                     FirstName = user.FirstName,
                     LastName = user.LastName,
                     GeographicLocation = user.GeographicLocation,
@@ -218,7 +218,6 @@ namespace Codecamp.Areas.Identity.Pages.Account.Manage
                     Email = email,
                     PhoneNumber = phoneNumber,
                     CompanyName = speaker != null ? speaker.CompanyName : string.Empty,
-                    Image = speaker != null ? speaker.Image : string.Empty,
                     Bio = speaker != null ? speaker.Bio : string.Empty,
                     WebsiteUrl = speaker != null ? speaker.WebsiteUrl : string.Empty,
                     BlogUrl = speaker != null ? speaker.BlogUrl : string.Empty,

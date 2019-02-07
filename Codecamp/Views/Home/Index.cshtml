@@ -1,5 +1,4 @@
-﻿@model Codecamp.Models.Event
-
+﻿@model Codecamp.Controllers.HomePageViewModel
 @{
     ViewData["Title"] = "Home Page";
 }
@@ -52,39 +51,97 @@
 </div>
 
 <div class="row">
-    <div class="col-md-3 col-lg-offset-1">
-        <h3>Action Items</h3>
-        <ul>
-            <li>Speakers</li>
-            <ul>
-                @if (User.Identity.IsAuthenticated)
-                {
-                    <li><a href="Identity/Account/Manage"><button class="btn btn-primary">Edit Speaker Profile</button></a><br /><br /></li>
-                    <li><a asp-controller="Sessions" asp-action="Index"><button class="btn btn-primary">Manage Sessions</button></a><br /><br /></li>
-                }
-                else
-                {
-                    <li>Already have an account? <a asp-area="Identity" asp-page="/Account/Login">Login</a></li>
-                    @if (Model != null && Model.IsSpeakerRegistrationOpen)
-                    {
-                        <li>No account? <a asp-area="Identity" asp-page="/Account/RegisterSpeaker"><button class="btn btn-primary">Register as a Speaker</button></a></li>
-                        <li><em>Note:</em> 2018 or previous years registrations have not been carried over</li>
-                    }
-                }
-            </ul>
-        </ul>
+    <div class="col-md-2">
+        <h3>Accounts</h3>
+        @if (User.Identity.IsAuthenticated)
+        {
+            <p>
+                <a href="Identity/Account/Manage">
+                    <button class="btn btn-primary">Manage Profile</button>
+                </a>
+            </p>
+            if (User.IsInRole("Speaker"))
+            {
+                <p>
+                    <a asp-controller="Sessions" asp-action="Index">
+                        <button class="btn btn-primary">Manage Sessions</button>
+                    </a>
+                </p>
+            }
+        }
+        else
+        {
+            <p>Already have an account? <a asp-area="Identity" asp-page="/Account/Login">Login</a></p>
+            <p>Need an Aaccount?</p>
+            @if (Model != null && Model.Event.IsSpeakerRegistrationOpen)
+            {
+                <p>
+                    <a asp-area="Identity" asp-page="/Account/RegisterSpeaker">
+                        <button class="btn btn-primary">Register as a Speaker</button>
+                    </a>
+                </p>
+            }
+            @if (Model != null && Model.Event.IsAttendeeRegistrationOpen)
+            {
+                <p>
+                    <a asp-area="Identity" asp-page="/Account/RegisterAttendee">
+                        <button class="btn btn-primary">Register as an Attendee</button>
+                    </a>
+                </p>
+            }
+            <p><em>Note:</em> 2018 or previous years registrations have not been carried over</p>
+        }
     </div>
-    <div class="col-md-3">
-        <h3>Milestones</h3>
+    <div class="col-md-4">
+        <h3>Activities</h3>
         <ul>
             <li><strong>Speaker Signups: </strong> <a asp-area="Identity" asp-page="/Account/RegisterSpeaker">sign up</a> by January 18th 2019 at 23:59 Eastern</li>
             <li><a target="_blank" href="/documents/OrlandoCodeCampSponsorInfo2019.pdf">Become a sponsor</a></li>
         </ul>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-3">
+        @if (Model.FeaturedSponsor != null)
+        {
+            <h3>Featured Sponsor</h3>
+            <a target="_blank" href="@(Model.FeaturedSponsor.WebsiteUrl)">
+                <img style="max-width: 150px;"
+                     class="sponsorImage"
+                     id="@(string.Format("{0}", Model.FeaturedSponsor.SponsorId))"
+                     src=@("/images/default_user_icon.jpg")
+                     alt="@(string.Format("{0}", Model.FeaturedSponsor.CompanyName))" />
+            </a>
+        }
+        <h3>Announcements</h3>
+        <ul>
+            @if (Model.Announcements.Any())
+            {
+                @foreach (var announcement in Model.Announcements)
+                 {
+                     <li>@Html.Raw(announcement.Message)</li>
+                 }
+            }
+            else
+            {
+                <li>There are currently no announcements</li>
+            }
+        </ul>
+    </div>
+    <div class="col-md-3">
         <h3>Organized by</h3>
         <p><a target="_blank" href="http://onetug.org"><img style="width:200px" src="~/images/ONETUGlogo.png"></a></p>
         <h3>Hosted by</h3>
         <p><a target="_blank" href="https://www.seminolestate.edu"><img style="width:200px" src="~/images/SSCOfFlorida.jpg"></a></p>
     </div>
 </div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.sponsorImage').each(function () {
+                setSponsorImage(this, this.id);
+            });
+        });
+    </script>
+}

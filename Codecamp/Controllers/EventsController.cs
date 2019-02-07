@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Codecamp.Data;
 using Codecamp.Models;
 using Codecamp.BusinessLogic;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Codecamp.Controllers
 {
@@ -24,12 +25,14 @@ namespace Codecamp.Controllers
         }
 
         // GET: Events
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
             return View(await _eventBL.GetAllEvents());
         }
 
         // GET: Events/Details/5
+        [HttpGet]
         public async Task<IActionResult> Details(int? id)
         {
             if (!id.HasValue)
@@ -47,6 +50,8 @@ namespace Codecamp.Controllers
         }
 
         // GET: Events/Create
+        [HttpGet]
+        [Authorize]
         public IActionResult Create()
         {
             return View();
@@ -56,6 +61,7 @@ namespace Codecamp.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
+        [Authorize]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("EventId,Name,SocialMediaHashtag,StartDateTime,EndDateTime,LocationAddress,IsActive,IsAttendeeRegistrationOpen,IsSpeakerRegistrationOpen")] Event @event)
         {
@@ -87,6 +93,7 @@ namespace Codecamp.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
+        [Authorize]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("EventId,Name,SocialMediaHashtag,StartDateTime,EndDateTime,LocationAddress,IsActive,IsAttendeeRegistrationOpen,IsSpeakerRegistrationOpen")] Event @event)
         {
