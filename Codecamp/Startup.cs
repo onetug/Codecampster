@@ -1,20 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Codecamp.BusinessLogic;
+﻿using Codecamp.BusinessLogic;
+using Codecamp.BusinessLogic.Api;
 using Codecamp.Data;
 using Codecamp.Models;
 using Codecamp.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
+using Swashbuckle.AspNetCore.Swagger;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Codecamp
 {
@@ -51,6 +52,10 @@ namespace Codecamp
                     options.AllowAreas = true;
                     options.Conventions.AuthorizeAreaFolder("Identity", "/Account/Manage");
                     options.Conventions.AuthorizeAreaPage("Identity", "/Account/Logout");
+                })
+                .AddJsonOptions(options =>
+                {
+                    options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
                 });
 
             services.AddDistributedMemoryCache();
@@ -64,6 +69,7 @@ namespace Codecamp
             });
 
             services.AddSingleton<IEmailSender, AuthMessageEmailSender>();
+
             services.AddTransient<ISpeakerBusinessLogic, SpeakerBusinessLogic>();
             services.AddTransient<IUserBusinessLogic, UserBusinessLogic>();
             services.AddTransient<IEventBusinessLogic, EventBusinessLogic>();
@@ -73,9 +79,16 @@ namespace Codecamp
             services.AddTransient<ITimeslotBusinessLogic, TimeslotBusinessLogic>();
             services.AddTransient<ITrackBusinessLogic, TrackBusinessLogic>();
             services.AddTransient<IScheduleBusinessLogic, ScheduleBusinessLogic>();
+
+            services.AddTransient<IEventsApiBusinessLogic, EventsApiBusinessLogic>();
+            services.AddTransient<ISpeakersApiBusinessLogic, SpeakersApiBusinessLogic>();
+            services.AddTransient<ISessionsApiBusinessLogic, SessionsApiBusinessLogic>();
+
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
+
             // Register the event business logic service
             services.AddTransient<EventBusinessLogic>();
+
             services.Configure<AppOptions>(Configuration.GetSection("AppSettings"));
             services.AddAuthorization(options =>
             {
@@ -85,6 +98,16 @@ namespace Codecamp
             });
 
             services.AddSession();
+
+            services.AddSwaggerGen(options => {
+                options.SwaggerDoc("v1",
+                    new Info { Title = "Orlando Code Camp API", Version = "v1"});
+
+                options.DocInclusionPredicate((_, api) =>
+                    !string.IsNullOrWhiteSpace(api.GroupName));
+
+                options.TagActionsBy(api => new List<string> {api.GroupName});
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -93,6 +116,8 @@ namespace Codecamp
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                // TODO Enable after update to Microsoft.AspNetCore.App to >= 2.2.0
+                // app.UseBrowserLink();
             }
             else
             {
@@ -109,6 +134,13 @@ namespace Codecamp
             app.UseAuthentication();
 
             app.UseSession();
+
+            app.UseSwagger();
+            app.UseSwaggerUI(setup =>
+            {
+                setup.SwaggerEndpoint("/swagger/v1/swagger.json",
+                    "Orlando Code Camp API V1");
+            });
 
             app.UseMvc(routes =>
             {
