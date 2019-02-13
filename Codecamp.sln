@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.27703.2042
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Codecamp", "Codecamp\Codecamp.csproj", "{7EB58B6F-5B59-4652-A57F-415E20BD9E22}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ResizeCodecampSpeakerImages", "ResizeCodecampSpeakerImages\ResizeCodecampSpeakerImages.csproj", "{DC1F49C7-0969-4542-8E02-70ADAFBFA272}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{7EB58B6F-5B59-4652-A57F-415E20BD9E22}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7EB58B6F-5B59-4652-A57F-415E20BD9E22}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7EB58B6F-5B59-4652-A57F-415E20BD9E22}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DC1F49C7-0969-4542-8E02-70ADAFBFA272}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DC1F49C7-0969-4542-8E02-70ADAFBFA272}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DC1F49C7-0969-4542-8E02-70ADAFBFA272}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DC1F49C7-0969-4542-8E02-70ADAFBFA272}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -33,7 +33,7 @@ namespace Codecamp.Controllers
                 return NotFound();
 
             var sponsor = await _context.Sponsors.FindAsync(sponsorId);
-            if (sponsor == null)
+            if (sponsor == null || sponsor.Image == null || sponsor.Image.Length == 0)
                 return NotFound();
 
             return File(new MemoryStream(sponsor.Image), "application/octet-stream");

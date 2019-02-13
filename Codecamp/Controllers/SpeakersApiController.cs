@@ -34,7 +34,7 @@ namespace Codecamp.Controllers
                 return NotFound();
 
             var speaker = await _context.Speakers.FindAsync(speakerId);
-            if (speaker == null)
+            if (speaker == null || speaker.Image == null || speaker.Image.Length == 0)
                 return NotFound();
 
             return File(new MemoryStream(speaker.Image), "application/octet-stream");

@@ -26,8 +26,8 @@ namespace Codecamp.Controllers
         // GET: Schedule
         public async Task<IActionResult> Index()
         {
-            var codecampDbContext = _context.CodecampSchedule.Include(s => s.Session).Include(s => s.Timeslot).Include(s => s.Track);
-            return View(await codecampDbContext.ToListAsync());
+            var schedule = await _scheduleBL.GetScheduleViewModelToBuildScheduleForActiveEvent();
+            return View(schedule);
         }
 
         // GET: Schedule/Details/5

@@ -168,12 +168,6 @@ namespace Codecamp.Controllers
                         = _speakerBL.ResizeImage(ms.ToArray());
                 }
 
-                if (speakerVM.ImageFile == null && speakerVM.ResizeImage == true)
-                {
-                    // Resize the image to be no greater than 300px x 300px
-                    speaker.Image = _speakerBL.ResizeImage(speaker.SpeakerId);
-                }
-
                 var result = await _speakerBL.UpdateSpeaker(speaker);
 
                 var user = await _userBL.GetUser(speakerVM.CodecampUserId);
