@@ -1,4 +1,4 @@
-using Codecamp.BusinessLogic;
+﻿using Codecamp.BusinessLogic;
 using Codecamp.BusinessLogic.Api;
 using Codecamp.Data;
 using Codecamp.Models;
@@ -135,7 +135,7 @@ namespace Codecamp
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                // TODO Enable after update to Microsoft.AspNetCore.App to >= 2.2.0
+                app.UseBrowserLink();
             }
             else
             {
