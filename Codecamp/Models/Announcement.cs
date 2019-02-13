@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace Codecamp.Models
 {
+    [DebuggerDisplay("{" + nameof(DebuggerDisplay) + ",nq}")]
     public class Announcement
     {
         public int AnnouncementId { get; set; }
@@ -26,5 +25,9 @@ namespace Codecamp.Models
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy-MM-dd}")]
         [Display(Name = "Expires On")]
         public DateTime? ExpiresOn { get; set; }
+
+        private string DebuggerDisplay =>
+            $"{AnnouncementId} - Event {EventId} - Rank {Rank} - " +
+            $"Publish {PublishOn:g} - Expire {ExpiresOn:g} - {Message,-20}";
     }
 }

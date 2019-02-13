@@ -1,4 +1,4 @@
-﻿using Codecamp.BusinessLogic;
+using Codecamp.BusinessLogic;
 using Codecamp.BusinessLogic.Api;
 using Codecamp.Data;
 using Codecamp.Models;
@@ -80,9 +80,15 @@ namespace Codecamp
             services.AddTransient<ITrackBusinessLogic, TrackBusinessLogic>();
             services.AddTransient<IScheduleBusinessLogic, ScheduleBusinessLogic>();
 
+            services.AddTransient<IAnnouncementsApiBusinessLogic, AnnouncementsApiBusinessLogic>();
             services.AddTransient<IEventsApiBusinessLogic, EventsApiBusinessLogic>();
             services.AddTransient<ISpeakersApiBusinessLogic, SpeakersApiBusinessLogic>();
             services.AddTransient<ISessionsApiBusinessLogic, SessionsApiBusinessLogic>();
+            services.AddTransient<ISpeakersApiBusinessLogic, SpeakersApiBusinessLogic>();
+            services.AddTransient<ISponsorsApiBusinessLogic, SponsorsApiBusinessLogic>();
+            services.AddTransient<ITimeslotsApiBusinessLogic,
+                TimeslotsApiBusinessLogic>();
+            services.AddTransient<ITracksApiBusinessLogic, TracksApiBusinessLogic>();
 
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
 
