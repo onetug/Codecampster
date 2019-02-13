@@ -13,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Swashbuckle.AspNetCore.Swagger;
+using Swashbuckle.AspNetCore.SwaggerUI;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -82,7 +83,6 @@ namespace Codecamp
 
             services.AddTransient<IAnnouncementsApiBusinessLogic, AnnouncementsApiBusinessLogic>();
             services.AddTransient<IEventsApiBusinessLogic, EventsApiBusinessLogic>();
-            services.AddTransient<ISpeakersApiBusinessLogic, SpeakersApiBusinessLogic>();
             services.AddTransient<ISessionsApiBusinessLogic, SessionsApiBusinessLogic>();
             services.AddTransient<ISpeakersApiBusinessLogic, SpeakersApiBusinessLogic>();
             services.AddTransient<ISponsorsApiBusinessLogic, SponsorsApiBusinessLogic>();
@@ -109,10 +109,23 @@ namespace Codecamp
                 options.SwaggerDoc("v1",
                     new Info { Title = "Orlando Code Camp API", Version = "v1"});
 
+                // Use controller API group name instead of controller name
                 options.DocInclusionPredicate((_, api) =>
                     !string.IsNullOrWhiteSpace(api.GroupName));
+                options.TagActionsBy(api => new List<string> { api.GroupName });
 
-                options.TagActionsBy(api => new List<string> {api.GroupName});
+                options.CustomSchemaIds(SchemaIdStrategy);
+
+                string SchemaIdStrategy(Type type)
+                {
+                    var typeName = type.Name;
+
+                    if (typeName.StartsWith("Api"))
+                        typeName = typeName.Split("Api",
+                            StringSplitOptions.RemoveEmptyEntries)[0];
+
+                    return typeName;
+                }
             });
         }
 
@@ -123,7 +136,6 @@ namespace Codecamp
             {
                 app.UseDeveloperExceptionPage();
                 // TODO Enable after update to Microsoft.AspNetCore.App to >= 2.2.0
-                // app.UseBrowserLink();
             }
             else
             {
@@ -146,6 +158,14 @@ namespace Codecamp
             {
                 setup.SwaggerEndpoint("/swagger/v1/swagger.json",
                     "Orlando Code Camp API V1");
+
+                // Don't show the models section at the end of the Swagger page
+                setup.DefaultModelsExpandDepth(-1);
+
+                setup.DisplayRequestDuration();
+
+                // Expand to Action level (Group name + Action name)
+                setup.DocExpansion(DocExpansion.List);
             });
 
             app.UseMvc(routes =>
