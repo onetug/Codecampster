@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace Codecamp.Models
 {
+    [DebuggerDisplay("{" + nameof(DebuggerDisplay) + ",nq}")]
     public class Event
     {
         public int EventId { get; set; }
@@ -44,10 +44,12 @@ namespace Codecamp.Models
         /// List of sessions for the event
         /// </summary>
         public List<Session> Sessions { get; set; }
-        
+
         /// <summary>
         /// List of speakers for the event
         /// </summary>
         public List<Speaker> Speakers { get; set; }
+
+        private string DebuggerDisplay => $"{Name} - {StartDateTime:g} to {EndDateTime:g}";
     }
 }

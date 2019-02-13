@@ -116,9 +116,9 @@
             @if (Model.Announcements.Any())
             {
                 @foreach (var announcement in Model.Announcements)
-                {
-                    <li>@Html.Raw(announcement.Message)</li>
-                }
+                 {
+                     <li>@Html.Raw(announcement.Message)</li>
+                 }
             }
             else
             {

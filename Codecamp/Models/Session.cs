@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace Codecamp.Models
 {
+    [DebuggerDisplay("{" + nameof(DebuggerDisplay) + ",nq}")]
     public class Session
     {
         public int SessionId { get; set; }
@@ -43,5 +42,9 @@ namespace Codecamp.Models
         public int? TimeslotId { get; set; }
 
         public virtual Timeslot Timeslot { get; set; }
+
+        private string DebuggerDisplay =>
+            $@"{SessionId} - Time {TimeslotId?.ToString() ?? "?"} - " + 
+            $@"Track {TrackId?.ToString() ?? "?"} - {Name}";
     }
 }

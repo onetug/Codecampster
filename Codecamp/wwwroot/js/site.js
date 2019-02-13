@@ -4,7 +4,7 @@
 // Write your JavaScript code.
 
 function setSpeakerImage(img, id) {
-    let url = location.origin + "/api/Speakers/image/" + id;
+    let url = location.origin + "/api/speakers/" + id + "/image";
     fetch(url)
         .then(function (response) {
             if (response.ok) {
