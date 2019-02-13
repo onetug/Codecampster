@@ -26,11 +26,25 @@ namespace Codecamp.Controllers.Api
             return jsonEventsList;
         }
 
-        [HttpGet("{eventId}")]
+        [HttpGet("/active")]
         [Produces("application/json", Type = typeof(ApiEvent))]
-        public IActionResult GetEvent(int eventId)
+        public IActionResult GetActiveEvent()
         {
-            var apiEvent = BusinessLogic.GetEvent(eventId);
+            var apiEvent = BusinessLogic.GetActiveEvent();
+
+            if (apiEvent == null)
+                return NotFound();
+
+            var jsonEvent = new JsonResult(apiEvent);
+
+            return jsonEvent;
+        }
+
+        [HttpGet("{year}")]
+        [Produces("application/json", Type = typeof(ApiEvent))]
+        public IActionResult GetEvent(int year)
+        {
+            var apiEvent = BusinessLogic.GetEvent(year);
 
             if (apiEvent == null)
                 return NotFound();

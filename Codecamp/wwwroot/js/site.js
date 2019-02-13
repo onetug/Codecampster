@@ -21,7 +21,7 @@ function setSpeakerImage(img, id) {
 }
 
 function setSponsorImage(img) {
-    let url = location.origin + "/api/Sponsors/image/" + img.id;
+    let url = location.origin + "/api/sponsors/" + id + "/image";
     fetch(url)
         .then(function (response) {
             if (response.ok) {
