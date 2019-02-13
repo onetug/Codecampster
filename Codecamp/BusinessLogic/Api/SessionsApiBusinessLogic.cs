@@ -8,7 +8,8 @@ namespace Codecamp.BusinessLogic.Api
 {
     public interface ISessionsApiBusinessLogic
     {
-        List<ApiSession> GetSessionsList(int? trackId,
+        List<ApiSession> GetSessionsList(int? eventId,
+            int? trackId,
             int? timeslotId,
             bool includeDescriptions);
 
@@ -22,14 +23,16 @@ namespace Codecamp.BusinessLogic.Api
         {
         }
 
-        public List<ApiSession> GetSessionsList(int? trackId,
-            int? timeslotId,
-            bool includeDescriptions)
+        public List<ApiSession> GetSessionsList(int? eventId = null,
+            int? trackId = null,
+            int? timeslotId = null,
+            bool includeDescriptions = false)
         {
             var apiSessionList = Context.Sessions
-                .OrderBy(session => session.SessionId)
+                .Where(session => session.EventId == eventId || eventId == null )
                 .Where(session => session.TrackId == trackId || trackId == null )
                 .Where(session => session.TimeslotId == timeslotId || timeslotId == null)
+                .OrderBy(session => session.SessionId)
                 .Include(session => session.SpeakerSessions)
                 .Select(session => new ApiSession(session, includeDescriptions))
                 .ToList();

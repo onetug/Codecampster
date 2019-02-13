@@ -9,7 +9,9 @@ namespace Codecamp.BusinessLogic.Api
     {
         List<ApiEvent> GetEventsList();
 
-        ApiEvent GetEvent(int eventId);
+        ApiEvent GetActiveEvent();
+
+        ApiEvent GetEvent(int year);
     }
 
     public class EventsApiBusinessLogic : ApiBusinessLogic, IEventsApiBusinessLogic
@@ -20,25 +22,11 @@ namespace Codecamp.BusinessLogic.Api
 
         public List<ApiEvent> GetEventsList()
         {
-            // Get list of web events as API events and convert to JSON
             var apiEventsList = Context.Events
                 .Select(e => new ApiEvent(e))
                 .ToList();
 
             return apiEventsList;
-        }
-
-        public ApiEvent GetEvent(int eventId)
-        {
-            // Get web event as API event and convert to JSON
-            var webEvent = Context.Events.Find(eventId);
-
-            if (webEvent == null)
-                return null;
-
-            var apiEvent = new ApiEvent(webEvent);
-
-            return apiEvent;
         }
     }
 }

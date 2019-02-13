@@ -18,12 +18,13 @@ namespace Codecamp.Controllers.Api
 
         [HttpGet]
         [Produces("application/json", Type = typeof(List<ApiSession>))]
-        public IActionResult GetSessionList(int? trackId = null,
+        public IActionResult GetSessionList(int? eventId = null, 
+            int? trackId = null,
             int? timeslotId = null,
             bool includeDescriptions = false)
         {
-            var apiSessionList = BusinessLogic.GetSessionsList(trackId, timeslotId,
-                    includeDescriptions);
+            var apiSessionList = BusinessLogic.GetSessionsList(eventId,
+                trackId, timeslotId, includeDescriptions);
             var jsonSessionsList = new JsonResult(apiSessionList);
 
             return jsonSessionsList;

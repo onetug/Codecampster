@@ -18,9 +18,10 @@ namespace Codecamp.Controllers.Api
 
         [HttpGet]
         [Produces("application/json", Type = typeof(List<ApiSpeaker>))]
-        public IActionResult GetSpeakersList(bool includeDetails = false)
+        public IActionResult GetSpeakersList(int? eventId = null,
+            bool includeDetails = false)
         {
-            var apiSpeakersList = BusinessLogic.GetSpeakersList(includeDetails);
+            var apiSpeakersList = BusinessLogic.GetSpeakersList(eventId, includeDetails);
 
             var jsonSpeakersList = new JsonResult(apiSpeakersList);
 

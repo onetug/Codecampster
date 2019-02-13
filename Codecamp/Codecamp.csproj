@@ -15,6 +15,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Controllers\SponsorsApiController.cs" />
     <Compile Remove="Migrations\20181025225240_AddFunctionalityForEvents.cs" />
     <Compile Remove="Migrations\20181025225240_AddFunctionalityForEvents.Designer.cs" />
     <Compile Remove="Migrations\20181025225414_AddFunctionalityForEvents-2.cs" />
