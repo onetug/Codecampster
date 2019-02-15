@@ -191,7 +191,22 @@ namespace Codecamp.Areas.Identity.Pages.Account.Manage
             }
             else if (LoginWithRegistration == "Attendee")
             {
+                // Set role as Speaker
+                user.IsAttending = true;
 
+                // Set the users event to the current event
+                var currentEvent
+                    = await _eventBL.GetActiveEvent();
+
+                if (user.EventId.HasValue == false
+                    || (user.EventId.HasValue == true
+                    && user.EventId.Value != currentEvent.EventId))
+                {
+                    user.EventId = currentEvent.EventId;
+                }
+
+                // Save the changes
+                await _context.SaveChangesAsync();
             }
 
             IsSpeaker = User.IsInRole("Speaker");
@@ -247,8 +262,6 @@ namespace Codecamp.Areas.Identity.Pages.Account.Manage
 
         public async Task<IActionResult> OnPostAsync()
         {
-            ViewData["MaxImageSize"] = SpeakerViewModel.MaxImageSize;
-
             IsSpeaker = User.IsInRole("Speaker");
 
             if (!ModelState.IsValid)
@@ -413,6 +426,7 @@ namespace Codecamp.Areas.Identity.Pages.Account.Manage
             await _context.SaveChangesAsync();
 
             await _signInManager.RefreshSignInAsync(user);
+
             StatusMessage = "Your profile has been updated";
 
             return RedirectToPage();

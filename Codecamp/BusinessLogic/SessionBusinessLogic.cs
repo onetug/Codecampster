@@ -56,12 +56,26 @@ namespace Codecamp.BusinessLogic
 
         public async Task<List<SessionViewModel>> GetAllSessionsViewModel()
         {
-            return await ToSessionViewModel(
+            var sessionViewModels = await ToSessionViewModel(
                 _context.Sessions
                 .Include(s => s.SpeakerSessions)
                 .Include(s => s.AttendeeSessions)
                 .Include(s => s.Event))
                 .ToListAsync();
+
+            for (int index = 0; index < sessionViewModels.Count(); index++)
+            {
+                var speakerSessions
+                    = _context.SpeakerSessions
+                    .Include(ss => ss.Session)
+                    .Include(ss => ss.Speaker)
+                    .Include(ss => ss.Speaker.CodecampUser)
+                    .Where(ss => ss.SessionId == sessionViewModels[index].SessionId);
+
+                sessionViewModels[index].SpeakerSessions = speakerSessions.ToList();
+            }
+
+            return sessionViewModels;
         }
 
         public async Task<List<Session>> GetAllSessions(int eventId)
@@ -76,13 +90,27 @@ namespace Codecamp.BusinessLogic
 
         public async Task<List<SessionViewModel>> GetAllSessionsViewModel(int eventId)
         {
-            return await ToSessionViewModel(
+            var sessionViewModels = await ToSessionViewModel(
                 _context.Sessions
                 .Include(s => s.SpeakerSessions)
                 .Include(s => s.AttendeeSessions)
                 .Include(s => s.Event)
                 .Where(s => s.EventId == eventId))
                 .ToListAsync();
+
+            for (int index = 0; index < sessionViewModels.Count(); index++)
+            {
+                var speakerSessions
+                    = _context.SpeakerSessions
+                    .Include(ss => ss.Session)
+                    .Include(ss => ss.Speaker)
+                    .Include(ss => ss.Speaker.CodecampUser)
+                    .Where(ss => ss.SessionId == sessionViewModels[index].SessionId);
+
+                sessionViewModels[index].SpeakerSessions = speakerSessions.ToList();
+            }
+
+            return sessionViewModels;
         }
 
         public async Task<List<Session>> GetAllSessionsForActiveEvent()
@@ -112,21 +140,37 @@ namespace Codecamp.BusinessLogic
                 = await _context.Events
                 .FirstOrDefaultAsync(e => e.IsActive == true);
 
+            var sessionViewModels = new List<SessionViewModel>();
             if (activeEvent == null)
-                return await ToSessionViewModel(
+                sessionViewModels = await ToSessionViewModel(
                     _context.Sessions
                     .Include(s => s.SpeakerSessions)
                     .Include(s => s.AttendeeSessions)
                     .Include(s => s.Event))
                     .ToListAsync();
+
             else
-                return await ToSessionViewModel(
+                sessionViewModels = await ToSessionViewModel(
                     _context.Sessions
                     .Include(s => s.SpeakerSessions)
                     .Include(s => s.AttendeeSessions)
                     .Include(s => s.Event)
                     .Where(s => s.EventId == activeEvent.EventId))
                     .ToListAsync();
+
+            for (int index = 0; index < sessionViewModels.Count(); index++)
+            {
+                var speakerSessions
+                    = _context.SpeakerSessions
+                    .Include(ss => ss.Session)
+                    .Include(ss => ss.Speaker)
+                    .Include(ss => ss.Speaker.CodecampUser)
+                    .Where(ss => ss.SessionId == sessionViewModels[index].SessionId);
+
+                sessionViewModels[index].SpeakerSessions = speakerSessions.ToList();
+            }
+
+            return sessionViewModels;
         }
 
         public async Task<List<Session>> GetAllApprovedSessions(int eventId)
@@ -142,13 +186,27 @@ namespace Codecamp.BusinessLogic
 
         public async Task<List<SessionViewModel>> GetAllApprovedSessionsViewModel(int eventId)
         {
-            return await ToSessionViewModel(
+            var sessionViewModels = await ToSessionViewModel(
                 _context.Sessions
                 .Include(s => s.SpeakerSessions)
                 .Include(s => s.AttendeeSessions)
                 .Include(s => s.Event)
                 .Where(s => s.EventId == eventId && s.IsApproved == true))
                 .ToListAsync();
+
+            for (int index = 0; index < sessionViewModels.Count(); index++)
+            {
+                var speakerSessions
+                    = _context.SpeakerSessions
+                    .Include(ss => ss.Session)
+                    .Include(ss => ss.Speaker)
+                    .Include(ss => ss.Speaker.CodecampUser)
+                    .Where(ss => ss.SessionId == sessionViewModels[index].SessionId);
+
+                sessionViewModels[index].SpeakerSessions = speakerSessions.ToList();
+            }
+
+            return sessionViewModels;
         }
 
         public async Task<List<Session>> GetAllApprovedSessionsForActiveEvent()
@@ -180,8 +238,9 @@ namespace Codecamp.BusinessLogic
                 = await _context.Events
                 .FirstOrDefaultAsync(e => e.IsActive == true);
 
+            var sessionViewModels = new List<SessionViewModel>();
             if (activeEvent == null)
-                return await ToSessionViewModel(
+                sessionViewModels = await ToSessionViewModel(
                     _context.Sessions
                     .Include(s => s.SpeakerSessions)
                     .Include(s => s.AttendeeSessions)
@@ -189,13 +248,27 @@ namespace Codecamp.BusinessLogic
                     .Where(s => s.IsApproved == true))
                     .ToListAsync();
             else
-                return await ToSessionViewModel(
+                sessionViewModels = await ToSessionViewModel(
                     _context.Sessions
                     .Include(s => s.SpeakerSessions)
                     .Include(s => s.AttendeeSessions)
                     .Include(s => s.Event)
                     .Where(s => s.EventId == activeEvent.EventId && s.IsApproved == true))
                     .ToListAsync();
+
+            for (int index = 0; index < sessionViewModels.Count(); index++)
+            {
+                var speakerSessions
+                    = _context.SpeakerSessions
+                    .Include(ss => ss.Session)
+                    .Include(ss => ss.Speaker)
+                    .Include(ss => ss.Speaker.CodecampUser)
+                    .Where(ss => ss.SessionId == sessionViewModels[index].SessionId);
+
+                sessionViewModels[index].SpeakerSessions = speakerSessions.ToList();
+            }
+
+            return sessionViewModels;
         }
 
         public async Task<List<Session>> GetAllSessionsForSpeakerForActiveEvent(int speakerId)
@@ -250,8 +323,9 @@ namespace Codecamp.BusinessLogic
                 = await _context.Events
                 .FirstOrDefaultAsync(e => e.IsActive == true);
 
+            var sessionViewModels = new List<SessionViewModel>();
             if (activeEvent == null)
-                return await ToSessionViewModel(
+                sessionViewModels = await ToSessionViewModel(
                     _context.Sessions
                     .Include(s => s.SpeakerSessions)
                     .Include(s => s.AttendeeSessions)
@@ -259,7 +333,7 @@ namespace Codecamp.BusinessLogic
                     .Where(s => s.SpeakerSessions.Any(s2 => s2.SpeakerId == speakerId)))
                     .ToListAsync();
             else
-                return await ToSessionViewModel(
+                sessionViewModels =  await ToSessionViewModel(
                     _context.Sessions
                     .Include(s => s.SpeakerSessions)
                     .Include(s => s.AttendeeSessions)
@@ -267,6 +341,20 @@ namespace Codecamp.BusinessLogic
                     .Where(s => s.SpeakerSessions.Any(s2 => s2.SpeakerId == speakerId)
                         && s.EventId == activeEvent.EventId))
                     .ToListAsync();
+
+            for (int index = 0; index < sessionViewModels.Count(); index++)
+            {
+                var speakerSessions
+                    = _context.SpeakerSessions
+                    .Include(ss => ss.Session)
+                    .Include(ss => ss.Speaker)
+                    .Include(ss => ss.Speaker.CodecampUser)
+                    .Where(ss => ss.SessionId == sessionViewModels[index].SessionId);
+
+                sessionViewModels[index].SpeakerSessions = speakerSessions.ToList();
+            }
+
+            return sessionViewModels;
         }
 
         public async Task<List<SessionViewModel>> GetAllApprovedSessionsViewModelForSpeakerForActiveEvent(int speakerId)
@@ -275,8 +363,9 @@ namespace Codecamp.BusinessLogic
                 = await _context.Events
                 .FirstOrDefaultAsync(e => e.IsActive == true);
 
+            var sessionViewModels = new List<SessionViewModel>();
             if (activeEvent == null)
-                return await ToSessionViewModel(
+                sessionViewModels = await ToSessionViewModel(
                     _context.Sessions
                     .Include(s => s.SpeakerSessions)
                     .Include(s => s.AttendeeSessions)
@@ -284,7 +373,7 @@ namespace Codecamp.BusinessLogic
                     .Where(s => s.SpeakerSessions.Any(s2 => s2.SpeakerId == speakerId && s.IsApproved == true)))
                     .ToListAsync();
             else
-                return await ToSessionViewModel(
+                sessionViewModels = await ToSessionViewModel(
                     _context.Sessions
                     .Include(s => s.SpeakerSessions)
                     .Include(s => s.AttendeeSessions)
@@ -292,6 +381,20 @@ namespace Codecamp.BusinessLogic
                     .Where(s => s.SpeakerSessions.Any(s2 => s2.SpeakerId == speakerId)
                         && s.EventId == activeEvent.EventId && s.IsApproved == true))
                     .ToListAsync();
+
+            for (int index = 0; index < sessionViewModels.Count(); index++)
+            {
+                var speakerSessions
+                    = _context.SpeakerSessions
+                    .Include(ss => ss.Session)
+                    .Include(ss => ss.Speaker)
+                    .Include(ss => ss.Speaker.CodecampUser)
+                    .Where(ss => ss.SessionId == sessionViewModels[index].SessionId);
+
+                sessionViewModels[index].SpeakerSessions = speakerSessions.ToList();
+            }
+
+            return sessionViewModels;
         }
 
         /// <summary>
@@ -446,11 +549,6 @@ namespace Codecamp.BusinessLogic
             if (sessions == null) return null;
 
             var sessionViewModels = from session in sessions
-                                    join speakerSession in _context.SpeakerSessions
-                                    .Include(ss => ss.Session)
-                                    .Include(ss => ss.Speaker)
-                                    .Include(ss => ss.Speaker.CodecampUser)
-                                    on session.SessionId equals speakerSession.SessionId into speakerSessionGroupJoin
                                     select new SessionViewModel
                                     {
                                         SessionId = session.SessionId,
@@ -459,8 +557,7 @@ namespace Codecamp.BusinessLogic
                                         SkillLevel = SkillLevel.GetSkillLevelDescription(session.SkillLevel),
                                         Keywords = session.Keywords,
                                         IsApproved = session.IsApproved,
-                                        SpeakerSessions = speakerSessionGroupJoin.ToList(),
-                                        EventName = session.Event.Name
+                                        EventName = session.Event.Name,
                                     };
 
             return sessionViewModels;

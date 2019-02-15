@@ -25,47 +25,47 @@
     @if (Model.Count() > 0)
     {
         @* This is for the Admins to allow them to edit the speaker *@
-        <table class="table">
+        <table class="table-striped">
             <thead>
                 <tr>
-                    <th>
+                    <th class="col-md-3">
                         @Html.DisplayNameFor(model => model.FullName)
                     </th>
-                    <th>
+                    <th class="col-md-2">
                         @Html.DisplayNameFor(model => model.CompanyName)
                     </th>
-                    <th>
+                    <th class="col-md-3">
                         @Html.DisplayNameFor(model => model.NoteToOrganizers)
                     </th>
-                    <th>
+                    <th class="col-md-1" align="center">
                         @Html.DisplayNameFor(model => model.IsMvp)
                     </th>
-                    <th>
+                    <th class="col-md-1" align="center">
                         @Html.DisplayNameFor(model => model.IsApproved)
                     </th>
-                    <th></th>
+                    <th class="col-md-2"></th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var item in Model)
                 {
                     <tr>
-                        <td>
+                        <td class="col-md-3">
                             @Html.DisplayFor(modelItem => item.FullName)
                         </td>
-                        <td>
+                        <td class="col-md-2">
                             @Html.DisplayFor(modelItem => item.CompanyName)
                         </td>
-                        <td>
+                        <td class="col-md-3">
                             @Html.DisplayFor(modelItem => item.NoteToOrganizers)
                         </td>
-                        <td>
+                        <td class="col-md-1" align="center">
                             @Html.DisplayFor(modelItem => item.IsMvp)
                         </td>
-                        <td>
+                        <td class="col-md-1" align="center">
                             @Html.DisplayFor(modelItem => item.IsApproved)
                         </td>
-                        <td>
+                        <td class="col-md-2" align="center">
                             <a asp-action="Edit" asp-route-id="@item.SpeakerId">Edit</a> |
                             <a asp-action="Details" asp-route-id="@item.SpeakerId">Details</a>
                         </td>
@@ -81,7 +81,7 @@
 }
 else
 {
-    <div class="row">
+    <div class="row" style="margin-bottom: 25px;">
         @if (Model.Count() > 0)
         {
             @foreach (var speaker in Model)
@@ -89,7 +89,7 @@ else
                 if (rowIndex == 5)
                 {
                 @:</div>
-                @:<div class="row">
+                @:<div class="row" style="margin-bottom: 25px;">
                     @* create a new row after four speakers*@
                     rowIndex = 1;
                 }
@@ -101,7 +101,7 @@ else
                         <a asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">
                             <div style="text-align:center;">
                                 <div style="width: 150px; height: 150px; margin-left: auto; margin-right: auto">
-                                    <img style="max-width: 150px;"
+                                    <img style="max-width: 150px; max-height: 150px;"
                                          class="speakerImage"
                                          id="@(string.Format("{0}", speaker.SpeakerId))"
                                          src=@("/images/default_user_icon.jpg")
@@ -123,7 +123,7 @@ else
                         <a asp-action="Details" asp-route-id="@(speaker.SpeakerId)">
                             <div style="text-align:center;">
                                 <div style="width: 150px; height: 150px; margin-left: auto; margin-right: auto;">
-                                    <img style="max-width: 150px;"
+                                    <img style="max-width: 150px; max-height: 150px;"
                                          class="speakerImage"
                                          id="@(string.Format("{0}", speaker.SpeakerId))"
                                          src=@("/images/default_user_icon.jpg")

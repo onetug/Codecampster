@@ -23,6 +23,7 @@ namespace Codecamp.BusinessLogic
         Task<List<SpeakerViewModel>> GetAllApprovedSpeakersViewModelForActiveEvent();
         Task<List<Speaker>> GetAllSpeakersForActiveEvent();
         Task<List<SpeakerViewModel>> GetAllSpeakersViewModelForActiveEvent();
+        Task<List<SpeakerViewModel>> GetAllSpeakersViewModelForActiveEventWithApprovedSessions();
         Task<Speaker> GetSpeaker(int speakerId);
         Task<SpeakerViewModel> GetSpeakerViewModel(int speakerId, bool onlyApprovedSessions = false);
         Task<bool> SpeakerExists(int speakerId);
@@ -170,7 +171,6 @@ namespace Codecamp.BusinessLogic
         /// <summary>
         /// Get all speakers for the active event
         /// </summary>
-        /// <param name="loadImages">Indicates whether to load the speaker image in the results</param>
         /// <returns>List of SpeakerViewModel objects</returns>
         public async Task<List<SpeakerViewModel>> GetAllSpeakersViewModelForActiveEvent()
         {
@@ -188,6 +188,33 @@ namespace Codecamp.BusinessLogic
                     _context.Speakers
                     .Include(s => s.CodecampUser)
                     .Where(s => s.CodecampUser.EventId == activeEvent.EventId))
+                    .ToListAsync();
+        }
+
+        /// <summary>
+        /// Get all speakers for the active event with approved sessions
+        /// </summary>
+        /// <returns>List of SpeakerViewModel objects</returns>
+        public async Task<List<SpeakerViewModel>> GetAllSpeakersViewModelForActiveEventWithApprovedSessions()
+        {
+            var activeEvent
+                = await _context.Events
+                .FirstOrDefaultAsync(e => e.IsActive == true);
+
+            if (activeEvent == null)
+                return await ToSpeakerViewModel(
+                    _context.Speakers
+                    .Include(s => s.CodecampUser)
+                    .Include(s => s.SpeakerSessions)
+                    .Where(s => s.SpeakerSessions.Any(ss => ss.Session.IsApproved == true)))
+                    .ToListAsync();
+            else
+                return await ToSpeakerViewModel(
+                    _context.Speakers
+                    .Include(s => s.CodecampUser)
+                    .Include(s => s.SpeakerSessions)
+                    .Where(s => s.CodecampUser.EventId == activeEvent.EventId 
+                    && s.SpeakerSessions.Any(ss => ss.Session.IsApproved == true)))
                     .ToListAsync();
         }
 
