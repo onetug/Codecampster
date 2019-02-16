@@ -106,7 +106,7 @@ namespace Codecamp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("TrackId,Name,RoomNumber,EventId")] Track track)
         {
-            if (id != track.EventId)
+            if (id != track.TrackId)
             {
                 return NotFound();
             }

@@ -39,13 +39,6 @@ namespace Codecamp.ViewModels
         [Display(Name = "Image")]
         public IFormFile ImageFile { get; set; }
 
-        [Display(Name = "Image Size W x H (pixels)")]
-        public string ImageSizePixels { get; set; }
-
-        public bool IsImageResizable { get; set; }
-
-        public bool ResizeImage { get; set; }
-
         [DataType(DataType.MultilineText)]
         [Display(Name = "Bio")]
         public string Bio { get; set; }

@@ -1,25 +1,25 @@
-﻿@model IEnumerable<Codecamp.Models.Schedule>
+﻿@model IEnumerable<Codecamp.ViewModels.ScheduleViewModel>
 
 @{
     ViewData["Title"] = "Index";
 }
 
-<h2>Index</h2>
+<h2>Build Codecamp Schedule</h2>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Session)
+                @Html.DisplayNameFor(model => model.Name)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Track)
+                @Html.DisplayNameFor(model => model.Description)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Timeslot)
+                @Html.DisplayNameFor(model => model.SkillLevel)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsApproved)
             </th>
             <th></th>
         </tr>
@@ -28,18 +28,16 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Session.SessionId)
+                @Html.DisplayFor(modelItem => item.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Track.Name)
+                @Html.DisplayFor(modelItem => item.Description)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Timeslot.TimeslotId)
+                @Html.DisplayFor(modelItem => item.SkillLevel)
             </td>
             <td>
-                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                @Html.DisplayFor(modelItem => item.IsApproved)
             </td>
         </tr>
 }

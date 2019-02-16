@@ -35,7 +35,7 @@
     <table class="table-striped">
         <thead>
             <tr>
-                <th class="col-md-3">
+                <th class="col-md-2">
                     @Html.DisplayNameFor(model => model.Sessions[0].Name)
                 </th>
                 <th class="col-md-3">
@@ -54,7 +54,7 @@
                         @Html.DisplayNameFor(model => model.Sessions[0].IsApproved)
                     </th>
                 }
-                <th class="col-md-1"></th>
+                <th class="col-md-2"></th>
             </tr>
         </thead>
         <tbody>
@@ -62,45 +62,45 @@
             {
                 @foreach (var item in Model.Sessions)
                 {
-                    <tr>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Name)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Description)
-                        </td>
-                        <td>
-                            @foreach (var speakerSession in item.SpeakerSessions)
-                            {
-                                <div>@Html.DisplayFor(modelItem => speakerSession.Speaker.CodecampUser.FullName)</div>
-                            }
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.SkillLevel)
-                        </td>
-                        @* Show the approved flag if the user is an Admin or Speaker *@
-                        @if (User.IsInRole("Admin") || User.IsInRole("Speaker"))
-                        {
-                            <td align="center">
-                                @Html.DisplayFor(modelItem => item.IsApproved)
-                            </td>
-                        }
-                        <td>
-                            @* Allow admins and speakers to edit the sessions *@
-                            @if (User.IsInRole("Admin") || (User.IsInRole("Speaker")
-                               && speakerId.HasValue && item.SpeakerSessions.Any(s => s.SpeakerId == speakerId.Value)))
-                            {
-                                <a asp-action="Edit" asp-route-id="@item.SessionId">Edit</a><span> | </span>
-                            }
-                            <a asp-action="Details" asp-route-id="@item.SessionId">Details</a>
-                            @* Allow admins and speakers to delete sessions *@
-                            @if (User.IsInRole("Admin") || (User.IsInRole("Speaker")
-                               && speakerId.HasValue && item.SpeakerSessions.Any(s => s.SpeakerId == speakerId.Value)))
-                            {
-                                <span> | </span><a asp-action="Delete" asp-route-id="@item.SessionId">Delete</a>
-                            }
-                        </td>
-                    </tr>
+            <tr>
+                <td style="padding: 10px;">
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td style="padding: 10px;">
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+                <td style="padding: 10px;">
+                    @foreach (var speakerSession in item.SpeakerSessions)
+                    {
+                        <div>@Html.DisplayFor(modelItem => speakerSession.Speaker.CodecampUser.FullName)</div>
+                    }
+                </td>
+                <td style="padding: 10px;">
+                    @Html.DisplayFor(modelItem => item.SkillLevel)
+                </td>
+                @* Show the approved flag if the user is an Admin or Speaker *@
+                @if (User.IsInRole("Admin") || User.IsInRole("Speaker"))
+                {
+                    <td align="center" style="padding: 10px;">
+                        @Html.DisplayFor(modelItem => item.IsApproved)
+                    </td>
+                }
+                <td style="padding: 10px;" align="center">
+                    @* Allow admins and speakers to edit the sessions *@
+                    @if (User.IsInRole("Admin") || (User.IsInRole("Speaker")
+                    && speakerId.HasValue && item.SpeakerSessions.Any(s => s.SpeakerId == speakerId.Value)))
+                    {
+                        <a asp-action="Edit" asp-route-id="@item.SessionId">Edit</a><span> | </span>
+                    }
+                    <a asp-action="Details" asp-route-id="@item.SessionId">Details</a>
+                    @* Allow admins and speakers to delete sessions *@
+                    @if (User.IsInRole("Admin") || (User.IsInRole("Speaker")
+                    && speakerId.HasValue && item.SpeakerSessions.Any(s => s.SpeakerId == speakerId.Value)))
+                    {
+                        <span> | </span><a asp-action="Delete" asp-route-id="@item.SessionId">Delete</a>
+                    }
+                </td>
+            </tr>
                 }
             }
             else

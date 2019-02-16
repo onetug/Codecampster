@@ -68,21 +68,17 @@ namespace Codecamp.Controllers
         {
             List<SpeakerViewModel> speakers;
 
-            // Get the speakers for the active event. If there is
-            // no active event, get all speakers for all events.
-            //if (User.IsInRole("Admin"))
-            //{
+            if (User.IsInRole("Admin"))
+            {
                 ViewData["Title"] = "All Speakers";
-                // Don't load any images, this is list on the Admin version of this
-                // page.
                 speakers = await _speakerBL.GetAllSpeakersViewModelForActiveEvent();
-            //}
-            //else
-            //{
-            //    ViewData["Title"] = "Speakers";
-            //    speakers = await _speakerBL.GetAllApprovedSpeakersViewModelForActiveEvent();
-            //}
-            
+            }
+            else
+            {
+                ViewData["Title"] = "Speakers";
+                speakers = await _speakerBL.GetAllSpeakersViewModelForActiveEventWithApprovedSessions();
+            }
+
             return View(speakers);
         }
 
@@ -166,12 +162,6 @@ namespace Codecamp.Controllers
 
                     speaker.Image 
                         = _speakerBL.ResizeImage(ms.ToArray());
-                }
-
-                if (speakerVM.ImageFile == null && speakerVM.ResizeImage == true)
-                {
-                    // Resize the image to be no greater than 300px x 300px
-                    speaker.Image = _speakerBL.ResizeImage(speaker.SpeakerId);
                 }
 
                 var result = await _speakerBL.UpdateSpeaker(speaker);

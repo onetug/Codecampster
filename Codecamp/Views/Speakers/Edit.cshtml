@@ -52,20 +52,6 @@
                          src=@("/images/default_user_icon.jpg")
                          alt="@(string.Format("{0}", Model.FullName))" />
                 </div>
-                @if (User.IsInRole("Admin"))
-                {
-                    <div>
-                        <span style="font-weight: bold;">Image size: </span> @Html.DisplayFor(model => model.ImageSizePixels)
-                    </div>
-                    @if (Model.IsImageResizable)
-                    {
-                        <div class="checkbox">
-                            <label>
-                                <input asp-for="ResizeImage" /> Resize this image to be no greater than 300 pixels x 300 pixels
-                            </label>
-                        </div>
-                    }
-                }
                 <input asp-for="ImageFile" type="file" class="form-control" />
                 <span asp-validation-for="ImageFile" class="alert-danger"></span>
             </div>
