@@ -107,10 +107,10 @@ namespace Codecamp.Areas.Identity.Pages.Account.Manage
             public string LinkedIn { get; set; }
 
             [Required]
-            [Display(Name = "Are you volunteering")]
+            [Display(Name = "I would like to volunteer")]
             public bool IsVolunteer { get; set; }
 
-            [Display(Name = "Is MVP")]
+            [Display(Name = "I am an MVP")]
             public bool IsMvp { get; set; }
 
             [DataType(DataType.Text)]
