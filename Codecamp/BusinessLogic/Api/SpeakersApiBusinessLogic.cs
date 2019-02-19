@@ -10,7 +10,8 @@ namespace Codecamp.BusinessLogic.Api
 {
     public interface ISpeakersApiBusinessLogic
     {
-        List<ApiSpeaker> GetSpeakersList(bool includeDetails = false);
+        List<ApiSpeaker> GetSpeakersList(int? eventId,
+            bool includeDetails = false);
 
         ApiSpeaker GetApiSpeaker(int speakerId,
             bool includeDetails = false);
@@ -25,9 +26,11 @@ namespace Codecamp.BusinessLogic.Api
         {
         }
 
-        public List<ApiSpeaker> GetSpeakersList(bool includeDetails = false)
+        public List<ApiSpeaker> GetSpeakersList(int? eventId = null,
+            bool includeDetails = false)
         {
             var apiSpeakerList = GetWebSpeakers()
+                .Where(speaker => speaker.EventId == eventId || eventId == null )
                 .Select(speaker =>
                     new ApiSpeaker(speaker,
                         GetImageUrl(speaker.SpeakerId),

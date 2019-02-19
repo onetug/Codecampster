@@ -4,8 +4,9 @@ using System.Diagnostics;
 
 namespace Codecamp.Models.Api
 {
+    // TODO See Models.Speaker for additional fields
     [DebuggerDisplay("{" + nameof(DebuggerDisplay) + ",nq}")]
-    [JsonObject("speaker")]
+    [JsonObject(Title = "speaker")]
     public class ApiSpeaker
     {
         public ApiSpeaker(Speaker webSpeaker, Uri imageUrl = null,
@@ -16,19 +17,22 @@ namespace Codecamp.Models.Api
 
             Id = webSpeaker.SpeakerId;
 
-            ImageUrl = imageUrl;
+            // Summary
+
+            EventId = webSpeaker.EventId;
+
             User = (webSpeaker.CodecampUser == null)
                 ? null
                 : new ApiUser(webSpeaker.CodecampUser, includeDetails);
+            ImageUrl = imageUrl;
 
             IsMvp = webSpeaker.IsMvp;
             IsApproved = webSpeaker.IsApproved;
 
-            // TODO Future
-            //EventId = webSpeaker.EventId;
-
             if (!includeDetails)
                 return;
+
+            // Details
 
             CompanyName = webSpeaker.CompanyName;
             Bio = webSpeaker.Bio;
@@ -37,23 +41,22 @@ namespace Codecamp.Models.Api
             LinkedIn = webSpeaker.LinkedIn;
         }
 
+        public int Id { get; }
+
         #region Summary
 
-        public int Id { get; }
+        public int? EventId { get; }
+
+        public string Name => User?.FullNameOrEmailAddress;
 
         [JsonProperty("user")]
         public ApiUser User { get; }
-
-        public string Name => User?.FullNameOrEmailAddress;
 
         public Uri ImageUrl { get; }
 
         public bool IsMvp { get; }
 
         public bool IsApproved { get; }
-
-        // TODO Future
-        //public int? EventId { get; }
 
         #endregion
 

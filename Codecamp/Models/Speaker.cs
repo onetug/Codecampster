@@ -5,6 +5,8 @@ using System.Diagnostics;
 
 namespace Codecamp.Models
 {
+    // TODO Add Twitter handle
+    // TODO Add separate email address for attendees versus presentation (work vs home)
     [DebuggerDisplay("{" + nameof(DebuggerDisplay) + ",nq}")]
     public class Speaker
     {

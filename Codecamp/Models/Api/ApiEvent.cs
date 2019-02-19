@@ -10,36 +10,36 @@ namespace Codecamp.Models.Api
     {
         public ApiEvent(Event webEvent)
         {
+            if (webEvent == null)
+                return;
+
             Id = webEvent.EventId;
 
             // Summary
+
             Name = webEvent.Name;
             StartDateTime = webEvent.StartDateTime;
             EndDateTime = webEvent.EndDateTime;
 
-            // State
             IsActive = webEvent.IsActive;
             IsSpeakerRegistrationOpen = webEvent.IsSpeakerRegistrationOpen;
             IsAttendeeRegistrationOpen = webEvent.IsAttendeeRegistrationOpen;
 
             // Details
+
             LocationAddress = webEvent.LocationAddress;
             SocialMediaHashtag = webEvent.SocialMediaHashtag;
         }
 
-        #region Summary
-
         public int Id { get; set; }
+
+        #region Summary
 
         public string Name { get; set; }
 
         public DateTime StartDateTime { get; set; }
 
         public DateTime EndDateTime { get; set; }
-
-        #endregion
-
-        #region State
 
         public bool IsActive { get; set; }
 
