@@ -37,7 +37,6 @@ namespace Codecamp.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(@"Data Source=DESKTOP-O59CFU1;Initial Catalog=orlandocodecamp2019;Connect Timeout=30;Encrypt=true;TrustServerCertificate=true;Integrated Security=true;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
         }
 
         protected override void OnModelCreating(ModelBuilder builder)

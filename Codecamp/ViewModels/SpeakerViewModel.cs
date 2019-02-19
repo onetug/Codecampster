@@ -64,10 +64,10 @@ namespace Codecamp.ViewModels
         public string LinkedIn { get; set; }
 
         [Required]
-        [Display(Name = "Are you volunteering")]
+        [Display(Name = "Is Volunteering")]
         public bool IsVolunteer { get; set; }
 
-        [Display(Name = "Is MVP")]
+        [Display(Name = "Is an MVP")]
         public bool IsMvp { get; set; }
 
         [DataType(DataType.Text)]

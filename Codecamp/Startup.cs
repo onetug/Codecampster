@@ -40,6 +40,7 @@ namespace Codecamp
             });
 
             services.AddDbContext<CodecampDbContext>(options =>
+                // options.UseSqlServer(Configuration.GetConnectionString("ProductionDbContextConnection")));
                 options.UseSqlServer(Configuration.GetConnectionString("CodecampDbContextConnection")));
 
             services.AddIdentity<CodecampUser, IdentityRole>()
