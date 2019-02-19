@@ -37,11 +37,8 @@
             @if (User.IsInRole("Admin"))
             {
                 <div class="form-group">
-                    <div class="checkbox">
-                        <label>
-                            <input asp-for="IsApproved" /> @Html.DisplayNameFor(model => model.IsApproved)
-                        </label>
-                    </div>
+                    <input asp-for="IsApproved" type="checkbox" class="medium-checkbox" />
+                    <label asp-for="IsApproved"></label>
                 </div>
             }
             <div class="form-group">

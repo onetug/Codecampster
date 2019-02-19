@@ -21,7 +21,7 @@
     {
         <div style="max-width: 150px; max-height:150px; position: relative; margin-right: 25px;">
             <a asp-controller="Speakers" asp-action="Details" asp-route-id="@speaker.SpeakerId">
-                <img style="max-width: 150px;"
+                <img style="max-width: 150px; max-height: 150px;"
                      class="speakerImage"
                      id="@(string.Format("{0}", speaker.SpeakerId))"
                      src=@("/images/default_user_icon.jpg")

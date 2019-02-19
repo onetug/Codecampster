@@ -28,6 +28,7 @@ namespace Codecamp.Models
         [Display(Name = "Note to Organizers")]
         public string NoteToOrganizers { get; set; }
 
+        [Display(Name = "I am an MVP")]
         public bool IsMvp { get; set; }
 
         public string LinkedIn { get; set; }

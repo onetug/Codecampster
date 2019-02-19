@@ -20,11 +20,8 @@
             @if (User.IsInRole("Admin"))
             {
                 <div class="form-group">
-                    <div class="checkbox">
-                        <label>
-                            <input asp-for="IsApproved" /> @Html.DisplayNameFor(model => model.IsApproved)
-                        </label>
-                    </div>
+                    <input asp-for="IsApproved" type="checkbox" class="medium-checkbox" />
+                    <label asp-for="IsApproved"></label>
                 </div>
                 <hr />
             }
@@ -46,7 +43,7 @@
             <div class="form-group">
                 <label asp-for="ImageFile"></label>
                 <div class="input-group">
-                    <img style="max-width: 150px;"
+                    <img style="max-width: 150px; max-height: 150px;"
                          class="speakerImage"
                          id="@(string.Format("{0}", Model.SpeakerId))"
                          src=@("/images/default_user_icon.jpg")
@@ -85,19 +82,13 @@
                 <input asp-for="LinkedIn" class="form-control" />
                 <span asp-validation-for="LinkedIn" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <div class="checkbox">
-                    <label>
-                        <input asp-for="IsVolunteer" /> @Html.DisplayNameFor(model => model.IsVolunteer)
-                    </label>
-                </div>
+            <div class="form-group" style="margin-top: 15px;">
+                    <input asp-for="IsVolunteer" type="checkbox" class="medium-checkbox" />
+                    <label asp-for="IsVolunteer"></label>
             </div>
-            <div class="form-group">
-                <div class="checkbox">
-                    <label>
-                        <input asp-for="IsMvp" /> @Html.DisplayNameFor(model => model.IsMvp)
-                    </label>
-                </div>
+            <div class="form-group" style="margin-top: 15px;">
+                <input asp-for="IsMvp" type="checkbox" class="medium-checkbox" />
+                <label asp-for="IsMvp"></label>
             </div>
             <div class="form-group">
                 <label asp-for="NoteToOrganizers" class="control-label"></label>

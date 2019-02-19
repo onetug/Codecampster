@@ -13,20 +13,26 @@ namespace ResizeCodecampSpeakerImages
 
         static void Main(string[] args)
         {
-            const int MaxSizePixels = 300;
+            const int MaxSizePixels = 290;
+
+            StreamWriter log = new StreamWriter("db_image_resize.txt");
+            log.WriteLine("Beginning image resize");
 
             using (var context = new CodecampDbContext())
             {
-                var speakers = from speaker in context.Speakers
+                var speakers = (from speaker in context.Speakers
                                join _event in context.Events
                                     on speaker.EventId equals _event.EventId
                                where _event.IsActive == true
-                               select speaker;
+                               select speaker).ToList();
             
-                foreach (var speaker in speakers)
+                for (int index = 0; index < speakers.Count(); index++)
                 {
+                    if (speakers[index].SpeakerId == 46)
+                        continue;
+
                     // Get the speaker image
-                    var imageArray = speaker.Image;
+                    var imageArray = speakers[index].Image;
                     if (imageArray != null)
                     {
                         var imageStream = new MemoryStream(imageArray);
@@ -39,8 +45,11 @@ namespace ResizeCodecampSpeakerImages
                                     || image.Height > MaxSizePixels)
                                 {
                                     Console.WriteLine("SpeakerId: {0}, Height: {1} px, Width: {2}."
-                                        + "  Speaker will be resized.", 
-                                        speaker.SpeakerId, image.Width, image.Height);
+                                        + "  Speaker will be resized.",
+                                        speakers[index].SpeakerId, image.Width, image.Height);
+                                    log.WriteLine("SpeakerId: {0}, Height: {1} px, Width: {2}."
+                                        + "  Speaker will be resized.",
+                                        speakers[index].SpeakerId, image.Width, image.Height);
 
                                     // Resize this image
                                     int width, height;
@@ -75,23 +84,31 @@ namespace ResizeCodecampSpeakerImages
                                                 .FirstOrDefault(c => c.FormatID == ImageFormat.Jpeg.Guid);
                                             resized.Save(ms, codec, encoderParameters);
 
-                                            speaker.Image = ms.ToArray();
+                                            speakers[index].Image = ms.ToArray();
                                         }
                                     }
+
+                                    context.SaveChanges();
                                 }
                             }
                         }
-                        catch(ArgumentException)
+                        catch(Exception)
                         {
-                            Console.WriteLine("SpeakerId: {0} image is invalid, deleting speaker image.", 
-                                speaker.SpeakerId);
-                            speaker.Image = null;
+                            Console.WriteLine("SpeakerId: {0} image is invalid, deleting speaker image.",
+                                speakers[index].SpeakerId);
+                            log.WriteLine("SpeakerId: {0} image is invalid, deleting speaker image.",
+                                speakers[index].SpeakerId);
+
+                            speakers[index].Image = null;
+
+                            context.SaveChanges();
                         }
                     }
                 }
-
-                context.SaveChanges();
             }
+
+            log.WriteLine("End image resize");
+            log.Close();
         }
     }
 }

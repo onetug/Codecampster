@@ -29,7 +29,7 @@ namespace Codecamp.Models
         [Display(Name = "I am attending")]
         public bool IsAttending { get; set; }
 
-        [Display(Name = "I want to volunteer")]
+        [Display(Name = "I would like to volunteer")]
         public bool IsVolunteer { get; set; }
 
         [Display(Name = "I am a speaker")]
