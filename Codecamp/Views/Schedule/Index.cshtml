@@ -21,7 +21,12 @@
             <th>
                 @Html.DisplayNameFor(model => model.IsApproved)
             </th>
-            <th></th>
+            <th>
+                @Html.DisplayNameFor(model => model.TrackId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TimeslotId)
+            </th>
         </tr>
     </thead>
     <tbody>
@@ -37,7 +42,15 @@
                 @Html.DisplayFor(modelItem => item.SkillLevel)
             </td>
             <td>
+                @Html.CheckBoxFor(modelItem => item.IsApproved,
+                    new { })
                 @Html.DisplayFor(modelItem => item.IsApproved)
+            </td>
+            <td>
+
+            </td>
+            <td>
+
             </td>
         </tr>
 }
