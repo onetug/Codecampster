@@ -28,6 +28,7 @@ namespace Codecamp.ViewModels
 
         public virtual List<SpeakerSession> SpeakerSessions { get; set; }
 
+        [Display(Name ="Track")]
         public int? TrackId { get; set; }
 
         [Display(Name = "Track")]
@@ -36,6 +37,7 @@ namespace Codecamp.ViewModels
         [Display(Name = "Room Number")]
         public string RoomNumber { get; set; }
 
+        [Display(Name = "Timeslot")]
         public int? TimeslotId { get; set; }
 
         [Display(Name = "Start Time")]

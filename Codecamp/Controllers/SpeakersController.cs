@@ -85,6 +85,9 @@ namespace Codecamp.Controllers
         // GET: Speakers/Details/5
         public async Task<IActionResult> Details(int? id)
         {
+            // Get the user information
+            var user = await _userManager.GetUserAsync(User);
+
             // If no id specified, return not found
             if (id == null)
                 return NotFound();
@@ -92,8 +95,18 @@ namespace Codecamp.Controllers
             if (!await _speakerBL.SpeakerExists(id.Value))
                 return NotFound();
 
+            SpeakerViewModel speaker = null;
             // Find the specified speaker
-            var speaker = await _speakerBL.GetSpeakerViewModel(id.Value);
+            if (User.IsInRole("Admin"))
+                // Get all sessions
+                speaker = await _speakerBL.GetSpeakerViewModel(id.Value);
+            else if (user != null && user.SpeakerId != null 
+                && user.Speaker.SpeakerId == id.Value)
+                // Get all sessions
+                speaker = await _speakerBL.GetSpeakerViewModel(id.Value);
+            else
+                // Only get approved sessions
+                speaker = await _speakerBL.GetSpeakerViewModel(id.Value, true);
 
             // If the speaker is not found, return not found
             if (speaker == null)
