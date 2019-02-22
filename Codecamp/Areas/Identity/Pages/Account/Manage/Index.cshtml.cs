@@ -78,7 +78,7 @@ namespace Codecamp.Areas.Identity.Pages.Account.Manage
             [Display(Name = "Company")]
             public string CompanyName { get; set; }
 
-            [FileSizeValidation(MaxImageSize)]
+            [ImageSizeValidation(MaxImageSize)]
             [Display(Name = "Image")]
             public IFormFile ImageFile { get; set; }
 
@@ -124,32 +124,6 @@ namespace Codecamp.Areas.Identity.Pages.Account.Manage
             [Phone]
             [Display(Name = "Phone number")]
             public string PhoneNumber { get; set; }
-        }
-
-        /// <summary>
-        /// Perform validation on filesize
-        /// </summary>
-        public class FileSizeValidationAttribute : ValidationAttribute
-        {
-            private int _maxFileSize;
-
-            public FileSizeValidationAttribute(int maxFileSize)
-            {
-                _maxFileSize = maxFileSize;
-            }
-
-            protected override ValidationResult IsValid(
-                object value, ValidationContext validationContext)
-            {
-                var imageFile = ((InputModel)validationContext.ObjectInstance).ImageFile;
-
-                if (imageFile != null && imageFile.Length > _maxFileSize)
-                {
-                    return new ValidationResult(string.Format("File size limit is {0} KB", (_maxFileSize / 1000)));
-                }
-
-                return ValidationResult.Success;
-            }
         }
 
         public async Task<IActionResult> OnGetAsync(string loginWithRegistration = null)
