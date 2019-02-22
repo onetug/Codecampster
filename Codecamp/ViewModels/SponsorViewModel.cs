@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Codecamp.BusinessLogic;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -9,8 +10,8 @@ namespace Codecamp.ViewModels
 {
     public class SponsorViewModel
     {
-        // Lets set the max file size to 20 MB, that is way big enough
-        public const int MaxImageSize = 20000000;
+        // Lets set the max file size to 10 MB, that is way big enough
+        public const int MaxImageSize = 10000000;
 
         public int SponsorId { get; set; }
 
@@ -34,6 +35,7 @@ namespace Codecamp.ViewModels
         [Display(Name = "Website")]
         public string WebsiteUrl { get; set; }
 
+        [ImageSizeValidation(MaxImageSize)]
         [Display(Name = "Image")]
         public IFormFile ImageFile { get; set; }
 

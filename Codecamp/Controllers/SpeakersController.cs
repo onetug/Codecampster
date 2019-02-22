@@ -37,32 +37,6 @@ namespace Codecamp.Controllers
             _userBL = userBL;
         }
 
-        /// <summary>
-        /// Perform validation on filesize
-        /// </summary>
-        public class FileSizeValidationAttribute : ValidationAttribute
-        {
-            private int _maxFileSize;
-
-            public FileSizeValidationAttribute(int maxFileSize)
-            {
-                _maxFileSize = maxFileSize;
-            }
-
-            protected override ValidationResult IsValid(
-                object value, ValidationContext validationContext)
-            {
-                var imageFile = ((SpeakerViewModel)validationContext.ObjectInstance).ImageFile;
-
-                if (imageFile != null && imageFile.Length > _maxFileSize)
-                {
-                    return new ValidationResult(string.Format("File size limit is {0} KB", (_maxFileSize / 1000)));
-                }
-
-                return ValidationResult.Success;
-            }
-        }
-
         // GET: Speakers
         public async Task<IActionResult> Index()
         {

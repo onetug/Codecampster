@@ -20,7 +20,7 @@ function setSpeakerImage(img, id) {
         });
 }
 
-function setSponsorImage(img) {
+function setSponsorImage(img, id) {
     let url = location.origin + "/api/sponsors/" + id + "/image";
     fetch(url)
         .then(function (response) {
