@@ -18,8 +18,10 @@ namespace Codecamp.BusinessLogic
         List<ScheduleViewModel> ToScheduleViewModel(List<Schedule> schedule);
         Task<List<ScheduleViewModel>> GetScheduleViewModelToBuildSchedule(int eventId);
         Task<List<ScheduleViewModel>> GetScheduleViewModelToBuildScheduleForActiveEvent();
-        Task<List<Track>> GetAvailableTracks(int eventId);
-        Task<List<Timeslot>> GetAvailableTimeslots(int eventId, int trackId);
+        Task<List<Track>> GetAvailableTracks(int? eventId = null);
+        Task<List<TrackViewModel>> GetAvailableTrackViewModels(int? eventId = null);
+        Task<List<Timeslot>> GetAvailableTimeslots(int trackId, int? eventId = null);
+        Task<List<TimeslotViewModel>> GetAvailableTimeslotViewModels(int trackId, int? eventId = null);
     }
 
     public class ScheduleBusinessLogic : IScheduleBusinessLogic
@@ -183,8 +185,11 @@ namespace Codecamp.BusinessLogic
                 return await GetScheduleViewModelToBuildSchedule(activeEvent.EventId);
         }
 
-        public async Task<List<Track>> GetAvailableTracks(int eventId)
+        public async Task<List<Track>> GetAvailableTracks(int? eventId = null)
         {
+            if (!eventId.HasValue)
+                eventId = _context.Events.Where(e => e.IsActive).FirstOrDefault().EventId;
+
             var availableTracks = new List<Track>();
 
             // Get the count of the number of timeslots
@@ -212,8 +217,11 @@ namespace Codecamp.BusinessLogic
             return availableTracks;
         }
 
-        public async Task<List<TrackViewModel>> GetAvailableTrackViewModels(int eventId)
+        public async Task<List<TrackViewModel>> GetAvailableTrackViewModels(int? eventId = null)
         {
+            if (!eventId.HasValue)
+                eventId = _context.Events.Where(e => e.IsActive).FirstOrDefault().EventId;
+
             var availableTrackViewModels = new List<TrackViewModel>();
 
             // Get the count of the number of timeslots
@@ -250,8 +258,11 @@ namespace Codecamp.BusinessLogic
             return availableTrackViewModels;
         }
 
-        public async Task<List<Timeslot>> GetAvailableTimeslots(int eventId, int trackId)
+        public async Task<List<Timeslot>> GetAvailableTimeslots(int trackId, int? eventId = null)
         {
+            if (!eventId.HasValue)
+                eventId = _context.Events.Where(e => e.IsActive).FirstOrDefault().EventId;
+
             // The assigned timeslots for the specified track
             var timeslotsAssignedForTrack = from item in _context.CodecampSchedule.Include(s => s.Track)
                                             where item.TrackId == trackId && item.Track.EventId == eventId
@@ -268,8 +279,11 @@ namespace Codecamp.BusinessLogic
             return await availableTimeslotsForTrack.ToListAsync();
         }
 
-        public async Task<List<TimeslotViewModel>> GetAvailableTimeslotViewModels(int eventId, int trackId)
+        public async Task<List<TimeslotViewModel>> GetAvailableTimeslotViewModels(int trackId, int? eventId = null)
         {
+            if (!eventId.HasValue)
+                eventId = _context.Events.Where(e => e.IsActive).FirstOrDefault().EventId;
+
             // The assigned timeslots for the specified track
             var timeslotsAssignedForTrack = from item in _context.CodecampSchedule.Include(s => s.Track)
                                             where item.TrackId == trackId && item.Track.EventId == eventId
