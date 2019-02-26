@@ -9,22 +9,22 @@
 <table class="table">
     <thead>
         <tr>
-            <th>
+            <th class="col-md-2">
                 @Html.DisplayNameFor(model => model.Name)
             </th>
-            <th>
+            <th class="col-md-3">
                 @Html.DisplayNameFor(model => model.Description)
             </th>
-            <th>
+            <th class="col-md-2">
                 @Html.DisplayNameFor(model => model.SkillLevel)
             </th>
-            <th>
+            <th class="col-md-1" style="text-align: center;">
                 @Html.DisplayNameFor(model => model.IsApproved)
             </th>
-            <th>
+            <th class="col-md-2">
                 @Html.DisplayNameFor(model => model.TrackId)
             </th>
-            <th>
+            <th class="col-md-2">
                 @Html.DisplayNameFor(model => model.TimeslotId)
             </th>
         </tr>
@@ -41,10 +41,9 @@
             <td>
                 @Html.DisplayFor(modelItem => item.SkillLevel)
             </td>
-            <td>
+            <td align="center">
                 @Html.CheckBoxFor(modelItem => item.IsApproved,
-                    new { })
-                @Html.DisplayFor(modelItem => item.IsApproved)
+                    new { @class = "medium-checkbox" })
             </td>
             <td>
 

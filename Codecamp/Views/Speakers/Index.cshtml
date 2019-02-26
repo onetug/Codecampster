@@ -100,7 +100,7 @@ else
                         @* Allow the user to edit themselves via the manage user page *@
                         <a asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">
                             <div style="text-align:center;">
-                                <div style="width: 150px; height: 150px; margin-left: auto; margin-right: auto">
+                                <div style="max-width: 150px; max-height: 150px; margin-left: auto; margin-right: auto">
                                     <img style="max-width: 150px; max-height: 150px;"
                                          class="speakerImage"
                                          id="@(string.Format("{0}", speaker.SpeakerId))"
