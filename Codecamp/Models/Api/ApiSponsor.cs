@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using System;
 using System.Diagnostics;
 
@@ -8,6 +8,12 @@ namespace Codecamp.Models.Api
     [JsonObject(Title = "sponsor")]
     public class ApiSponsor
     {
+        // For Json.Net Serialization/Deserialization
+        public ApiSponsor()
+        {
+
+        }
+
         public ApiSponsor(Sponsor webSponsor, Uri imageUrl = null,
             bool includeDetails = false)
         {

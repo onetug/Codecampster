@@ -1,6 +1,7 @@
 ﻿using Codecamp.Data;
 using Codecamp.Models;
 using Codecamp.Models.Api;
+using Codecamp.ViewModels;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -8,7 +9,9 @@ namespace Codecamp.BusinessLogic.Api
 {
     public interface ISponsorsApiBusinessLogic
     {
-        List<ApiSponsor> GetSponsorsList(int? eventId,
+        IList<SponsorLevel> GetSponsorLevels();
+
+        IList<ApiSponsor> GetSponsorsList(int? eventId,
             bool includeDetails = false);
 
         Sponsor GetWebSponsor(int sponsorId);
@@ -21,7 +24,15 @@ namespace Codecamp.BusinessLogic.Api
         {
         }
 
-        public List<ApiSponsor> GetSponsorsList(int? eventId = null,
+        // TODO Sponsor levels are not currently tied to EventIds
+        public IList<SponsorLevel> GetSponsorLevels()
+        {
+            var sponsorLevel = SponsorLevel.GetSponsorshipLevels();
+
+            return sponsorLevel;
+        }
+
+        public IList<ApiSponsor> GetSponsorsList(int? eventId = null,
             bool includeDetails = false)
         {
             var apiSponsorsList = Context.Sponsors

@@ -15,7 +15,7 @@ namespace Codecamp.BusinessLogic.Api
             ImageFolder = imageFolder;
         }
 
-        protected CodecampDbContext Context { get; }
+        protected CodecampDbContext Context { get; set; }
 
         #region Events
 
@@ -62,7 +62,7 @@ namespace Codecamp.BusinessLogic.Api
         #region Images (Speakers and Sponsors)
 
         [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
-        protected string ImageFolder { get; }
+        protected string ImageFolder { get; set; }
 
         protected Uri GetImageUrl(int id)
         {

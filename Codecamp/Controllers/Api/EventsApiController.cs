@@ -26,7 +26,7 @@ namespace Codecamp.Controllers.Api
             return jsonEventsList;
         }
 
-        [HttpGet("/active")]
+        [HttpGet("active")]
         [Produces("application/json", Type = typeof(ApiEvent))]
         public IActionResult GetActiveEvent()
         {

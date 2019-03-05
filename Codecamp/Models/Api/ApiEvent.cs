@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using System;
 using System.Diagnostics;
 
@@ -8,6 +8,12 @@ namespace Codecamp.Models.Api
     [JsonObject(Title = "event")]
     public class ApiEvent
     {
+        // For Json.Net Serialization/Deserialization
+        public ApiEvent()
+        {
+
+        }
+
         public ApiEvent(Event webEvent)
         {
             if (webEvent == null)
@@ -57,6 +63,7 @@ namespace Codecamp.Models.Api
 
         #endregion
 
-        private string DebuggerDisplay => $"{Name} - {StartDateTime:g} to {EndDateTime:g}";
+        private string DebuggerDisplay =>
+            $"{Id} - {Name} - {StartDateTime:g} to {EndDateTime:g}";
     }
 }
