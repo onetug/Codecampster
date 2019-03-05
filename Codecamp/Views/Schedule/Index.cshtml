@@ -33,6 +33,7 @@
 @foreach (var item in Model) {
         <tr>
             <td>
+                @Html.HiddenFor(modelItem => item.SessionId, new { @class = "session-id" })
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
             <td>
@@ -43,15 +44,271 @@
             </td>
             <td align="center">
                 @Html.CheckBoxFor(modelItem => item.IsApproved,
-                    new { @class = "medium-checkbox" })
+                    new { @class = "medium-checkbox is-approved-checkbox" })
             </td>
             <td>
-
+                @Html.HiddenFor(modelItem => item.TrackId, new { @class = "track-id"})
+                <select class="dropdown-list-tracks" style="display: none;"></select>
             </td>
             <td>
-
+                @Html.HiddenFor(modelItem => item.TimeslotId, new { @class = "timeslot-id" })
+                <select class="dropdown-list-timeslots" style="display: none;"></select>
             </td>
         </tr>
 }
     </tbody>
 </table>
+<div id="message"></div>
+
+@section Scripts {
+    <script type="text/javascript">
+        // Initialize the event handlers
+        function initializeEventHandlers() {
+            // The is approved checkboxes
+            $('.is-approved-checkbox').each(function (index) {
+                $(this).change(function () {
+                    let currentRow = $(this).closest('tr');
+                    let sessionId = parseInt(currentRow.find('.session-id').val(), 10);
+                    let checkboxIsApprovedValue = $(this).is(':checked');
+
+                    // Assign the track to the session
+                    let options = {};
+                    options.url = 'api/schedule/sessionApproval/' + sessionId;
+                    options.type = 'POST';
+                    options.dataType = 'json';
+                    options.data = JSON.stringify(checkboxIsApprovedValue);
+                    options.contentType = 'application/json';
+                    options.success = function (data) {
+                        // Set the assigned timeslot value
+                        if (data == true)
+                            $(this).prop('checked', true);
+                        else
+                            $(this).prop('checked', false);
+
+                        populateAvailableTracks();
+                        populateAvailableTimeslots();
+                    };
+                    options.error = function () {
+                        // Error saving track to session
+                        $('#message').html('Error while calling Web API to set approved status');
+                    };
+                    $.ajax(options);
+                });
+            });
+
+            // The track dropown list
+            $('.dropdown-list-tracks').each(function (index) {
+                // Proecss changes to the track dropdown list
+                $(this).change(function () {
+                    let currentRow = $(this).closest('tr');
+                    let sessionId = parseInt(currentRow.find('.session-id').val(), 10);
+                    let trackIdHiddenInput = currentRow.find('.track-id');
+                    let trackId = parseInt($(this).val(), 10);
+
+                    // Assign the track to the session
+                    let options = {};
+                    options.url = 'api/schedule/assignTrackToSession/' + sessionId;
+                    options.type = 'POST';
+                    options.dataType = 'json';
+                    options.data = JSON.stringify(trackId);
+                    options.contentType = 'application/json';
+                    options.success = function (data) {
+                        // Disable the dropdown lists
+                        $('.dropdown-list-tracks').attr('disabled', true);
+                        $('.dropdown-list-timeslots').attr('disabled', true);
+
+                        // Set the assigned track value
+                        trackIdHiddenInput.val(data);
+
+                        // Update the dropdowns based on the assigned track
+                        populateAvailableTracks();
+                        populateAvailableTimeslots();
+                    };
+                    options.error = function () {
+                        // Error saving track to session
+                        $('#message').html('Error while calling Web API to save the assigned track');
+                    };
+                    $.ajax(options);
+                });
+            });
+
+            // The timeslot dropown list
+            $('.dropdown-list-timeslots').each(function (index) {
+                // Proecss changes to the track dropdown list
+                $(this).change(function () {
+                    let currentRow = $(this).closest('tr');
+                    let sessionId = parseInt(currentRow.find('.session-id').val(), 10);
+                    let timeslotIdHiddenInput = currentRow.find('.timeslot-id');
+                    let timeslotId = parseInt($(this).val(), 10);
+
+                    // Assign the track to the session
+                    let options = {};
+                    options.url = 'api/schedule/assignTimeslotToSession/' + sessionId;
+                    options.type = 'POST';
+                    options.dataType = 'json';
+                    options.data = JSON.stringify(timeslotId);
+                    options.contentType = 'application/json';
+                    options.success = function (data) {
+                        // Disable the dropdown lists
+                        $('.dropdown-list-tracks').attr('disabled', true);
+                        $('.dropdown-list-timeslots').attr('disabled', true);
+
+                        // Set the assigned timeslot value
+                        timeslotIdHiddenInput.val(data);
+
+                        // Update the dropdowns based on the assigned timelot
+                        populateAvailableTracks();
+                        populateAvailableTimeslots();
+                    };
+                    options.error = function () {
+                        // Error saving track to session
+                        $('#message').html('Error while calling Web API');
+                    };
+                    $.ajax(options);
+                });
+            });
+        }
+
+        // Populate the available tracks for all track dropdown lists
+        function populateAvailableTracks() {
+            let options = {};
+            options.url = 'api/schedule/allAvailableTracks';
+            options.type = 'GET';
+            options.dataType = 'json';
+            options.success = function (allSessionTracks) {
+                // allSessionTracks contains a dictionary with track dropdown list items
+                // for all sessions
+
+                // Go through each dropdown list
+                $('.dropdown-list-tracks').each(function (index) {
+                    let ddl = this;
+
+                    let currentRow = $(ddl).closest('tr');
+                    let sessionId = parseInt(currentRow.find('.session-id').val(), 10);
+                    let trackIdHiddenInput = currentRow.find('.track-id');
+                    let trackId = parseInt(trackIdHiddenInput.val(), 10);
+                    let isApprovedCheckbox = currentRow.find('.is-approved-checkbox');
+
+                    if (!$(isApprovedCheckbox).is(':checked'))
+                        // Session is not approved, hide the track selection
+                        $(ddl).hide();
+                    else {
+                        // Clear the dropdown list
+                        $(ddl).empty();
+
+                        // If track items exist for the session then
+                        if (allSessionTracks[sessionId] != null) {
+                            // Get the session tracks
+                            let sessionTracks = allSessionTracks[sessionId];
+
+                            // Add the select option, and select if no track id has been selected
+                            if (isNaN(trackId) || trackId == 0)
+                                $(ddl).append('<option value=0 selected>Select Track</option>');
+                            else
+                                $(ddl).append('<option value=0>Select Track</option>');
+
+                            // Add available track options
+                            sessionTracks.forEach(function (element) {
+                                if (element.trackId == trackId)
+                                    // the track is selected
+                                    $(ddl).append('<option value='
+                                        + element.trackId + ' selected>' + element.displayName
+                                        + '</option>');
+                                else
+                                    // The track is not selected
+                                    $(ddl).append('<option value='
+                                        + element.trackId + '>' + element.displayName
+                                        + '</option>');
+                            });
+                        }
+
+                        // Re-enable the dropdown list
+                        $(ddl).attr('disabled', false);
+                        // Show it, if not already shown
+                        $(ddl).show();
+                    }
+                });
+            };
+            options.error = function () {
+                // Error obtaining tracks
+                $('#message').html('Error while calling Web API to get available tracks');
+            };
+            $.ajax(options);
+        }
+
+        // Populate the available timeslots for all timeslot dropdown lists
+        function populateAvailableTimeslots() {
+            let options = {};
+            options.url = 'api/schedule/allAvailableTimeslots'
+            options.type = 'GET';
+            options.dataType = 'json';
+            options.success = function (allSessionTimeslots) {
+                // allSessionTimeslots contains a dictionary with timeslot dropdown items
+                // for all sessions
+
+                // Go through each dropdown list
+                $('.dropdown-list-timeslots').each(function (index) {
+                    let ddl = this;
+
+                    let currentRow = $(ddl).closest('tr');
+                    let sessionId = parseInt(currentRow.find('.session-id').val(), 10);
+                    let trackId = parseInt(currentRow.find('.track-id').val(), 10);
+                    let timeslotIdHiddenInput = currentRow.find('.timeslot-id');
+                    let timeslotId = parseInt(timeslotIdHiddenInput.val(), 10);
+                    let isApprovedCheckbox = currentRow.find('.is-approved-checkbox');
+
+                    if (!$(isApprovedCheckbox).is(':checked') || (isNaN(trackId) || trackId == null))
+                        $(ddl).hide();
+                    else {
+                        // Clear the dropdown list
+                        $(ddl).empty();
+
+                        if (allSessionTimeslots[sessionId] != null) {
+                            // Get the session timeslots
+                            let sessionTimeslots = allSessionTimeslots[sessionId];
+
+                            // Add the select option, and select if no track id has been selected
+                            if (isNaN(timeslotId) || timeslotId == 0)
+                                $(ddl).append('<option value=0 selected>Select Timeslot</option>');
+                            else
+                                $(ddl).append('<option value=0>Select Timeslot</option>');
+
+                            // Add available track options
+                            sessionTimeslots.forEach(function (element) {
+                                if (element.timeslotId == timeslotId)
+                                    // the track is selected
+                                    $(ddl).append('<option value='
+                                        + element.timeslotId + ' selected>' + element.displayName
+                                        + '</option>');
+                                else
+                                    // The track is not selected
+                                    $(ddl).append('<option value='
+                                        + element.timeslotId + '>' + element.displayName
+                                        + '</option>');
+                            });
+                        }
+
+                        $(ddl).attr('disabled', false);
+                        $(ddl).show();
+                    }
+                });
+            };
+            options.error = function () {
+                // Error obtaining tracks
+                $('#message').html('Error while calling Web API to get available timeslots');
+            };
+            $.ajax(options);
+        }
+
+        $(document).ready(function () {
+            // Initialize the page event handlers
+            initializeEventHandlers();
+
+            // Available tracks
+            populateAvailableTracks();
+
+            // Available timeslots/track
+            populateAvailableTimeslots();
+        });
+    </script>
+}

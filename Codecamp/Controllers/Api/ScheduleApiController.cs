@@ -29,14 +29,44 @@ namespace Codecamp.Controllers.Api
         /// Gets the avaialble TrackViewModel objects for the active event
         /// </summary>
         /// <returns>Collection of TrackViewModel objects</returns>
-        [HttpGet("availableTracks")]
+        [HttpGet("availableTracks/{sessionId}")]
         [Produces("application/json")]
-        public async Task<ActionResult<List<TrackViewModel>>> GetAvailableTracks()
+        public async Task<ActionResult<List<TrackViewModel>>> GetAvailableTracks(int sessionId)
         {
             var availableTracks
-                = await _scheduleBL.GetAvailableTrackViewModels();
+                = await _scheduleBL.GetAvailableTrackViewModels(sessionId);
 
             return availableTracks;
+        }
+
+        /// <summary>
+        /// Gets the available tracks for assignment to sessions.  The collection
+        /// is returned as a dictionary with session id as the key
+        /// </summary>
+        /// <returns>Dictionary of TrackViewModels for each session</returns>
+        [HttpGet("allAvailableTracks")]
+        [Produces("application/json")]
+        public async Task<ActionResult<Dictionary<int, List<TrackViewModel>>>> GetAvailableTrackViewModelsForSessions()
+        {
+            var availableTracks
+                = await _scheduleBL.GetAvailableTrackViewModelsForSessions();
+
+            return availableTracks;
+        }
+
+        /// <summary>
+        /// Gets the available timeslots for assignment to sessions.  The collection
+        /// is returned as a dictionary with session id as the key
+        /// </summary>
+        /// <returns>Dictionary of TimeslotViewModels for each session</returns>
+        [HttpGet("allAvailableTimeslots")]
+        [Produces("application/json")]
+        public async Task<ActionResult<Dictionary<int, List<TimeslotViewModel>>>> GetAvailableTimeslotViewModelsForSessions()
+        {
+            var availableTimeslots
+                = await _scheduleBL.GetAvailableTimeslotViewModelsForSessions();
+
+            return availableTimeslots;
         }
 
         /// <summary>
@@ -44,29 +74,70 @@ namespace Codecamp.Controllers.Api
         /// </summary>
         /// <param name="trackId">The desired TrackId</param>
         /// <returns>The collection of TimeslotViewModel objects</returns>
-        [HttpGet("availableTimeslots/{trackId}")]
+        [HttpGet("availableTimeslots/{sessionId}")]
         [Produces("application/json")]
-        public async Task<ActionResult<List<TimeslotViewModel>>> GetAvailableTimeslots(int trackId)
+        public async Task<ActionResult<List<TimeslotViewModel>>> GetAvailableTimeslots(int sessionId)
         {
             var availableTimeslots
-                = await _scheduleBL.GetAvailableTimeslotViewModels(trackId);
+                = await _scheduleBL.GetAvailableTimeslotViewModels(sessionId);
 
             return availableTimeslots;
         }
 
-        [HttpPost("sessionApproval/{id}")]
-        public async Task<ActionResult<Session>> SetApprovalStatus(int id, [FromBody] bool approvalStatus)
+        [HttpPost("sessionApproval/{sessionId}")]
+        [Produces("application/json")]
+        public async Task<ActionResult<bool>> SetApprovalStatus(int sessionId, [FromBody] bool approvalStatus)
         {
-            var session = await _sessionBL.GetSession(id);
+            var session = await _sessionBL.GetSession(sessionId);
+
+            var originalValue = session.IsApproved;
 
             session.IsApproved = approvalStatus;
 
             var result = await _sessionBL.UpdateSession(session);
 
             if (result == true)
-                return StatusCode(StatusCodes.Status200OK);
+                return Ok(session.IsApproved);
             else
-                return StatusCode(StatusCodes.Status500InternalServerError);
+                return StatusCode(StatusCodes.Status400BadRequest, originalValue);
+        }
+
+        [HttpPost("assignTrackToSession/{sessionId}")]
+        [Produces("application/json")]
+        public async Task<ActionResult<int>> AssignTrackToSession(int sessionId,
+            [FromBody] int trackId)
+        {
+            var session = await _sessionBL.GetSession(sessionId);
+
+            var originalValue = session.TrackId;
+
+            session.TrackId = trackId == 0 ? (int?)null : trackId;
+
+            var result = await _sessionBL.UpdateSession(session);
+
+            if (result == true)
+                return Ok(session.TrackId);
+            else
+                return StatusCode(StatusCodes.Status400BadRequest, originalValue);
+        }
+
+        [HttpPost("assignTimeslotToSession/{sessionId}")]
+        [Produces("application/json")]
+        public async Task<ActionResult<int>> AssignTimeslotToSession(int sessionId,
+            [FromBody] int timeslotId)
+        {
+            var session = await _sessionBL.GetSession(sessionId);
+
+            var originalValue = session.TimeslotId;
+
+            session.TimeslotId = timeslotId == 0 ? (int?)null : timeslotId;
+
+            var result = await _sessionBL.UpdateSession(session);
+
+            if (result == true)
+                return Ok(session.TimeslotId);
+            else
+                return StatusCode(StatusCodes.Status400BadRequest, originalValue);
         }
     }
 }
