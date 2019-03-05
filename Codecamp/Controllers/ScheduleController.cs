@@ -26,7 +26,7 @@ namespace Codecamp.Controllers
         // GET: Schedule
         public async Task<IActionResult> Index()
         {
-            var schedule = await _scheduleBL.GetScheduleViewModelToBuildScheduleForActiveEvent();
+            var schedule = await _scheduleBL.GetActiveScheduleViewModel();
             return View(schedule);
         }
 
