@@ -5,7 +5,7 @@
 }
 
 <h4>@ViewData["Title"]</h4>
-@Html.Partial("_StatusMessage", Model.StatusMessage)
+@await Html.PartialAsync("_StatusMessage", Model.StatusMessage)
 
 <div class="row">
     <div class="col-md-6">
@@ -49,7 +49,7 @@
                     <div class="form-group">
                         <label asp-for="Input.ImageFile"></label><label>&nbsp;(note: Image size limit of @ViewData["MaxImageSize"] KB)</label>
                         <div class="input-group">
-                            <img style="max-width: 150px;"
+                            <img style="max-width: 150px; max-height: 150px;"
                                  class="speakerImage"
                                  id="@(string.Format("{0}", Model.Input.SpeakerId))"
                                  src=@("/images/default_user_icon.jpg")
@@ -83,12 +83,12 @@
                         <input asp-for="Input.LinkedIn" class="form-control" />
                     </div>
                     <div class="form-group">
+                        <input asp-for="Input.IsVolunteer" type="checkbox" class="medium-checkbox" style="margin-top: 20px;" />
                         <label asp-for="Input.IsVolunteer"></label>
-                        <input asp-for="Input.IsVolunteer" class="form-inline" />
                     </div>
                     <div class="form-group">
+                        <input asp-for="Input.IsVolunteer" type="checkbox" class="medium-checkbox" />
                         <label asp-for="Input.IsMvp"></label>
-                        <input asp-for="Input.IsMvp" class="form-inline" />
                     </div>
                     <div class="form-group">
                         <label asp-for="Input.NoteToOrganizers"></label>
@@ -142,8 +142,8 @@
                         <input asp-for="Input.TwitterHandle" class="form-control" />
                     </div>
                     <div class="form-group">
+                        <input asp-for="Input.IsVolunteer" type="checkbox" class="medium-checkbox" style="margin-top: 20px;" />
                         <label asp-for="Input.IsVolunteer"></label>
-                        <input asp-for="Input.IsVolunteer" class="form-inline" />
                     </div>
                     <div class="form-group">
                         <label asp-for="Input.PhoneNumber"></label>

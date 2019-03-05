@@ -20,6 +20,7 @@ namespace Codecamp.Models
         // Keywords associated with the session.
         public string Keywords { get; set; }
 
+        [Display(Name = "Is Approved")]
         public bool IsApproved { get; set; }
 
         // The sessions associated with speakers
@@ -33,12 +34,12 @@ namespace Codecamp.Models
 
         public virtual Event Event { get; set; }
 
-        [ForeignKey("TrackId")]
+        [ForeignKey("Track Id")]
         public int? TrackId { get; set; }
 
         public virtual Track Track { get; set; }
 
-        [ForeignKey("TimeslotId")]
+        [ForeignKey("Timeslot Id")]
         public int? TimeslotId { get; set; }
 
         public virtual Timeslot Timeslot { get; set; }

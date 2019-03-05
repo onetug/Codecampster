@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Codecamp.BusinessLogic;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -10,8 +11,8 @@ namespace Codecamp.ViewModels
 {
     public class SpeakerViewModel
     {
-        // Lets set the max file size to 20 MB, that is way big enough
-        public const int MaxImageSize = 20000000;
+        // Lets set the max file size to 5 MB, that is way big enough
+        public const int MaxImageSize = 5000000;
 
         public int SpeakerId { get; set; }
 
@@ -35,16 +36,9 @@ namespace Codecamp.ViewModels
         [Display(Name = "Company")]
         public string CompanyName { get; set; }
 
-        [FileSizeValidation(MaxImageSize)]
+        [ImageSizeValidation(MaxImageSize)]
         [Display(Name = "Image")]
         public IFormFile ImageFile { get; set; }
-
-        [Display(Name = "Image Size W x H (pixels)")]
-        public string ImageSizePixels { get; set; }
-
-        public bool IsImageResizable { get; set; }
-
-        public bool ResizeImage { get; set; }
 
         [DataType(DataType.MultilineText)]
         [Display(Name = "Bio")]
@@ -71,10 +65,10 @@ namespace Codecamp.ViewModels
         public string LinkedIn { get; set; }
 
         [Required]
-        [Display(Name = "Are you volunteering")]
+        [Display(Name = "Is Volunteering")]
         public bool IsVolunteer { get; set; }
 
-        [Display(Name = "Is MVP")]
+        [Display(Name = "Is an MVP")]
         public bool IsMvp { get; set; }
 
         [DataType(DataType.Text)]

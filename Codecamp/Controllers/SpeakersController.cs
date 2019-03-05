@@ -37,58 +37,31 @@ namespace Codecamp.Controllers
             _userBL = userBL;
         }
 
-        /// <summary>
-        /// Perform validation on filesize
-        /// </summary>
-        public class FileSizeValidationAttribute : ValidationAttribute
-        {
-            private int _maxFileSize;
-
-            public FileSizeValidationAttribute(int maxFileSize)
-            {
-                _maxFileSize = maxFileSize;
-            }
-
-            protected override ValidationResult IsValid(
-                object value, ValidationContext validationContext)
-            {
-                var imageFile = ((SpeakerViewModel)validationContext.ObjectInstance).ImageFile;
-
-                if (imageFile != null && imageFile.Length > _maxFileSize)
-                {
-                    return new ValidationResult(string.Format("File size limit is {0} KB", (_maxFileSize / 1000)));
-                }
-
-                return ValidationResult.Success;
-            }
-        }
-
         // GET: Speakers
         public async Task<IActionResult> Index()
         {
             List<SpeakerViewModel> speakers;
 
-            // Get the speakers for the active event. If there is
-            // no active event, get all speakers for all events.
-            //if (User.IsInRole("Admin"))
-            //{
+            if (User.IsInRole("Admin"))
+            {
                 ViewData["Title"] = "All Speakers";
-                // Don't load any images, this is list on the Admin version of this
-                // page.
                 speakers = await _speakerBL.GetAllSpeakersViewModelForActiveEvent();
-            //}
-            //else
-            //{
-            //    ViewData["Title"] = "Speakers";
-            //    speakers = await _speakerBL.GetAllApprovedSpeakersViewModelForActiveEvent();
-            //}
-            
+            }
+            else
+            {
+                ViewData["Title"] = "Speakers";
+                speakers = await _speakerBL.GetAllSpeakersViewModelForActiveEventWithApprovedSessions();
+            }
+
             return View(speakers);
         }
 
         // GET: Speakers/Details/5
         public async Task<IActionResult> Details(int? id)
         {
+            // Get the user information
+            var user = await _userManager.GetUserAsync(User);
+
             // If no id specified, return not found
             if (id == null)
                 return NotFound();
@@ -96,8 +69,18 @@ namespace Codecamp.Controllers
             if (!await _speakerBL.SpeakerExists(id.Value))
                 return NotFound();
 
+            SpeakerViewModel speaker = null;
             // Find the specified speaker
-            var speaker = await _speakerBL.GetSpeakerViewModel(id.Value);
+            if (User.IsInRole("Admin"))
+                // Get all sessions
+                speaker = await _speakerBL.GetSpeakerViewModel(id.Value);
+            else if (user != null && user.SpeakerId != null 
+                && user.Speaker.SpeakerId == id.Value)
+                // Get all sessions
+                speaker = await _speakerBL.GetSpeakerViewModel(id.Value);
+            else
+                // Only get approved sessions
+                speaker = await _speakerBL.GetSpeakerViewModel(id.Value, true);
 
             // If the speaker is not found, return not found
             if (speaker == null)
@@ -166,12 +149,6 @@ namespace Codecamp.Controllers
 
                     speaker.Image 
                         = _speakerBL.ResizeImage(ms.ToArray());
-                }
-
-                if (speakerVM.ImageFile == null && speakerVM.ResizeImage == true)
-                {
-                    // Resize the image to be no greater than 300px x 300px
-                    speaker.Image = _speakerBL.ResizeImage(speaker.SpeakerId);
                 }
 
                 var result = await _speakerBL.UpdateSpeaker(speaker);

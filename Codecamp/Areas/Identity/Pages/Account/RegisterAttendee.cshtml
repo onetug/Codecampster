@@ -18,6 +18,10 @@
                 <span asp-validation-for="Input.Email" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <input asp-for="Input.IsVolunteer" type="checkbox" class="medium-checkbox" />
+                <label asp-for="Input.IsVolunteer"></label>
+            </div>
+            <div class="form-group">
                 <label asp-for="Input.Password"></label>
                 <input asp-for="Input.Password" class="form-control" />
                 <span asp-validation-for="Input.Password" class="text-danger"></span>

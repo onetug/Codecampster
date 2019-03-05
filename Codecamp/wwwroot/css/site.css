@@ -44,3 +44,9 @@ body {
 table {
     font-size: medium;
 }
+
+.medium-checkbox {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+}
