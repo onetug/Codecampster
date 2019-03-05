@@ -5,6 +5,12 @@ namespace Codecamp.Models.Api
     [JsonObject(Title = "user")]
     public class ApiUser
     {
+        // For Json.Net Serialization/Deserialization
+        public ApiUser()
+        {
+
+        }
+
         public ApiUser(CodecampUser webUser, bool includeDetails = false)
         {
             Id = webUser.Id;
@@ -23,14 +29,14 @@ namespace Codecamp.Models.Api
 
         #region Summary
 
-        public string Id { get; }
+        public string Id { get; set; }
 
-        public string FirstName { get; }
+        public string FirstName { get; set; }
 
-        public string LastName { get; }
+        public string LastName { get; set; }
 
         // TODO Future
-        //public int? EventId { get; }
+        //public int? EventId { get; set; }
 
         // TODO Consolidate with Codecamp.Models.CodeCampUser.FullName
         public string FullNameOrEmailAddress
@@ -48,12 +54,12 @@ namespace Codecamp.Models.Api
 
         #region Details
 
-        public string EmailAddress { get; }
+        public string EmailAddress { get; set; }
 
         #endregion
 
         // Redundant unless attendees are directly accessible
-        private int? SpeakerId { get; }
+        private int? SpeakerId { get; set; }
 
         private string DebuggerDisplay =>
             $"{Id}" +  DebugSpeakerId + $" - {FullNameOrEmailAddress}";

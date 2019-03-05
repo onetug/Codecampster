@@ -7,6 +7,12 @@ namespace Codecamp.Models.Api
     [JsonObject(Title = "track")]
     public class ApiTrack
     {
+        // For Json.Net Serialization/Deserialization
+        public ApiTrack()
+        {
+
+        }
+
         public ApiTrack(Track webTrack)
         {
             if (webTrack == null)
@@ -22,11 +28,19 @@ namespace Codecamp.Models.Api
 
         public int Id { get; set; }
 
+        #region Summary
+
         public int? EventId { get; set; }
 
         public string Name { get; set; }
 
+        #endregion
+
+        #region Details
+
         public string RoomNumber { get; set; }
+
+        #endregion
 
         private string DebuggerDisplay =>
             $"{Id} - Event {EventId} - {Name} - {RoomNumber}";

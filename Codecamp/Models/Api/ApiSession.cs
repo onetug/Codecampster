@@ -8,6 +8,12 @@ namespace Codecamp.Models.Api
     [JsonObject(Title = "session")]
     public class ApiSession
     {
+        // For Json.Net Serialization/Deserialization
+        public ApiSession()
+        {
+
+        }
+
         public ApiSession(Session webSession, bool includeDescription = false)
         {
             if (webSession == null)
@@ -37,32 +43,32 @@ namespace Codecamp.Models.Api
             Description = webSession.Description;
         }
 
-        public int Id { get; }
+        public int Id { get; set; }
 
         #region Summary
 
-        public int? EventId { get; }
+        public int? EventId { get; set; }
 
-        public string Name { get; }
+        public string Name { get; set; }
 
         // TODO Multiple speakers
-        public int? SpeakerId { get; }
+        public int? SpeakerId { get; set; }
 
-        public bool IsApproved { get;  }
+        public bool IsApproved { get; set; }
 
-        public int? TrackId { get;  }
+        public int? TrackId { get; set; }
 
-        public int? TimeslotId { get;  }
+        public int? TimeslotId { get; set; }
 
-        public int SkillLevel { get;  }
+        public int SkillLevel { get; set; }
 
-        public string Keywords { get;  }
+        public string Keywords { get; set; }
 
         #endregion
 
         #region Details
 
-        public string Description { get;  }
+        public string Description { get; set; }
 
         #endregion
 

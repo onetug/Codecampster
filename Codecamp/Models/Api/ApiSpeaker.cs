@@ -9,6 +9,12 @@ namespace Codecamp.Models.Api
     [JsonObject(Title = "speaker")]
     public class ApiSpeaker
     {
+        // For Json.Net Serialization/Deserialization
+        public ApiSpeaker()
+        {
+
+        }
+
         public ApiSpeaker(Speaker webSpeaker, Uri imageUrl = null,
             bool includeDetails = false)
         {
@@ -41,36 +47,36 @@ namespace Codecamp.Models.Api
             LinkedIn = webSpeaker.LinkedIn;
         }
 
-        public int Id { get; }
+        public int Id { get; set; }
 
         #region Summary
 
-        public int? EventId { get; }
+        public int? EventId { get; set; }
 
         public string Name => User?.FullNameOrEmailAddress;
 
         [JsonProperty("user")]
-        public ApiUser User { get; }
+        public ApiUser User { get; set; }
 
-        public Uri ImageUrl { get; }
+        public Uri ImageUrl { get; set; }
 
-        public bool IsMvp { get; }
+        public bool IsMvp { get; set; }
 
-        public bool IsApproved { get; }
+        public bool IsApproved { get; set; }
 
         #endregion
 
         #region Details
 
-        public string CompanyName { get; }
+        public string CompanyName { get; set; }
 
-        public string Bio { get; }
+        public string Bio { get; set; }
 
-        public string WebsiteUrl { get; }
+        public string WebsiteUrl { get; set; }
 
-        public string BlogUrl { get; }
+        public string BlogUrl { get; set; }
 
-        public string LinkedIn { get; }
+        public string LinkedIn { get; set; }
 
         #endregion
 

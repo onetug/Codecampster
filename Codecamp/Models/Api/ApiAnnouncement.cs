@@ -8,6 +8,12 @@ namespace Codecamp.Models.Api
     [JsonObject(Title = "announcement")]
     public class ApiAnnouncement
     {
+        // For Json.Net Serialization/Deserialization
+        public ApiAnnouncement()
+        {
+
+        }
+
         public ApiAnnouncement(Announcement webAnnouncement)
         {
             Id = webAnnouncement.AnnouncementId;

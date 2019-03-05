@@ -1,5 +1,6 @@
 ﻿using Codecamp.BusinessLogic.Api;
 using Codecamp.Models.Api;
+using Codecamp.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 
@@ -22,6 +23,16 @@ namespace Codecamp.Controllers.Api
         {
             var apiSponsorList = BusinessLogic.GetSponsorsList(eventId);
             var jsonSponsorsList = new JsonResult(apiSponsorList);
+
+            return jsonSponsorsList;
+        }
+
+        [HttpGet("levels")]
+        [Produces("application/json", Type = typeof(List<SponsorLevel>))]
+        public IActionResult GetSponsorLevels(int? eventId = null)
+        {
+            var sponsorLevels = BusinessLogic.GetSponsorLevels();
+            var jsonSponsorsList = new JsonResult(sponsorLevels);
 
             return jsonSponsorsList;
         }
