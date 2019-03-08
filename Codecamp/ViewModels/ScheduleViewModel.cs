@@ -26,6 +26,7 @@ namespace Codecamp.ViewModels
         [Display(Name = "Is Approved")]
         public bool IsApproved { get; set; }
 
+        [Display(Name = "Speakers")]
         public virtual List<SpeakerSession> SpeakerSessions { get; set; }
 
         [Display(Name ="Track")]

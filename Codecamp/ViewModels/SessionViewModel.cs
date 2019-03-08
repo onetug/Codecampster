@@ -32,5 +32,8 @@ namespace Codecamp.ViewModels
 
         [Display(Name = "Event Name")]
         public string EventName { get; set; }
+
+        [Display(Name = "Favorite")]
+        public bool IsUserFavorite { get; set; }
     }
 }

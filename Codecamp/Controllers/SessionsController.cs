@@ -22,6 +22,17 @@ namespace Codecamp.Controllers
         private readonly IEventBusinessLogic _eventBL;
         private readonly ISpeakerBusinessLogic _speakerBL;
 
+        protected string UserId
+        {
+            get
+            {
+                // Get the user's Id
+                return User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier) != null
+                    ? User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value
+                    : null;
+            }
+        }
+
         public SessionsController(
             CodecampDbContext context,
             UserManager<CodecampUser> userManager,
@@ -53,7 +64,7 @@ namespace Codecamp.Controllers
             {
                 // Get all sessions for the active event for the admin
                 pageModel.SelectedUserType = (int)TypesOfUsers.AllUsers; // JTL, I don't think this is actually necessary
-                pageModel.Sessions = await _sessionBL.GetAllSessionsViewModelForActiveEvent();
+                pageModel.Sessions = await _sessionBL.GetAllSessionsViewModelForActiveEvent(UserId);
 
                 ViewData["Title"] = "All Sessions";
             }
@@ -69,14 +80,14 @@ namespace Codecamp.Controllers
                         // The user is a speaker and we have access to their speakerId, therefore
                         // get all of the speaker's sessions for the active event.
                         pageModel.Sessions = await _sessionBL.GetAllSessionsViewModelForSpeakerForActiveEvent(
-                            user.SpeakerId.Value);
+                            user.SpeakerId.Value, UserId);
 
                         ViewData["Title"] = "Your Sessions";
                     }
                     else
                     {
                         // The user desires to see all approved sessions for the event
-                        pageModel.Sessions = await _sessionBL.GetAllApprovedSessionsViewModelForActiveEvent();
+                        pageModel.Sessions = await _sessionBL.GetAllApprovedSessionsViewModelForActiveEvent(UserId);
 
                         ViewData["Title"] = "Sessions";
                     }
@@ -86,7 +97,7 @@ namespace Codecamp.Controllers
                     // We can't get the speakerId, so we'll return only approved
                     // speakers for the active event.
                     pageModel.SelectedUserType = (int)TypesOfUsers.AllUsers;
-                    pageModel.Sessions = await _sessionBL.GetAllApprovedSessionsViewModelForActiveEvent();
+                    pageModel.Sessions = await _sessionBL.GetAllApprovedSessionsViewModelForActiveEvent(UserId);
 
                     ViewData["Title"] = "Sessions";
                 }
@@ -96,7 +107,7 @@ namespace Codecamp.Controllers
                 // The user is an attendee, return all approved sessions for
                 // the active event.
                 pageModel.SelectedUserType = (int)TypesOfUsers.AllUsers; // JTL, I don't think this is actually necessary
-                pageModel.Sessions = await _sessionBL.GetAllApprovedSessionsViewModelForActiveEvent();
+                pageModel.Sessions = await _sessionBL.GetAllApprovedSessionsViewModelForActiveEvent(UserId);
 
                 ViewData["Title"] = "Sessions";
             }
@@ -115,7 +126,7 @@ namespace Codecamp.Controllers
             {
                 // Get all sessions for the active event for the admin
                 pageModel.SelectedUserType = (int)TypesOfUsers.AllUsers; // JTL, I don't think this is actually necessary
-                pageModel.Sessions = await _sessionBL.GetAllSessionsViewModelForActiveEvent();
+                pageModel.Sessions = await _sessionBL.GetAllSessionsViewModelForActiveEvent(UserId);
 
                 ViewData["Title"] = "All Sessions";
             }
@@ -131,14 +142,14 @@ namespace Codecamp.Controllers
                         // The user is a speaker and we have access to their speakerId, therefore
                         // get all of the speaker's sessions for the active event.
                         pageModel.Sessions = await _sessionBL.GetAllSessionsViewModelForSpeakerForActiveEvent(
-                            user.SpeakerId.Value);
+                            user.SpeakerId.Value, UserId);
 
                         ViewData["Title"] = "Your Sessions";
                     }
                     else
                     {
                         // The user desires to see all approved sessions for the event
-                        pageModel.Sessions = await _sessionBL.GetAllApprovedSessionsViewModelForActiveEvent();
+                        pageModel.Sessions = await _sessionBL.GetAllApprovedSessionsViewModelForActiveEvent(UserId);
 
                         ViewData["Title"] = "Sessions";
                     }
@@ -148,7 +159,7 @@ namespace Codecamp.Controllers
                     // We can't get the speakerId, so we'll return only approved
                     // speakers for the active event.
                     pageModel.SelectedUserType = (int)TypesOfUsers.AllUsers;
-                    pageModel.Sessions = await _sessionBL.GetAllApprovedSessionsViewModelForActiveEvent();
+                    pageModel.Sessions = await _sessionBL.GetAllApprovedSessionsViewModelForActiveEvent(UserId);
 
                     ViewData["Title"] = "Sessions";
                 }
@@ -158,7 +169,7 @@ namespace Codecamp.Controllers
                 // The user is an attendee, return all approved sessions for
                 // the active event.
                 pageModel.SelectedUserType = (int)TypesOfUsers.AllUsers; // JTL, I don't think this is actually necessary
-                pageModel.Sessions = await _sessionBL.GetAllApprovedSessionsViewModelForActiveEvent();
+                pageModel.Sessions = await _sessionBL.GetAllApprovedSessionsViewModelForActiveEvent(UserId);
 
                 ViewData["Title"] = "Sessions";
             }
@@ -176,7 +187,7 @@ namespace Codecamp.Controllers
             if (!await _sessionBL.SessionExists(id.Value))
                 return NotFound();
 
-            var session = await _sessionBL.GetSessionViewModel(id.Value);
+            var session = await _sessionBL.GetSessionViewModel(id.Value, UserId);
 
             if (session == null)
                 return NotFound();

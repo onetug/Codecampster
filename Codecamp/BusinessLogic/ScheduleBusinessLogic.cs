@@ -34,16 +34,12 @@ namespace Codecamp.BusinessLogic
         {
             var scheduleToBuild
                 // Get the sessions
-                = from session in _context.Sessions
+                = from session in _context.Sessions.Include(s => s.SpeakerSessions)
                   // Speaker/session information
                   join _speakerSession in _context.SpeakerSessions
-                    on session.SessionId equals _speakerSession.SessionId 
+                    .Include(ss => ss.Speaker).Include(ss => ss.Speaker.CodecampUser)
+                    on session.SessionId equals _speakerSession.SessionId
                     into speakerSessionLeftJoin
-                  // Get schedule info if it exists
-                  //join _schedule in _context.CodecampSchedule 
-                  //  on session.SessionId equals _schedule.SessionId 
-                  //  into scheduleLeftJoin
-                  //from schedule in scheduleLeftJoin.DefaultIfEmpty()
                   // Get track information if it exists
                   join _track in _context.Tracks
                     on session.TrackId equals _track.TrackId 

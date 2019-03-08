@@ -13,7 +13,7 @@
                 @Html.DisplayNameFor(model => model.Name)
             </th>
             <th class="col-md-3">
-                @Html.DisplayNameFor(model => model.Description)
+                @Html.DisplayNameFor(model => model.SpeakerSessions)
             </th>
             <th class="col-md-2">
                 @Html.DisplayNameFor(model => model.SkillLevel)
@@ -37,7 +37,10 @@
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Description)
+                @foreach (var speakerSession in item.SpeakerSessions)
+                {
+                    <div>@Html.DisplayFor(modelItem => speakerSession.Speaker.CodecampUser.FullName)</div>
+                }
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.SkillLevel)
@@ -73,7 +76,7 @@
 
                     // Assign the track to the session
                     let options = {};
-                    options.url = 'api/schedule/sessionApproval/' + sessionId;
+                    options.url = '/api/schedule/sessionApproval/' + sessionId;
                     options.type = 'POST';
                     options.dataType = 'json';
                     options.data = JSON.stringify(checkboxIsApprovedValue);
@@ -107,7 +110,7 @@
 
                     // Assign the track to the session
                     let options = {};
-                    options.url = 'api/schedule/assignTrackToSession/' + sessionId;
+                    options.url = '/api/schedule/assignTrackToSession/' + sessionId;
                     options.type = 'POST';
                     options.dataType = 'json';
                     options.data = JSON.stringify(trackId);
@@ -143,7 +146,7 @@
 
                     // Assign the track to the session
                     let options = {};
-                    options.url = 'api/schedule/assignTimeslotToSession/' + sessionId;
+                    options.url = '/api/schedule/assignTimeslotToSession/' + sessionId;
                     options.type = 'POST';
                     options.dataType = 'json';
                     options.data = JSON.stringify(timeslotId);
@@ -172,7 +175,7 @@
         // Populate the available tracks for all track dropdown lists
         function populateAvailableTracks() {
             let options = {};
-            options.url = 'api/schedule/allAvailableTracks';
+            options.url = '/api/schedule/allAvailableTracks';
             options.type = 'GET';
             options.dataType = 'json';
             options.success = function (allSessionTracks) {
@@ -239,7 +242,7 @@
         // Populate the available timeslots for all timeslot dropdown lists
         function populateAvailableTimeslots() {
             let options = {};
-            options.url = 'api/schedule/allAvailableTimeslots'
+            options.url = '/api/schedule/allAvailableTimeslots'
             options.type = 'GET';
             options.dataType = 'json';
             options.success = function (allSessionTimeslots) {

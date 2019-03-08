@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Codecamp.Controllers.Api
 {
     [Route("api/schedule")]
-    [ApiExplorerSettings(GroupName = "Sechedule")]
+    [ApiExplorerSettings(GroupName = "Schedule")]
     [ApiController]
     public class ScheduleApiController : ControllerBase
     {

@@ -13,27 +13,33 @@ namespace Codecamp.BusinessLogic
     public interface ISessionBusinessLogic
     {
         Task<List<Session>> GetAllSessions();
-        Task<List<SessionViewModel>> GetAllSessionsViewModel();
+        Task<List<SessionViewModel>> GetAllSessionsViewModel(string userId = null);
         Task<List<Session>> GetAllSessions(int eventId);
-        Task<List<SessionViewModel>> GetAllSessionsViewModel(int eventId);
+        Task<List<SessionViewModel>> GetAllSessionsViewModel(int eventId, string userId = null);
         Task<List<Session>> GetAllSessionsForActiveEvent();
-        Task<List<SessionViewModel>> GetAllSessionsViewModelForActiveEvent();
+        Task<List<SessionViewModel>> GetAllSessionsViewModelForActiveEvent(string userId = null);
         Task<List<Session>> GetAllApprovedSessions(int eventId);
-        Task<List<SessionViewModel>> GetAllApprovedSessionsViewModel(int eventId);
+        Task<List<SessionViewModel>> GetAllApprovedSessionsViewModel(int eventId,
+            string userId = null);
         Task<List<Session>> GetAllApprovedSessionsForActiveEvent();
-        Task<List<SessionViewModel>> GetAllApprovedSessionsViewModelForActiveEvent();
+        Task<List<SessionViewModel>> GetAllApprovedSessionsViewModelForActiveEvent(
+            string userId = null);
         Task<List<Session>> GetAllSessionsForSpeakerForActiveEvent(int speakerId);
-        Task<List<SessionViewModel>> GetAllSessionsViewModelForSpeakerForActiveEvent(int speakerId);
+        Task<List<SessionViewModel>> GetAllSessionsViewModelForSpeakerForActiveEvent(
+            int speakerId, string userId = null);
         Task<List<Session>> GetAllApprovedSessionsForSpeakerForActiveEvent(int speakerId);
-        Task<List<SessionViewModel>> GetAllApprovedSessionsViewModelForSpeakerForActiveEvent(int speakerId);
+        Task<List<SessionViewModel>> GetAllApprovedSessionsViewModelForSpeakerForActiveEvent(
+            int speakerId, string userId = null);
         Task<Session> GetSession(int sessionId);
-        Task<SessionViewModel> GetSessionViewModel(int sessionId);
+        Task<SessionViewModel> GetSessionViewModel(int sessionId, string userId = null);
         Task<bool> CreateSession(Session session, int speakerId);
         Task<bool> SessionExists(int sessionId);
         Task<bool> SpeakerSessionExists(int speakerId, int sessionId);
         Task<bool> UpdateSession(Session session);
         Task<bool> DeleteSession(int sessionId);
-        IQueryable<SessionViewModel> ToSessionViewModel(IQueryable<Session> sessions);
+        Task<bool> ToggleFavoriteSession(int sessionId, string userId);
+        IQueryable<SessionViewModel> ToSessionViewModel(IQueryable<Session> sessions,
+            string userId = null);
     }
 
     public class SessionBusinessLogic : ISessionBusinessLogic
@@ -54,13 +60,13 @@ namespace Codecamp.BusinessLogic
                 .ToListAsync();
         }
 
-        public async Task<List<SessionViewModel>> GetAllSessionsViewModel()
+        public async Task<List<SessionViewModel>> GetAllSessionsViewModel(string userId = null)
         {
             var sessionViewModels = await ToSessionViewModel(
                 _context.Sessions
                 .Include(s => s.SpeakerSessions)
                 .Include(s => s.AttendeeSessions)
-                .Include(s => s.Event))
+                .Include(s => s.Event), userId)
                 .ToListAsync();
 
             for (int index = 0; index < sessionViewModels.Count(); index++)
@@ -88,14 +94,14 @@ namespace Codecamp.BusinessLogic
                 .ToListAsync();
         }
 
-        public async Task<List<SessionViewModel>> GetAllSessionsViewModel(int eventId)
+        public async Task<List<SessionViewModel>> GetAllSessionsViewModel(int eventId, string userId = null)
         {
             var sessionViewModels = await ToSessionViewModel(
                 _context.Sessions
                 .Include(s => s.SpeakerSessions)
                 .Include(s => s.AttendeeSessions)
                 .Include(s => s.Event)
-                .Where(s => s.EventId == eventId))
+                .Where(s => s.EventId == eventId), userId)
                 .ToListAsync();
 
             for (int index = 0; index < sessionViewModels.Count(); index++)
@@ -134,7 +140,7 @@ namespace Codecamp.BusinessLogic
                     .ToListAsync();
         }
 
-        public async Task<List<SessionViewModel>> GetAllSessionsViewModelForActiveEvent()
+        public async Task<List<SessionViewModel>> GetAllSessionsViewModelForActiveEvent(string userId = null)
         {
             var activeEvent
                 = await _context.Events
@@ -146,7 +152,7 @@ namespace Codecamp.BusinessLogic
                     _context.Sessions
                     .Include(s => s.SpeakerSessions)
                     .Include(s => s.AttendeeSessions)
-                    .Include(s => s.Event))
+                    .Include(s => s.Event), userId)
                     .ToListAsync();
 
             else
@@ -155,7 +161,7 @@ namespace Codecamp.BusinessLogic
                     .Include(s => s.SpeakerSessions)
                     .Include(s => s.AttendeeSessions)
                     .Include(s => s.Event)
-                    .Where(s => s.EventId == activeEvent.EventId))
+                    .Where(s => s.EventId == activeEvent.EventId), userId)
                     .ToListAsync();
 
             for (int index = 0; index < sessionViewModels.Count(); index++)
@@ -184,14 +190,15 @@ namespace Codecamp.BusinessLogic
                 .ToListAsync();
         }
 
-        public async Task<List<SessionViewModel>> GetAllApprovedSessionsViewModel(int eventId)
+        public async Task<List<SessionViewModel>> GetAllApprovedSessionsViewModel(int eventId,
+            string userId = null)
         {
             var sessionViewModels = await ToSessionViewModel(
                 _context.Sessions
                 .Include(s => s.SpeakerSessions)
                 .Include(s => s.AttendeeSessions)
                 .Include(s => s.Event)
-                .Where(s => s.EventId == eventId && s.IsApproved == true))
+                .Where(s => s.EventId == eventId && s.IsApproved == true), userId)
                 .ToListAsync();
 
             for (int index = 0; index < sessionViewModels.Count(); index++)
@@ -232,7 +239,8 @@ namespace Codecamp.BusinessLogic
                     .ToListAsync();
         }
 
-        public async Task<List<SessionViewModel>> GetAllApprovedSessionsViewModelForActiveEvent()
+        public async Task<List<SessionViewModel>> GetAllApprovedSessionsViewModelForActiveEvent(
+            string userId = null)
         {
             var activeEvent
                 = await _context.Events
@@ -245,7 +253,7 @@ namespace Codecamp.BusinessLogic
                     .Include(s => s.SpeakerSessions)
                     .Include(s => s.AttendeeSessions)
                     .Include(s => s.Event)
-                    .Where(s => s.IsApproved == true))
+                    .Where(s => s.IsApproved == true), userId)
                     .ToListAsync();
             else
                 sessionViewModels = await ToSessionViewModel(
@@ -253,7 +261,7 @@ namespace Codecamp.BusinessLogic
                     .Include(s => s.SpeakerSessions)
                     .Include(s => s.AttendeeSessions)
                     .Include(s => s.Event)
-                    .Where(s => s.EventId == activeEvent.EventId && s.IsApproved == true))
+                    .Where(s => s.EventId == activeEvent.EventId && s.IsApproved == true), userId)
                     .ToListAsync();
 
             for (int index = 0; index < sessionViewModels.Count(); index++)
@@ -317,7 +325,8 @@ namespace Codecamp.BusinessLogic
                     .ToListAsync();
         }
 
-        public async Task<List<SessionViewModel>> GetAllSessionsViewModelForSpeakerForActiveEvent(int speakerId)
+        public async Task<List<SessionViewModel>> GetAllSessionsViewModelForSpeakerForActiveEvent(
+            int speakerId, string userId = null)
         {
             var activeEvent
                 = await _context.Events
@@ -330,7 +339,7 @@ namespace Codecamp.BusinessLogic
                     .Include(s => s.SpeakerSessions)
                     .Include(s => s.AttendeeSessions)
                     .Include(s => s.Event)
-                    .Where(s => s.SpeakerSessions.Any(s2 => s2.SpeakerId == speakerId)))
+                    .Where(s => s.SpeakerSessions.Any(s2 => s2.SpeakerId == speakerId)), userId)
                     .ToListAsync();
             else
                 sessionViewModels =  await ToSessionViewModel(
@@ -339,7 +348,7 @@ namespace Codecamp.BusinessLogic
                     .Include(s => s.AttendeeSessions)
                     .Include(s => s.Event)
                     .Where(s => s.SpeakerSessions.Any(s2 => s2.SpeakerId == speakerId)
-                        && s.EventId == activeEvent.EventId))
+                        && s.EventId == activeEvent.EventId), userId)
                     .ToListAsync();
 
             for (int index = 0; index < sessionViewModels.Count(); index++)
@@ -357,7 +366,8 @@ namespace Codecamp.BusinessLogic
             return sessionViewModels;
         }
 
-        public async Task<List<SessionViewModel>> GetAllApprovedSessionsViewModelForSpeakerForActiveEvent(int speakerId)
+        public async Task<List<SessionViewModel>> GetAllApprovedSessionsViewModelForSpeakerForActiveEvent(
+            int speakerId, string userId = null)
         {
             var activeEvent
                 = await _context.Events
@@ -370,7 +380,8 @@ namespace Codecamp.BusinessLogic
                     .Include(s => s.SpeakerSessions)
                     .Include(s => s.AttendeeSessions)
                     .Include(s => s.Event)
-                    .Where(s => s.SpeakerSessions.Any(s2 => s2.SpeakerId == speakerId && s.IsApproved == true)))
+                    .Where(s => s.SpeakerSessions.Any(s2 => s2.SpeakerId == speakerId && s.IsApproved == true)),
+                    userId)
                     .ToListAsync();
             else
                 sessionViewModels = await ToSessionViewModel(
@@ -379,7 +390,7 @@ namespace Codecamp.BusinessLogic
                     .Include(s => s.AttendeeSessions)
                     .Include(s => s.Event)
                     .Where(s => s.SpeakerSessions.Any(s2 => s2.SpeakerId == speakerId)
-                        && s.EventId == activeEvent.EventId && s.IsApproved == true))
+                        && s.EventId == activeEvent.EventId && s.IsApproved == true), userId)
                     .ToListAsync();
 
             for (int index = 0; index < sessionViewModels.Count(); index++)
@@ -416,13 +427,13 @@ namespace Codecamp.BusinessLogic
         /// </summary>
         /// <param name="sessionId">The specified session Id</param>
         /// <returns>The SessionViewModel object</returns>
-        public async Task<SessionViewModel> GetSessionViewModel(int sessionId)
+        public async Task<SessionViewModel> GetSessionViewModel(int sessionId, string userId = null)
         {
             return ToSessionViewModel(await _context.Sessions
                 .Include(s => s.SpeakerSessions)
                 .Include(s => s.AttendeeSessions)
                 .Include(s => s.Event)
-                .FirstOrDefaultAsync(s => s.SessionId == sessionId));
+                .FirstOrDefaultAsync(s => s.SessionId == sessionId), userId);
         }
 
         /// <summary>
@@ -539,12 +550,62 @@ namespace Codecamp.BusinessLogic
             }
         }
 
+        public async Task<bool> ToggleFavoriteSession(int sessionId, string userId)
+        {
+            var attendeeSession = await _context.AttendeesSessions
+                .Where(_as => _as.CodecampUserId == userId
+                && _as.SessionId == sessionId)
+                .FirstOrDefaultAsync();
+            if (attendeeSession == null)
+            {
+                try
+                {
+                    // Add the attendee session
+                    _context.AttendeesSessions
+                        .Add(new AttendeeSession
+                        {
+                            SessionId = sessionId,
+                            CodecampUserId = userId
+                        });
+
+                    // Save changes
+                    await _context.SaveChangesAsync();
+
+                    return true;
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                try
+                {
+                    // Remove the attendee session
+                    _context
+                        .AttendeesSessions
+                        .Remove(attendeeSession);
+
+                    // Save changes
+                    await _context.SaveChangesAsync();
+
+                    return true;
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    return false;
+                }
+            }
+        }
+
         /// <summary>
         /// Convert a Session to a SessionViewModel
         /// </summary>
         /// <param name="sessions">IQueryable<Session> object</param>
         /// <returns>IQueryable<SessionViewModel> object</returns>
-        public IQueryable<SessionViewModel> ToSessionViewModel(IQueryable<Session> sessions)
+        public IQueryable<SessionViewModel> ToSessionViewModel(IQueryable<Session> sessions,
+            string userId = null)
         {
             if (sessions == null) return null;
 
@@ -558,12 +619,15 @@ namespace Codecamp.BusinessLogic
                                         Keywords = session.Keywords,
                                         IsApproved = session.IsApproved,
                                         EventName = session.Event.Name,
+                                        IsUserFavorite = userId == null ? false : session.AttendeeSessions
+                                            .Exists(_as => _as.CodecampUserId == userId
+                                            && _as.SessionId == session.SessionId)
                                     };
 
             return sessionViewModels;
         }
 
-        public SessionViewModel ToSessionViewModel(Session session)
+        public SessionViewModel ToSessionViewModel(Session session, string userId = null)
         {
             if (session == null) return null;
 
@@ -583,7 +647,10 @@ namespace Codecamp.BusinessLogic
                 Keywords = session.Keywords,
                 IsApproved = session.IsApproved,
                 SpeakerSessions = speakerSessions,
-                EventName = session.Event.Name
+                EventName = session.Event.Name,
+                IsUserFavorite = userId == null ? false : session.AttendeeSessions
+                    .Exists(_as => _as.CodecampUserId == userId
+                    && _as.SessionId == session.SessionId)
             };
 
             return sessionViewModel;
