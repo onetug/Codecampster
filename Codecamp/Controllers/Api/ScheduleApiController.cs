@@ -113,6 +113,9 @@ namespace Codecamp.Controllers.Api
 
             session.TrackId = trackId == 0 ? (int?)null : trackId;
 
+            // The track changed, reset the timeslot also
+            session.TimeslotId = (int?)null;
+
             var result = await _sessionBL.UpdateSession(session);
 
             if (result == true)

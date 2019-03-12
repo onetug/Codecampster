@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Codecamp.Data;
 using Codecamp.Models;
 using Codecamp.BusinessLogic;
+using Codecamp.ViewModels;
 
 namespace Codecamp.Controllers
 {
@@ -15,12 +16,28 @@ namespace Codecamp.Controllers
     {
         private readonly CodecampDbContext _context;
         private readonly IScheduleBusinessLogic _scheduleBL;
+        private readonly ITimeslotBusinessLogic _timeslotBL;
+        private readonly ITrackBusinessLogic _trackBL;
+        private readonly ISessionBusinessLogic _sessionBL;
 
         public ScheduleController(CodecampDbContext context,
-            IScheduleBusinessLogic scheduleBL)
+            IScheduleBusinessLogic scheduleBL,
+            ITimeslotBusinessLogic timeslotBL,
+            ITrackBusinessLogic trackBL,
+            ISessionBusinessLogic sessionBL)
         {
             _context = context;
             _scheduleBL = scheduleBL;
+            _timeslotBL = timeslotBL;
+            _trackBL = trackBL;
+            _sessionBL = sessionBL;
+        }
+
+        public class PageModel
+        {
+            public List<SessionViewModel> Sessions { get; set; }
+            public List<TrackViewModel> Tracks { get; set; }
+            public List<TimeslotViewModel> Timeslots { get; set; }
         }
 
         // GET: Schedule
@@ -29,6 +46,23 @@ namespace Codecamp.Controllers
             var schedule = await _scheduleBL.GetActiveScheduleViewModel();
 
             return View(schedule);
+        }
+
+        // GET: Agenda
+        public async Task<IActionResult> Agenda()
+        {
+            var agenda = new PageModel();
+
+            agenda.Sessions 
+                = await _sessionBL.GetAllApprovedSessionViewModelsForActiveEvent();
+
+            agenda.Tracks
+                = await _trackBL.GetAllTrackViewModelsForActiveEvent();
+
+            agenda.Timeslots
+                = await _timeslotBL.GetAllTimeslotViewModelsForActiveEvent();
+
+            return View(agenda);
         }
 
         // GET: Schedule/Details/5

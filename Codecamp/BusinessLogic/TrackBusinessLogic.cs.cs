@@ -1,5 +1,6 @@
 ﻿using Codecamp.Data;
 using Codecamp.Models;
+using Codecamp.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,9 @@ namespace Codecamp.BusinessLogic
     {
         Task<List<Track>> GetAllTracks();
         Task<List<Track>> GetAllTracks(int eventId);
+        Task<List<TrackViewModel>> GetAllTrackViewModels(int eventId);
         Task<List<Track>> GetAllTracksForActiveEvent();
+        Task<List<TrackViewModel>> GetAllTrackViewModelsForActiveEvent();
         Task<Track> GetTrack(int trackId);
         Task<bool> TrackExists(int trackId);
         Task<bool> CreateTrack(Track track);
@@ -46,6 +49,24 @@ namespace Codecamp.BusinessLogic
                 .ToListAsync();
         }
 
+        public async Task<List<TrackViewModel>> GetAllTrackViewModels(int eventId)
+        {
+            var tracks = await _context.Tracks
+                .Where(t => t.EventId == eventId)
+                .OrderBy(t => t.Name)
+                .ThenBy(t => t.RoomNumber)
+                .Select(t => new TrackViewModel
+                {
+                    TrackId = t.TrackId,
+                    DisplayName = string.Format("{0} (Room {1})", t.Name, t.RoomNumber),
+                    Name = t.Name,
+                    RoomNumber = t.RoomNumber
+                })
+                .ToListAsync();
+
+            return tracks;
+        }
+
         public async Task<List<Track>> GetAllTracksForActiveEvent()
         {
             var activeEvent
@@ -63,6 +84,14 @@ namespace Codecamp.BusinessLogic
                     .OrderBy(t => t.RoomNumber)
                     .ThenBy(t => t.Name)
                     .ToListAsync();
+        }
+        public async Task<List<TrackViewModel>> GetAllTrackViewModelsForActiveEvent()
+        {
+            var activeEvent
+                = await _context.Events
+                .FirstOrDefaultAsync(e => e.IsActive == true);
+
+            return await GetAllTrackViewModels(activeEvent.EventId);
         }
 
         public async Task<Track> GetTrack(int trackId)

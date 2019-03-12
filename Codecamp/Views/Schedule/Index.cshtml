@@ -13,7 +13,7 @@
                 @Html.DisplayNameFor(model => model.Name)
             </th>
             <th class="col-md-3">
-                @Html.DisplayNameFor(model => model.SpeakerSessions)
+                @Html.DisplayNameFor(model => model.Speakers)
             </th>
             <th class="col-md-2">
                 @Html.DisplayNameFor(model => model.SkillLevel)
@@ -37,10 +37,7 @@
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
             <td>
-                @foreach (var speakerSession in item.SpeakerSessions)
-                {
-                    <div>@Html.DisplayFor(modelItem => speakerSession.Speaker.CodecampUser.FullName)</div>
-                }
+                @Html.DisplayFor(modelItem => item.Speakers)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.SkillLevel)

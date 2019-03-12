@@ -1,5 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @inject UserManager<CodecampUser> UserManager
+@inject Codecamp.BusinessLogic.ISessionBusinessLogic sessionBL
 @model Codecamp.ViewModels.SpeakerViewModel
 
 @{
@@ -143,14 +144,14 @@
                 <td>
                     @* Allow admins and speakers to edit the sessions *@
                     @if (User.IsInRole("Admin") || (User.IsInRole("Speaker")
-                       && speakerId.HasValue && session.SpeakerSessions.Any(s => s.SpeakerId == speakerId.Value)))
+                       && speakerId.HasValue && sessionBL.IsSessionEditableBySpeaker(session.SessionId, speakerId.Value)))
                     {
                         <a asp-controller="Sessions" asp-action="Edit" asp-route-id="@session.SessionId">Edit</a><span> | </span>
                     }
                     <a asp-controller="Sessions" asp-action="Details" asp-route-id="@session.SessionId">Details</a>
                     @* Allow admins and speakers to delete sessions *@
                     @if (User.IsInRole("Admin") || (User.IsInRole("Speaker")
-                       && speakerId.HasValue && session.SpeakerSessions.Any(s => s.SpeakerId == speakerId.Value)))
+                       && speakerId.HasValue && sessionBL.IsSessionEditableBySpeaker(session.SessionId, speakerId.Value)))
                     {
                         <span> | </span><a asp-controller="Sessions" asp-action="Delete" asp-route-id="@session.SessionId">Delete</a>
                     }

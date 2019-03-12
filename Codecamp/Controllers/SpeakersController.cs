@@ -75,7 +75,7 @@ namespace Codecamp.Controllers
                 // Get all sessions
                 speaker = await _speakerBL.GetSpeakerViewModel(id.Value);
             else if (user != null && user.SpeakerId != null 
-                && user.Speaker.SpeakerId == id.Value)
+                && user.SpeakerId == id.Value)
                 // Get all sessions
                 speaker = await _speakerBL.GetSpeakerViewModel(id.Value);
             else
