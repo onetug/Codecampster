@@ -1,6 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @inject UserManager<CodecampUser> UserManager
-@model Codecamp.ViewModels.SessionViewModel
+@model Codecamp.Controllers.SessionsController.DetailPageModel
 
 @{
     ViewData["Title"] = "Details";
@@ -14,7 +14,13 @@
     }
 }
 
-<h2><span style="font-weight: bold;">Title:&nbsp;</span>@Model.Name</h2>
+<h2><span style="font-weight: bold;">Title:&nbsp;</span>@Model.Session.Name</h2>
+@*<div style="float: right;">
+    @Html.HiddenFor(model => user.Id, new { id = "hiddenFieldUserId" })
+    @Html.HiddenFor(model => model.Session.SessionId, new { id = "hiddenFieldSessionId" })
+    @Html.CheckBoxFor(model => model.Session.IsUserFavorite, 
+        new { id = "checkBoxIsUserFavorite" })
+</div>*@
 
 <div style="margin-bottom: 40px;">
     @foreach (var speaker in Model.Speakers)
@@ -41,50 +47,81 @@
     <hr />
     <dl class="dl-horizontal">
         <dt>
-            @Html.DisplayNameFor(model => model.Name)
+            @Html.DisplayNameFor(model => model.Session.Name)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Name)
+            @Html.DisplayFor(model => model.Session.Name)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.Description)
+            @Html.DisplayNameFor(model => model.Session.Description)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Description)
+            @Html.DisplayFor(model => model.Session.Description)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.SkillLevel)
+            @Html.DisplayNameFor(model => model.Session.SkillLevel)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.SkillLevel)
+            @Html.DisplayFor(model => model.Session.SkillLevel)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.Keywords)
+            @Html.DisplayNameFor(model => model.Session.Keywords)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.Keywords)
+            @Html.DisplayFor(model => model.Session.Keywords)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.IsApproved)
+            @Html.DisplayNameFor(model => model.Session.IsApproved)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.IsApproved)
+            @Html.DisplayFor(model => model.Session.IsApproved)
         </dd>
     </dl>
 </div>
 
 <div class="bottom-navigation">
     @if (User.IsInRole("Admin") || (User.IsInRole("Speaker")
-      && speakerId.HasValue && Model.SpeakerSessions.Any(s => s.SpeakerId == speakerId.Value)))
+      && speakerId.HasValue && Model.Speakers.Any(s => s.SpeakerId == speakerId.Value)))
     {
-        <a asp-action="Edit" asp-route-id="@Model.SessionId">Edit</a><span> | </span>
+        <a asp-action="Edit" asp-route-id="@Model.Session.SessionId">Edit</a><span> | </span>
     }
     <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {
     <script type="text/javascript">
+        function initializeEventHandlers() {
+            $('#checkBoxIsUserFavorite').change(function () {
+                let checkBoxIsUserFavoriteValue = $(this).is(':checked');
+                let sessionId = parseInt($('#hiddenFieldSessionId').val(), 10);
+                let userId = $('#hiddenFieldUserId').val();
+
+                let options = {}
+                options.url = '/api/sessions/toggleFavoriteSession/' + sessionId;
+                options.type = 'POST';
+                options.dataType = 'json';
+                options.data = JSON.stringify(userId);
+                options.contentType = 'application/json';
+                options.success = function (data) {
+                    if (data != true) {
+                        if (checkBoxIsUserFavoriteValue)
+                            $('#checkBoxIsUserFavorite').prop('checked', true);
+                        else
+                            $('#checkBoxIsUserFavorite').prop('checked', false);
+                    }
+                };
+                options.error = function () {
+                    // Error saving track to session
+                    $('#message').html('Error while calling Web API to toggle favorite session');
+                };
+                $.ajax(options);
+            });
+        }
+
         $(document).ready(function () {
+            // Initialie the page event handlers
+            initializeEventHandlers();
+
             $('.speakerImage').each(function () {
                 setSpeakerImage(this, this.id);
             });

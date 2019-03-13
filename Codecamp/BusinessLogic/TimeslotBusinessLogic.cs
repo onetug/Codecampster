@@ -1,5 +1,6 @@
 ﻿using Codecamp.Data;
 using Codecamp.Models;
+using Codecamp.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,9 @@ namespace Codecamp.BusinessLogic
     {
         Task<List<Timeslot>> GetAllTimeslots();
         Task<List<Timeslot>> GetAllTimeslots(int eventId);
+        Task<List<TimeslotViewModel>> GetAllTimeslotViewModels(int eventId);
         Task<List<Timeslot>> GetAllTimeslotsForActiveEvent();
+        Task<List<TimeslotViewModel>> GetAllTimeslotViewModelsForActiveEvent();
         Task<Timeslot> GetTimeslot(int timeslotId);
         Task<bool> TimeslotExists(int timeslotId);
         Task<bool> CreateTimeslot(Timeslot timeslot);
@@ -44,6 +47,26 @@ namespace Codecamp.BusinessLogic
                 .ToListAsync();
         }
 
+        public async Task<List<TimeslotViewModel>> GetAllTimeslotViewModels(int eventId)
+        {
+            var timeslots = await _context.Timeslots
+                .Where(t => t.EventId == eventId)
+                .OrderBy(t => t.StartTime.TimeOfDay)
+                .Select(t => new TimeslotViewModel
+                {
+                    TimeslotId = t.TimeslotId,
+                    DisplayName = string.Format("{0:H:mm} - {1:H:mm}", 
+                        t.StartTime, t.EndTime),
+                    StartTime = t.StartTime,
+                    EndTime = t.EndTime,
+                    ContainsNoSessions = t.ContainsNoSessions,
+                    Name = t.Name
+                })
+                .ToListAsync();
+
+            return timeslots;
+        }
+
         public async Task<List<Timeslot>> GetAllTimeslotsForActiveEvent()
         {
             var activeEvent
@@ -59,6 +82,14 @@ namespace Codecamp.BusinessLogic
                     .Where(t => t.EventId == activeEvent.EventId)
                     .OrderBy(t => t.StartTime)
                     .ToListAsync();
+        }
+        public async Task<List<TimeslotViewModel>> GetAllTimeslotViewModelsForActiveEvent()
+        {
+            var activeEvent
+                = await _context.Events
+                .FirstOrDefaultAsync(e => e.IsActive == true);
+
+            return await GetAllTimeslotViewModels(activeEvent.EventId);
         }
 
         public async Task<Timeslot> GetTimeslot(int timeslotId)

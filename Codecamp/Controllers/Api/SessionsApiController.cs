@@ -1,24 +1,32 @@
-﻿using Codecamp.BusinessLogic.Api;
+﻿using Codecamp.BusinessLogic;
+using Codecamp.BusinessLogic.Api;
 using Codecamp.Models.Api;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Codecamp.Controllers.Api
 {
     [Route("api/sessions")]
     [ApiExplorerSettings(GroupName = "Sessions")]
+    [ApiController]
     public class SessionsApiController : ControllerBase
     {
-        public SessionsApiController(ISessionsApiBusinessLogic logic)
+        public SessionsApiController(
+            ISessionsApiBusinessLogic logic,
+            ISessionBusinessLogic sessionBL)
         {
             BusinessLogic = logic;
+            _sessionBL = sessionBL;
         }
 
         private ISessionsApiBusinessLogic BusinessLogic { get; }
+        private ISessionBusinessLogic _sessionBL { get; set; }
 
         [HttpGet]
         [Produces("application/json", Type = typeof(List<ApiSession>))]
-        public IActionResult GetSessionList(int? eventId = null, 
+        public IActionResult GetSessionList(int? eventId = null,
             int? trackId = null,
             int? timeslotId = null,
             bool includeDescriptions = false)
@@ -43,6 +51,18 @@ namespace Codecamp.Controllers.Api
             var jsonSession = new JsonResult(apiSession);
 
             return jsonSession;
+        }
+
+        [HttpPost("toggleFavoriteSession/{sessionId}")]
+        [Produces("application/json")]
+        public async Task<ActionResult<bool>> ToggleFavoriteSession(int sessionId, [FromBody] string userId)
+        {
+            var result = await _sessionBL.ToggleFavoriteSession(sessionId, userId);
+
+            if (result == true)
+                return Ok(result);
+            else
+                return StatusCode(StatusCodes.Status400BadRequest, result);
         }
     }
 }

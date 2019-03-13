@@ -245,9 +245,9 @@ namespace Codecamp.BusinessLogic
             var speakerViewModel = ToSpeakerViewModel(speaker);
 
             if (onlyApprovedSessions == false)
-                speakerViewModel.Sessions = await _sessionBL.GetAllSessionsViewModelForSpeakerForActiveEvent(speakerViewModel.SpeakerId);
+                speakerViewModel.Sessions = await _sessionBL.GetAllSessionViewModelsForSpeakerForActiveEvent(speakerViewModel.SpeakerId);
             else
-                speakerViewModel.Sessions = await _sessionBL.GetAllApprovedSessionsViewModelForSpeakerForActiveEvent(speakerViewModel.SpeakerId);
+                speakerViewModel.Sessions = await _sessionBL.GetAllApprovedSessionViewModelsForSpeakerForActiveEvent(speakerViewModel.SpeakerId);
 
             return speakerViewModel;
         }

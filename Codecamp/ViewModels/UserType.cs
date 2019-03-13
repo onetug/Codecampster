@@ -13,8 +13,8 @@ namespace Codecamp.ViewModels
 
     public class UserType
     {
-        public static string AllUsers = "All Users";
-        public static string JustMine = "Mine";
+        public static string AllUsers = "Show All Sessions";
+        public static string JustMine = "Show My Sessions";
 
         public static IList<UserType> GetUserTypes()
         {

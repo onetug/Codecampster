@@ -26,11 +26,32 @@ namespace Codecamp.ViewModels
         public bool IsApproved { get; set; }
 
         // Session speakers
-        public List<SpeakerViewModel> Speakers { get; set; }
-
-        public virtual List<SpeakerSession> SpeakerSessions { get; set; }
+        [Display(Name = "Speakers")]
+        public string SpeakerNames { get; set; }
 
         [Display(Name = "Event Name")]
         public string EventName { get; set; }
+
+        [Display(Name = "Favorite")]
+        public bool IsUserFavorite { get; set; }
+
+        public int? TrackId { get; set; }
+
+        [Display(Name = "Track Name")]
+        public string TrackName { get; set; }
+
+        [Display(Name = "Room Number")]
+        public string RoomNumber { get; set; }
+
+        public int? TimeslotId { get; set; }
+
+        [Display(Name = "Timeslot Name")]
+        public string TimeslotName { get; set; }
+
+        [Display(Name = "Start Time")]
+        public DateTime? StartTime { get; set; }
+
+        [Display(Name = "End Time")]
+        public DateTime? EndTime { get; set; }
     }
 }

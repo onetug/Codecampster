@@ -21,39 +21,74 @@ namespace Codecamp.Controllers
         private readonly ISessionBusinessLogic _sessionBL;
         private readonly IEventBusinessLogic _eventBL;
         private readonly ISpeakerBusinessLogic _speakerBL;
+        private readonly ITrackBusinessLogic _trackBL;
+        private readonly ITimeslotBusinessLogic _timeslotBL;
+
+        protected string UserId
+        {
+            get
+            {
+                // Get the user's Id
+                return User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier) != null
+                    ? User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value
+                    : null;
+            }
+        }
 
         public SessionsController(
             CodecampDbContext context,
             UserManager<CodecampUser> userManager,
             ISessionBusinessLogic sessionBL,
             IEventBusinessLogic eventBL,
-            ISpeakerBusinessLogic speakerBL)
+            ISpeakerBusinessLogic speakerBL,
+            ITrackBusinessLogic trackBL,
+            ITimeslotBusinessLogic timeslotBL)
         {
             _context = context;
             _userManager = userManager;
             _sessionBL = sessionBL;
             _eventBL = eventBL;
             _speakerBL = speakerBL;
+            _trackBL = trackBL;
+            _timeslotBL = timeslotBL;
         }
 
         public class PageModel
         {
             public int SelectedUserType { get; set; }
+            public int SelectedTrackId { get; set; }
+            public int SelectedTimeslotId { get; set; }
+            public bool ShowOnlyFavorites { get; set; }
+            public List<UserType> UserTypes { get; set; }
             public List<SessionViewModel> Sessions { get; set; }
+            public List<TrackViewModel> Tracks { get; set; }
+            public List<TimeslotViewModel> Timeslots { get; set; }
+        }
+
+        public class DetailPageModel
+        {
+            public List<SpeakerViewModel> Speakers { get; set; }
+            public SessionViewModel Session { get; set; }
         }
 
         // GET: Sessions
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            ViewBag.UserTypes = UserType.GetUserTypes();
             var pageModel = new PageModel();
+            pageModel.UserTypes = UserType.GetUserTypes().ToList();
+
+            pageModel.Tracks = await _trackBL.GetAllTrackViewModelsForActiveEvent();
+            pageModel.Tracks.Insert(0, new TrackViewModel { TrackId = 0, DisplayName = "All Tracks" });
+
+            pageModel.Timeslots = await _timeslotBL.GetAllTimeslotViewModelsForActiveEvent();
+            pageModel.Timeslots.Insert(0, new TimeslotViewModel { TimeslotId = 0, DisplayName = "All Timeslots" });
 
             if (User.IsInRole("Admin"))
             {
                 // Get all sessions for the active event for the admin
                 pageModel.SelectedUserType = (int)TypesOfUsers.AllUsers; // JTL, I don't think this is actually necessary
-                pageModel.Sessions = await _sessionBL.GetAllSessionsViewModelForActiveEvent();
+                pageModel.Sessions = await _sessionBL.GetAllApprovedSessionViewModelsForActiveEvent(UserId);
 
                 ViewData["Title"] = "All Sessions";
             }
@@ -68,15 +103,15 @@ namespace Codecamp.Controllers
                     {
                         // The user is a speaker and we have access to their speakerId, therefore
                         // get all of the speaker's sessions for the active event.
-                        pageModel.Sessions = await _sessionBL.GetAllSessionsViewModelForSpeakerForActiveEvent(
-                            user.SpeakerId.Value);
+                        pageModel.Sessions = await _sessionBL.GetAllSessionViewModelsForSpeakerForActiveEvent(
+                            user.SpeakerId.Value, UserId);
 
                         ViewData["Title"] = "Your Sessions";
                     }
                     else
                     {
                         // The user desires to see all approved sessions for the event
-                        pageModel.Sessions = await _sessionBL.GetAllApprovedSessionsViewModelForActiveEvent();
+                        pageModel.Sessions = await _sessionBL.GetAllApprovedSessionViewModelsForActiveEvent(UserId);
 
                         ViewData["Title"] = "Sessions";
                     }
@@ -86,7 +121,7 @@ namespace Codecamp.Controllers
                     // We can't get the speakerId, so we'll return only approved
                     // speakers for the active event.
                     pageModel.SelectedUserType = (int)TypesOfUsers.AllUsers;
-                    pageModel.Sessions = await _sessionBL.GetAllApprovedSessionsViewModelForActiveEvent();
+                    pageModel.Sessions = await _sessionBL.GetAllApprovedSessionViewModelsForActiveEvent(UserId);
 
                     ViewData["Title"] = "Sessions";
                 }
@@ -96,7 +131,7 @@ namespace Codecamp.Controllers
                 // The user is an attendee, return all approved sessions for
                 // the active event.
                 pageModel.SelectedUserType = (int)TypesOfUsers.AllUsers; // JTL, I don't think this is actually necessary
-                pageModel.Sessions = await _sessionBL.GetAllApprovedSessionsViewModelForActiveEvent();
+                pageModel.Sessions = await _sessionBL.GetAllApprovedSessionViewModelsForActiveEvent(UserId);
 
                 ViewData["Title"] = "Sessions";
             }
@@ -106,23 +141,25 @@ namespace Codecamp.Controllers
 
         // POST: Sessions/1
         [HttpPost]
-        public async Task<IActionResult> Index(int selectedUserType)
+        public async Task<IActionResult> Index([Bind("SelectedUserType, SelectedTrackId, SelectedTimeslotId, ShowOnlyFavorites")] PageModel pageModel)
         {
-            ViewBag.UserTypes = UserType.GetUserTypes();
-            var pageModel = new PageModel();
+            pageModel.UserTypes = UserType.GetUserTypes().ToList();
+
+            pageModel.Tracks = await _trackBL.GetAllTrackViewModelsForActiveEvent();
+            pageModel.Tracks.Insert(0, new TrackViewModel { TrackId = 0, DisplayName = "All Tracks" });
+
+            pageModel.Timeslots = await _timeslotBL.GetAllTimeslotViewModelsForActiveEvent();
+            pageModel.Timeslots.Insert(0, new TimeslotViewModel { TimeslotId = 0, DisplayName = "All Timeslots" });
 
             if (User.IsInRole("Admin"))
             {
                 // Get all sessions for the active event for the admin
-                pageModel.SelectedUserType = (int)TypesOfUsers.AllUsers; // JTL, I don't think this is actually necessary
-                pageModel.Sessions = await _sessionBL.GetAllSessionsViewModelForActiveEvent();
+                pageModel.Sessions = await _sessionBL.GetAllSessionViewModelsForActiveEvent(UserId);
 
                 ViewData["Title"] = "All Sessions";
             }
             else if (User.IsInRole("Speaker"))
             {
-                pageModel.SelectedUserType = selectedUserType;
-
                 var user = await _userManager.GetUserAsync(User);
                 if (user != null && user.SpeakerId.HasValue)
                 {
@@ -130,15 +167,15 @@ namespace Codecamp.Controllers
                     {
                         // The user is a speaker and we have access to their speakerId, therefore
                         // get all of the speaker's sessions for the active event.
-                        pageModel.Sessions = await _sessionBL.GetAllSessionsViewModelForSpeakerForActiveEvent(
-                            user.SpeakerId.Value);
+                        pageModel.Sessions = await _sessionBL.GetAllSessionViewModelsForSpeakerForActiveEvent(
+                            user.SpeakerId.Value, UserId);
 
                         ViewData["Title"] = "Your Sessions";
                     }
                     else
                     {
                         // The user desires to see all approved sessions for the event
-                        pageModel.Sessions = await _sessionBL.GetAllApprovedSessionsViewModelForActiveEvent();
+                        pageModel.Sessions = await _sessionBL.GetAllApprovedSessionViewModelsForActiveEvent(UserId);
 
                         ViewData["Title"] = "Sessions";
                     }
@@ -148,7 +185,7 @@ namespace Codecamp.Controllers
                     // We can't get the speakerId, so we'll return only approved
                     // speakers for the active event.
                     pageModel.SelectedUserType = (int)TypesOfUsers.AllUsers;
-                    pageModel.Sessions = await _sessionBL.GetAllApprovedSessionsViewModelForActiveEvent();
+                    pageModel.Sessions = await _sessionBL.GetAllApprovedSessionViewModelsForActiveEvent(UserId);
 
                     ViewData["Title"] = "Sessions";
                 }
@@ -158,10 +195,20 @@ namespace Codecamp.Controllers
                 // The user is an attendee, return all approved sessions for
                 // the active event.
                 pageModel.SelectedUserType = (int)TypesOfUsers.AllUsers; // JTL, I don't think this is actually necessary
-                pageModel.Sessions = await _sessionBL.GetAllApprovedSessionsViewModelForActiveEvent();
+                pageModel.Sessions = await _sessionBL.GetAllApprovedSessionViewModelsForActiveEvent(UserId);
 
                 ViewData["Title"] = "Sessions";
             }
+
+            if (pageModel.SelectedTimeslotId > 0)
+                pageModel.Sessions = pageModel.Sessions
+                    .Where(s => s.TimeslotId == pageModel.SelectedTimeslotId)
+                    .ToList();
+
+            if (pageModel.SelectedTrackId > 0)
+                pageModel.Sessions = pageModel.Sessions
+                    .Where(s => s.TrackId == pageModel.SelectedTrackId)
+                    .ToList();
 
             return View(pageModel);
         }
@@ -176,15 +223,15 @@ namespace Codecamp.Controllers
             if (!await _sessionBL.SessionExists(id.Value))
                 return NotFound();
 
-            var session = await _sessionBL.GetSessionViewModel(id.Value);
+            var pageModel = new DetailPageModel();
+            pageModel.Session = await _sessionBL.GetSessionViewModels(id.Value, UserId);
 
-            if (session == null)
+            if (pageModel.Session == null)
                 return NotFound();
 
-            // Now retrieve the speaker's information for the session
-            session.Speakers = await _speakerBL.GetSpeakersForSession(id.Value);
+            pageModel.Speakers = await _speakerBL.GetSpeakersForSession(pageModel.Session.SessionId);
 
-            return View(session);
+            return View(pageModel);
         }
 
         [HttpGet]

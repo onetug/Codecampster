@@ -44,8 +44,14 @@
                             <li><a target="_blank" href="/documents/OrlandoCodeCampSponsorInfo2019.pdf">Become a sponsor</a></li>
                         </ul>
                     </li>
+                    <li>
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Sessions <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <li><a asp-area="" asp-controller="Sessions" asp-action="Index">Sessions</a></li>
+                            <li><a asp-area="" asp-controller="Schedule" asp-action="Agenda">Agenda</a></li>
+                        </ul>
+                    </li>
                     <li><a asp-area="" asp-controller="Speakers" asp-action="Index">Speakers</a></li>
-                    <li><a asp-area="" asp-controller="Sessions" asp-action="Index">Sessions</a></li>
                     @if (User.IsInRole("Admin"))
                     {
                         <li>

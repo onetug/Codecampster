@@ -32,18 +32,13 @@ namespace Codecamp.BusinessLogic
 
         public async Task<List<ScheduleViewModel>> GetScheduleViewModel(int eventId)
         {
-            var scheduleToBuild
+            var tempSchedule
                 // Get the sessions
                 = from session in _context.Sessions
-                  // Speaker/session information
-                  join _speakerSession in _context.SpeakerSessions
-                    on session.SessionId equals _speakerSession.SessionId 
-                    into speakerSessionLeftJoin
-                  // Get schedule info if it exists
-                  //join _schedule in _context.CodecampSchedule 
-                  //  on session.SessionId equals _schedule.SessionId 
-                  //  into scheduleLeftJoin
-                  //from schedule in scheduleLeftJoin.DefaultIfEmpty()
+                      // Speaker/session information
+                  join speakerSession in _context.SpeakerSessions on session.SessionId equals speakerSession.SessionId
+                  join speaker in _context.Speakers on speakerSession.SpeakerId equals speaker.SpeakerId
+                  join codecampUser in _context.CodecampUsers on speaker.CodecampUserId equals codecampUser.Id
                   // Get track information if it exists
                   join _track in _context.Tracks
                     on session.TrackId equals _track.TrackId 
@@ -64,21 +59,56 @@ namespace Codecamp.BusinessLogic
                       SkillLevel = SkillLevel.GetSkillLevelDescription(session.SkillLevel),
                       Keywords = session.Keywords,
                       IsApproved = session.IsApproved,
-                      SpeakerSessions = speakerSessionLeftJoin.ToList(),
+                      Speakers = codecampUser.FullName,
                       TrackId = track != null ? track.TrackId : (int?)null,
                       TrackName = track != null ? track.Name : string.Empty,
                       RoomNumber = track != null ? track.RoomNumber : string.Empty,
                       TimeslotId = timeslot != null ? timeslot.TimeslotId : (int?)null,
-                      StartTime = timeslot != null ? timeslot.StartTime : (DateTime?)null,
-                      EndTime = timeslot != null ? timeslot.EndTime : (DateTime?)null
+                      StartTime = timeslot != null ? timeslot.StartTime : DateTime.MinValue,
+                      EndTime = timeslot != null ? timeslot.EndTime : DateTime.MinValue
                   };
 
-            scheduleToBuild = scheduleToBuild
+            var schedule = from _schedule in tempSchedule
+                           group _schedule by new
+                           {
+                               _schedule.SessionId,
+                               _schedule.Name,
+                               _schedule.Description,
+                               _schedule.SkillLevelId,
+                               _schedule.SkillLevel,
+                               _schedule.Keywords,
+                               _schedule.IsApproved,
+                               _schedule.TrackId,
+                               _schedule.TrackName,
+                               _schedule.RoomNumber,
+                               _schedule.TimeslotId,
+                               _schedule.StartTime,
+                               _schedule.EndTime
+                           } into groupSchedule
+                           select new ScheduleViewModel
+                           {
+                               SessionId = groupSchedule.Key.SessionId,
+                               Name = groupSchedule.Key.Name,
+                               Description = groupSchedule.Key.Description,
+                               SkillLevelId = groupSchedule.Key.SkillLevelId,
+                               SkillLevel = groupSchedule.Key.SkillLevel,
+                               Keywords = groupSchedule.Key.Keywords,
+                               IsApproved = groupSchedule.Key.IsApproved,
+                               TrackId = groupSchedule.Key.TrackId,
+                               TrackName = groupSchedule.Key.TrackName,
+                               RoomNumber = groupSchedule.Key.RoomNumber,
+                               TimeslotId = groupSchedule.Key.TimeslotId,
+                               StartTime = groupSchedule.Key.StartTime,
+                               EndTime = groupSchedule.Key.EndTime,
+                               Speakers = string.Join(",", groupSchedule.Select(gs => gs.Speakers))
+                           };
+
+            schedule = schedule
                 .OrderByDescending(s => s.IsApproved)
                 .ThenBy(s => s.TrackName)
-                .ThenBy(s => s.StartTime);
+                .ThenBy(s => s.StartTime.Value.TimeOfDay);
 
-            return await scheduleToBuild.ToListAsync();
+            return await schedule.ToListAsync();
         }
 
         public async Task<List<ScheduleViewModel>> GetActiveScheduleViewModel()
@@ -217,7 +247,7 @@ namespace Codecamp.BusinessLogic
                                              select timeslot;
 
             availableTimeslotsForTrack = availableTimeslotsForTrack
-                .OrderBy(t => t.StartTime);
+                .OrderBy(t => t.StartTime.TimeOfDay);
 
             return await availableTimeslotsForTrack.ToListAsync();
         }
@@ -257,7 +287,7 @@ namespace Codecamp.BusinessLogic
                                                       };
 
             availableTimeslotViewModelsForTrack = availableTimeslotViewModelsForTrack
-                .OrderBy(t => t.StartTime);
+                .OrderBy(t => t.StartTime.TimeOfDay);
 
             return await availableTimeslotViewModelsForTrack.ToListAsync();
         }

@@ -1,5 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @inject UserManager<CodecampUser> UserManager
+@inject Codecamp.BusinessLogic.ISessionBusinessLogic sessionBL
 @model Codecamp.Controllers.SessionsController.PageModel
 
 @{
@@ -14,23 +15,37 @@
 
 <h2>Sessions</h2>
 
-<form asp-action="Index" id="SessionIndex" asp-route-id="@(Model.SelectedUserType)">
+<form asp-action="Index" id="SessionIndex" asp-route-id="">
     @* Allow a speaker to create a new session *@
     @if (User.IsInRole("Speaker"))
     {
         <div>
             <a asp-action="Create">Create New</a>
         </div>
+    }
 
-        <div class="row">
+    <div class="row" style="vertical-align: bottom;">
+        @if (User.IsInRole("Speaker"))
+        {
             <div class="col-md-3">
-                <label class="control-label">Sessions to show:</label>
                 @Html.DropDownListFor(model => model.SelectedUserType,
-                    new SelectList(ViewBag.UserTypes, "UserTypeId", "Description"),
+                    new SelectList(Model.UserTypes, "UserTypeId", "Description"),
                     new { @id = "SelectedUserType", @class = "form-control", @onchange = "selectedUserTypeChanged();" })
             </div>
+        }
+
+        <div class="col-md-3">
+            @Html.DropDownListFor(model => model.SelectedTrackId, 
+                new SelectList(Model.Tracks, "TrackId", "DisplayName"), 
+                new { @id = "SelectedTrackId", @class = "form-control", @onchange = "selectedTrackChanged();" })
         </div>
-    }
+
+        <div class="col-md-3">
+            @Html.DropDownListFor(model => model.SelectedTimeslotId,
+                new SelectList(Model.Timeslots, "TimeslotId", "DisplayName"),
+                new { @id = "SelectedTimeslotId", @class = "form-control", @onchange = "selectedTimeslotChanged();" })
+        </div>
+    </div>
 
     <table class="table-striped">
         <thead>
@@ -38,14 +53,20 @@
                 <th class="col-md-2">
                     @Html.DisplayNameFor(model => model.Sessions[0].Name)
                 </th>
-                <th class="col-md-3">
+                <th class="col-md-2">
                     @Html.DisplayNameFor(model => model.Sessions[0].Description)
                 </th>
                 <th class="col-md-2">
-                    @Html.DisplayNameFor(model => model.Sessions[0].Speakers)
+                    @Html.DisplayNameFor(model => model.Sessions[0].SpeakerNames)
                 </th>
                 <th class="col-md-2">
                     @Html.DisplayNameFor(model => model.Sessions[0].SkillLevel)
+                </th>
+                <th class="col-md-1">
+                    @Html.DisplayNameFor(model => model.Sessions[0].TrackName)
+                </th>
+                <th class="col-md-1">
+                    @Html.DisplayNameFor(model => model.Sessions[0].TimeslotName)
                 </th>
                 @* Show the approved column if the user is an admin or speaker *@
                 @if (User.IsInRole("Admin") || User.IsInRole("Speaker"))
@@ -54,7 +75,7 @@
                         @Html.DisplayNameFor(model => model.Sessions[0].IsApproved)
                     </th>
                 }
-                <th class="col-md-2"></th>
+                <th class="col-md-1"></th>
             </tr>
         </thead>
         <tbody>
@@ -70,13 +91,16 @@
                     @Html.DisplayFor(modelItem => item.Description)
                 </td>
                 <td style="padding: 10px;">
-                    @foreach (var speakerSession in item.SpeakerSessions)
-                    {
-                        <div>@Html.DisplayFor(modelItem => speakerSession.Speaker.CodecampUser.FullName)</div>
-                    }
+                    @Html.DisplayFor(modelItem => item.SpeakerNames)
                 </td>
                 <td style="padding: 10px;">
                     @Html.DisplayFor(modelItem => item.SkillLevel)
+                </td>
+                <td style="padding: 10px;">
+                    @Html.DisplayFor(modelItem => item.TrackName)
+                </td>
+                <td style="padding: 10px;">
+                    @Html.DisplayFor(modelItem => item.TimeslotName)
                 </td>
                 @* Show the approved flag if the user is an Admin or Speaker *@
                 @if (User.IsInRole("Admin") || User.IsInRole("Speaker"))
@@ -88,14 +112,14 @@
                 <td style="padding: 10px;" align="center">
                     @* Allow admins and speakers to edit the sessions *@
                     @if (User.IsInRole("Admin") || (User.IsInRole("Speaker")
-                    && speakerId.HasValue && item.SpeakerSessions.Any(s => s.SpeakerId == speakerId.Value)))
+                        && speakerId.HasValue && sessionBL.IsSessionEditableBySpeaker(item.SessionId, speakerId.Value)))
                     {
                         <a asp-action="Edit" asp-route-id="@item.SessionId">Edit</a><span> | </span>
                     }
                     <a asp-action="Details" asp-route-id="@item.SessionId">Details</a>
                     @* Allow admins and speakers to delete sessions *@
                     @if (User.IsInRole("Admin") || (User.IsInRole("Speaker")
-                    && speakerId.HasValue && item.SpeakerSessions.Any(s => s.SpeakerId == speakerId.Value)))
+                        && speakerId.HasValue && sessionBL.IsSessionEditableBySpeaker(item.SessionId, speakerId.Value)))
                     {
                         <span> | </span><a asp-action="Delete" asp-route-id="@item.SessionId">Delete</a>
                     }
@@ -105,16 +129,22 @@
             }
             else
             {
-            <td colspan="4">No sessions specified yet...</td>
-            }
-        </tbody>
-    </table>
-</form>
+            <td colspan="4">No sessions</td>
+        }
+            </tbody>
+        </table>
+    </form>
 
 @section Scripts {
     <script type="text/javascript">
         // Submit the form
         function selectedUserTypeChanged() {
+            $('#SessionIndex').submit();
+        }
+        function selectedTrackChanged() {
+            $('#SessionIndex').submit();
+        }
+        function selectedTimeslotChanged() {
             $('#SessionIndex').submit();
         }
     </script>

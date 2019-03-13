@@ -1,0 +1,95 @@
+﻿@model Codecamp.Controllers.ScheduleController.PageModel
+
+@{ 
+    ViewData["Title"] = "Index";
+}
+
+<style>
+    table, th, td {
+        border: 1px solid black;
+        padding: 5px;
+    }
+
+    tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+
+    th {
+        background-color: #000;
+        color: white;
+        width: 75px;
+    }
+
+    td:hover {
+        background-color: deepskyblue;
+        cursor: pointer;
+    }
+
+    .ui-dialog {
+        position: fixed;
+    }
+    .showImage {
+        visibility: visible;
+    }
+    .hideImage {
+        visibility: hidden;
+    }
+    .speakerNames {
+        font-size: smaller;
+        font-style: italic;
+    }
+    .skillLevel {
+        font-size: smaller;
+        font-style: italic;
+    }
+    .sessionTitle {
+        font-weight: bold;
+    }
+</style>
+
+<h2>Agenda</h2>
+
+<table>
+    <tr>
+        <th></th>
+        @foreach (var track in Model.Tracks)
+        {
+            <th>@track.DisplayName</th>
+        }
+    </tr>
+    @foreach (var timeslot in Model.Timeslots)
+    {
+    <tr>
+        <td>@timeslot.DisplayName</td>
+
+        @if (timeslot.ContainsNoSessions == true)
+        {
+            <td colspan="@Model.Tracks.Count()" style="text-align: center;">@timeslot.Name</td>
+        }
+        else
+        {
+            @foreach (var track in Model.Tracks)
+            {
+                var session = Model.Sessions
+                    .Where(s => s.TimeslotId == timeslot.TimeslotId
+                    && s.TrackId == track.TrackId).FirstOrDefault();
+
+                if (session != null)
+                {
+                    <td>
+                        <a asp-action="Details" asp-controller="Sessions" asp-route-id="@session.SessionId">
+                            <div class="sessionTitle">@session.Name</div>
+                            <div class="speakerNames">@session.SpeakerNames</div>
+                            <div class="skillLevel">@session.SkillLevel</div>
+                        </a>
+                    </td>
+                }
+                else
+                {
+                    <td></td>
+                }
+            }
+        }
+    </tr>
+    }
+</table>
