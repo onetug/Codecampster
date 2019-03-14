@@ -77,34 +77,28 @@ else
         @* This page is for everone else *@
         @if (Model.Count() > 0)
         {
-            @foreach (var sponsor in Model)
-            {
-                if (rowIndex == 5)
-                {
-                    @:</div>
-                    @:<div class="row">
-                    @* create a new row after four sponsors *@
-                    rowIndex = 1;
-                }
+            @foreach (var sponsor in Model.OrderBy(m => SponsorLevel.GetSponsorshipDisplayLevel(m.SponsorLevel)))
+             {
+                 <div>
+                 <div class="col-md-3">
+                     <a asp-action="Details"
+                        asp-route-id="@(sponsor.SponsorId)">
+                         <div style="text-align: center;">
+                             <div style="max-width: 150px; max-height: 150px; margin-left: auto; margin-right: auto;alignment: top">
+                                 <img style="max-width: 150px; max-height: 150px;"
+                                      class="sponsorImage"
+                                      id="@(string.Format("{0}", sponsor.SponsorId))"
+                                      src=@("/images/default_user_icon.jpg")
+                                      alt="@(string.Format("{0}", sponsor.CompanyName))" />
+                             </div>
+                             <span>@SponsorLevel.GetSponsorshipLevelDescription(sponsor.SponsorLevel)</span>
+                         </div>
+                     </a>
+                 </div>
+                 </div>
 
-                <div class="col-md-3">
-                    <a asp-action="Details"
-                       asp-route-id="@(sponsor.SponsorId)">
-                        <div style="text-align: center;">
-                            <div style="max-width: 150px; max-height: 150px; margin-left: auto; margin-right: auto;">
-                                <img style="max-width: 150px; max-height: 150px;"
-                                     class="sponsorImage"
-                                     id="@(string.Format("{0}", sponsor.SponsorId))"
-                                     src=@("/images/default_user_icon.jpg")
-                                     alt="@(string.Format("{0}", sponsor.CompanyName))" />
-                            </div>
-                            <span>@SponsorLevel.GetSponsorshipLevelDescription(sponsor.SponsorLevel)</span>
-                        </div>
-                    </a>
-                </div>
-
-                rowIndex++;
             }
+
         }
         else
         {

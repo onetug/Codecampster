@@ -56,6 +56,29 @@ namespace Codecamp.ViewModels
             return sponsorshipLevels;
         }
 
+        public static int GetSponsorshipDisplayLevel(int sponsorshipLevel)
+        {
+            switch (sponsorshipLevel)
+            {
+                case (int)LevelsOfSponsorship.Platinum:
+                    return 1;
+                case (int)LevelsOfSponsorship.Gold:
+                    return 2;
+                case (int)LevelsOfSponsorship.AttendeePartySponsor:
+                case (int)LevelsOfSponsorship.SpeakerPartySponsor:
+                case (int)LevelsOfSponsorship.LunchSponsor:
+                    return 3;
+                case (int)LevelsOfSponsorship.Silver:
+                    return 4;
+                case (int)LevelsOfSponsorship.Coffee:
+                case (int)LevelsOfSponsorship.Breakfast:
+                case (int)LevelsOfSponsorship.Bronze:
+                default:
+                    return 5;
+            }
+
+        }
+
         public static string GetSponsorshipLevelDescription(int sponsorshipLevel)
         {
             switch (sponsorshipLevel)
@@ -67,7 +90,7 @@ namespace Codecamp.ViewModels
                 case (int)LevelsOfSponsorship.AttendeePartySponsor:
                     return AttendeePartySponsor;
                 case (int)LevelsOfSponsorship.SpeakerPartySponsor:
-                    return AttendeePartySponsor;
+                    return SpeakerPartySponsor;
                 case (int)LevelsOfSponsorship.LunchSponsor:
                     return LunchSponsor;
                 case (int)LevelsOfSponsorship.Bronze:
