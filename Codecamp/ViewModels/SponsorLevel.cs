@@ -26,7 +26,7 @@ namespace Codecamp.ViewModels
         public static string SpeakerPartySponsor = "Speaker Party Level Sponsor";
         public static string LunchSponsor = "Lunch Level Sponsor";
         public static string Bronze = "Bronze Level Sponsor";
-        public static string Silver = "Silver Level Spnsor";
+        public static string Silver = "Silver Level Sponsor";
         public static string Gold = "Gold Level Sponsor";
         public static string Platinum = "Platinum Level Sponsor";
 
