@@ -12,6 +12,7 @@
     <div class="col-md-4">
         <form asp-action="Edit">
             <input type="hidden" asp-for="EventId" />
+            <input type="hidden" asp-for="IsApproved" />
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="SessionId" />
             <div class="form-group">
