@@ -73,7 +73,7 @@
         {
             <p>Already have an account? <a asp-area="Identity" asp-page="/Account/Login">Login</a></p>
             <p>Need an Account?</p>
-            @if (Model != null && Model.Event.IsSpeakerRegistrationOpen)
+            @if (Model != null && Model.Event != null && (Model.Event?.IsSpeakerRegistrationOpen ?? false))
             {
                 <p>
                     <a asp-area="Identity" asp-page="/Account/RegisterSpeaker">
@@ -81,7 +81,7 @@
                     </a>
                 </p>
             }
-            @if (Model != null && Model.Event.IsAttendeeRegistrationOpen)
+            @if (Model != null && Model.Event != null && (Model.Event?.IsAttendeeRegistrationOpen ?? false))
             {
                 <p>
                     <a asp-area="Identity" asp-page="/Account/RegisterAttendee">
