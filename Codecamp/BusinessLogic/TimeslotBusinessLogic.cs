@@ -89,7 +89,12 @@ namespace Codecamp.BusinessLogic
                 = await _context.Events
                 .FirstOrDefaultAsync(e => e.IsActive == true);
 
-            return await GetAllTimeslotViewModels(activeEvent.EventId);
+            if (activeEvent?.EventId != null)
+            {
+                return await GetAllTimeslotViewModels(activeEvent.EventId);
+            }
+
+            return new List<TimeslotViewModel>();
         }
 
         public async Task<Timeslot> GetTimeslot(int timeslotId)
