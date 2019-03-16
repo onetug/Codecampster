@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Codecamp.Controllers
 {
+    [Authorize(Policy = "RequireAdminRole")]
     public class TimeslotsController : Controller
     {
         private readonly CodecampDbContext _context;
@@ -124,6 +125,7 @@ namespace Codecamp.Controllers
 
         // GET: Timeslots/Delete/5
         [HttpGet]
+        [Authorize(Policy = "RequireAdminRole")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (!id.HasValue)
@@ -143,7 +145,7 @@ namespace Codecamp.Controllers
 
         // POST: Timeslots/Delete/5
         [HttpPost, ActionName("Delete")]
-        [Authorize]
+        [Authorize(Policy = "RequireAdminRole")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {

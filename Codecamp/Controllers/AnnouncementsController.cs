@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Codecamp.Controllers
 {
+    [Authorize(Policy = "RequireAdminRole")]
     public class AnnouncementsController : Controller
     {
         private readonly CodecampDbContext _context;
@@ -29,6 +30,7 @@ namespace Codecamp.Controllers
 
         // GET: Announcements
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
             List<AnnouncementViewModel> announcements;
@@ -42,7 +44,7 @@ namespace Codecamp.Controllers
         }
 
         [HttpGet]
-        [Authorize]
+        [Authorize(Policy = "RequireAdminRole")]
         // GET: Announcements/Create
         public IActionResult Create()
         {
@@ -50,7 +52,7 @@ namespace Codecamp.Controllers
         }
 
         [HttpPost]
-        [Authorize]
+        [Authorize(Policy = "RequireAdminRole")]
         [ValidateAntiForgeryToken]
         // POST: Announcements/Create
         public async Task<IActionResult> Create([Bind("AnnouncementId,Message,Rank,PublishOn,ExpiresOn")] Announcement announcement)
@@ -73,7 +75,7 @@ namespace Codecamp.Controllers
 
         // GET: Announcements/Edit/5
         [HttpGet]
-        [Authorize]
+        [Authorize(Policy = "RequireAdminRole")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (!id.HasValue)
@@ -91,7 +93,7 @@ namespace Codecamp.Controllers
 
         // POST: Announcements/Edit/5
         [HttpPost]
-        [Authorize]
+        [Authorize(Policy = "RequireAdminRole")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id,
             [Bind("AnnouncementId,EventId,Message,Rank,PublishOn,ExpiresOn")] Announcement announcement)
@@ -114,6 +116,7 @@ namespace Codecamp.Controllers
 
         // GET: Announcements/Delete/5
         [HttpGet]
+        [Authorize(Policy = "RequireAdminRole")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (!id.HasValue)
@@ -133,7 +136,7 @@ namespace Codecamp.Controllers
         // POST: Announcements/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Authorize]
+        [Authorize(Policy = "RequireAdminRole")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             await _announcementBL.DeleteAnnouncement(id);

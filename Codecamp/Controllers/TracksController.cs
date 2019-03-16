@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Codecamp.Controllers
 {
+    [Authorize(Policy = "RequireAdminRole")]
     public class TracksController : Controller
     {
         private readonly CodecampDbContext _context;
