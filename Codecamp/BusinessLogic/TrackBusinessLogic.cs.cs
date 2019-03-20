@@ -91,7 +91,12 @@ namespace Codecamp.BusinessLogic
                 = await _context.Events
                 .FirstOrDefaultAsync(e => e.IsActive == true);
 
-            return await GetAllTrackViewModels(activeEvent.EventId);
+            if(activeEvent?.EventId != null)
+            {
+                return await GetAllTrackViewModels(activeEvent.EventId);
+            }
+
+            return new List<TrackViewModel>();
         }
 
         public async Task<Track> GetTrack(int trackId)
