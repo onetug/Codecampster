@@ -91,6 +91,7 @@ namespace Codecamp.Controllers
         }
 
         // GET: Speakers/Edit/5
+        [Authorize(Roles = "Admin, Speaker")]
         public async Task<IActionResult> Edit(int? id)
         {
             // If no id specified, return not found
@@ -107,6 +108,19 @@ namespace Codecamp.Controllers
             if (speaker == null)
                 return NotFound();
 
+            //If the user is not an Admin we need to do additional verification
+            if (!User.IsInRole("Admin"))
+            {
+                // Get the user information
+                var currentUser = await _userManager.GetUserAsync(User);
+
+                //Verify User is the speaker so they can edit thier own profile
+                if (currentUser.SpeakerId.Value != speaker.SpeakerId)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+            }
+
             // Else return the view with the speaker information
             return View(speaker);
         }
@@ -116,7 +130,7 @@ namespace Codecamp.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize]
+        [Authorize(Roles = "Admin, Speaker")]
         public async Task<IActionResult> Edit(int id, 
             [Bind("SpeakerId,CodecampUserId,FirstName,LastName,CompanyName,ImageFile,ResizeImage,Bio,WebsiteUrl,BlogUrl,GeographicLocation,TwitterHandle,LinkedIn,IsVolunteer,IsMvp,NoteToOrganizers,Email,PhoneNumber,IsApproved")] SpeakerViewModel speakerVM)
         {
@@ -126,6 +140,19 @@ namespace Codecamp.Controllers
                     return NotFound();
 
                 var speaker = await _speakerBL.GetSpeaker(id);
+
+                //If the user is not an Admin we need to do additional verification
+                if (!User.IsInRole("Admin"))
+                {
+                    // Get the user information
+                    var currentUser = await _userManager.GetUserAsync(User);
+
+                    //Verify User is the speaker so they can edit thier own profile
+                    if (currentUser.SpeakerId.Value != speaker.SpeakerId)
+                    {
+                        return RedirectToAction(nameof(Index));
+                    }
+                }
 
                 // Update the speaker information from the page
                 speaker.CompanyName = speakerVM.CompanyName;

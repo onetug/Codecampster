@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Codecamp.Controllers
 {
+    [Authorize(Policy = "RequireAdminRole")]
     public class EventsController : Controller
     {
         private readonly CodecampDbContext _context;
@@ -51,7 +52,7 @@ namespace Codecamp.Controllers
 
         // GET: Events/Create
         [HttpGet]
-        [Authorize]
+        [Authorize(Policy = "RequireAdminRole")]
         public IActionResult Create()
         {
             return View();
@@ -61,7 +62,7 @@ namespace Codecamp.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [Authorize]
+        [Authorize(Policy = "RequireAdminRole")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("EventId,Name,SocialMediaHashtag,StartDateTime,EndDateTime,LocationAddress,IsActive,IsAttendeeRegistrationOpen,IsSpeakerRegistrationOpen")] Event @event)
         {
@@ -74,6 +75,7 @@ namespace Codecamp.Controllers
         }
 
         // GET: Events/Edit/5
+        [Authorize(Policy = "RequireAdminRole")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (!id.HasValue)
@@ -93,7 +95,7 @@ namespace Codecamp.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [Authorize]
+        [Authorize(Policy = "RequireAdminRole")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("EventId,Name,SocialMediaHashtag,StartDateTime,EndDateTime,LocationAddress,IsActive,IsAttendeeRegistrationOpen,IsSpeakerRegistrationOpen")] Event @event)
         {
@@ -113,6 +115,7 @@ namespace Codecamp.Controllers
         }
 
         // GET: Events/Delete/5
+        [Authorize(Policy = "RequireAdminRole")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (!id.HasValue)
@@ -133,6 +136,7 @@ namespace Codecamp.Controllers
         // POST: Events/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = "RequireAdminRole")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             await _eventBL.DeleteEvent(id);
