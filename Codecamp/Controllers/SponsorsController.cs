@@ -185,6 +185,7 @@ namespace Codecamp.Controllers
         }
 
         // GET: Sponsors/Delete/5
+        [Authorize(Policy = "RequireAdminRole")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (!id.HasValue)
@@ -204,7 +205,7 @@ namespace Codecamp.Controllers
         // POST: Sponsors/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Authorize]
+        [Authorize(Policy = "RequireAdminRole")]
         public async Task <IActionResult> DeleteConfirmed(int id)
         {
             await _sponsorBL.DeleteSponsor(id);

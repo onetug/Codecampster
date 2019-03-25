@@ -235,7 +235,7 @@ namespace Codecamp.Controllers
         }
 
         [HttpGet]
-        [Authorize]
+        [Authorize(Roles = "Admin, Speaker")]
         // GET: Sessions/Create
         public IActionResult Create()
         {
@@ -247,7 +247,7 @@ namespace Codecamp.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [Authorize]
+        [Authorize(Roles = "Admin, Speaker")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("SessionId,Name,Description,SkillLevel,Keywords")] Session session)
         {
@@ -280,6 +280,7 @@ namespace Codecamp.Controllers
         }
 
         // GET: Sessions/Edit/5
+        [Authorize(Roles = "Admin, Speaker")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (!id.HasValue)
@@ -289,6 +290,20 @@ namespace Codecamp.Controllers
             if (session == null)
                 return NotFound();
 
+            //If the user is not an Admin we need to do additional verification
+            if (!User.IsInRole("Admin"))
+            {
+                // Get the user information
+                var currentUser = await _userManager.GetUserAsync(User);
+
+                var speaker = await _speakerBL.GetSpeaker(currentUser.SpeakerId.Value);
+                //If the user is not the speaker for the session then they should not be able to edit it.
+                if (!_sessionBL.IsSessionEditableBySpeaker(session.SessionId, speaker.SpeakerId))
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+            }
+
             ViewBag.SkillLevels = SkillLevel.GetSkillLevels();
             return View(session);
         }
@@ -297,7 +312,7 @@ namespace Codecamp.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [Authorize]
+        [Authorize(Roles = "Admin, Speaker")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("SessionId,Name,Description,SkillLevel,Keywords,IsApproved,EventId")] Session session)
         {
@@ -306,6 +321,20 @@ namespace Codecamp.Controllers
 
             if (ModelState.IsValid)
             {
+                //If the user is not an Admin we need to do additional verification
+                if (!User.IsInRole("Admin"))
+                {
+                    // Get the user information
+                    var currentUser = await _userManager.GetUserAsync(User);
+
+                    var speaker = await _speakerBL.GetSpeaker(currentUser.SpeakerId.Value);
+                    //If the user is not the speaker for the session then they should not be able to edit it.
+                    if (!_sessionBL.IsSessionEditableBySpeaker(session.SessionId, speaker.SpeakerId))
+                    {
+                        return RedirectToAction(nameof(Index));
+                    }
+                }
+
                 if (await _sessionBL.UpdateSession(session) == false)
                     return NotFound();
 
@@ -316,6 +345,7 @@ namespace Codecamp.Controllers
         }
 
         // GET: Sessions/Delete/5
+        [Authorize(Policy = "RequireAdminRole")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (!id.HasValue)
@@ -331,7 +361,7 @@ namespace Codecamp.Controllers
 
         // POST: Sessions/Delete/5
         [HttpPost, ActionName("Delete")]
-        [Authorize]
+        [Authorize(Policy = "RequireAdminRole")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
