@@ -107,18 +107,13 @@ namespace Codecamp.Areas.Identity.Pages.Account
                 var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: true);
                 if (result.Succeeded)
                 {
-                    // We've successfully signed in.  If we're registering a user, redirect to the 
-                    // user managment page to complete registration.
+                    // We've successfully signed in.
 
-                    if (LoginWithRegistration == "Speaker")
+                    // Redirect to user profile page to complete registration, if the first and last names are empty
+                    var user = await _userManager.FindByEmailAsync(Input.Email);
+                    if (user != null && string.IsNullOrEmpty(user.FirstName) && string.IsNullOrEmpty(user.LastName))
                     {
-                        // Redirect to the manage account page to complete
-                        // speaker registration
-                        return RedirectToPage(returnUrl, new { LoginWithRegistration = LoginWithRegistration });
-                    }
-                    else if (LoginWithRegistration == "Attendee")
-                    {
-
+                        return RedirectToPage("./Manage/Index");
                     }
 
                     // Else, redirect to the home page

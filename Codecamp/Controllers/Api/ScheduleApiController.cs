@@ -18,26 +18,27 @@ namespace Codecamp.Controllers.Api
         private IScheduleBusinessLogic _scheduleBL { get; set; }
         private ISessionBusinessLogic _sessionBL { get; set; }
 
-        public ScheduleApiController(IScheduleBusinessLogic scheduleBL,
+        public ScheduleApiController(
+            IScheduleBusinessLogic scheduleBL,
             ISessionBusinessLogic sessionBL)
         {
             _scheduleBL = scheduleBL;
             _sessionBL = sessionBL;
         }
 
-        /// <summary>
-        /// Gets the avaialble TrackViewModel objects for the active event
-        /// </summary>
-        /// <returns>Collection of TrackViewModel objects</returns>
-        [HttpGet("availableTracks/{sessionId}")]
-        [Produces("application/json")]
-        public async Task<ActionResult<List<TrackViewModel>>> GetAvailableTracks(int sessionId)
-        {
-            var availableTracks
-                = await _scheduleBL.GetAvailableTrackViewModels(sessionId);
+        ///// <summary>
+        ///// Gets the avaialble TrackViewModel objects for the active event
+        ///// </summary>
+        ///// <returns>Collection of TrackViewModel objects</returns>
+        //[HttpGet("availableTracks/{sessionId}")]
+        //[Produces("application/json", Type = typeof(List<TrackViewModel>))]
+        //public async Task<ActionResult<List<TrackViewModel>>> GetAvailableTracks(int sessionId)
+        //{
+        //    var availableTracks
+        //        = await _scheduleBL.GetAvailableTrackViewModels(sessionId);
 
-            return availableTracks;
-        }
+        //    return availableTracks;
+        //}
 
         /// <summary>
         /// Gets the available tracks for assignment to sessions.  The collection
@@ -45,7 +46,7 @@ namespace Codecamp.Controllers.Api
         /// </summary>
         /// <returns>Dictionary of TrackViewModels for each session</returns>
         [HttpGet("allAvailableTracks")]
-        [Produces("application/json")]
+        [Produces("application/json", Type = typeof(Dictionary<int, List<TrackViewModel>>))]
         public async Task<ActionResult<Dictionary<int, List<TrackViewModel>>>> GetAvailableTrackViewModelsForSessions()
         {
             var availableTracks
@@ -60,7 +61,7 @@ namespace Codecamp.Controllers.Api
         /// </summary>
         /// <returns>Dictionary of TimeslotViewModels for each session</returns>
         [HttpGet("allAvailableTimeslots")]
-        [Produces("application/json")]
+        [Produces("application/json", Type = typeof(Dictionary<int, List<TimeslotViewModel>>))]
         public async Task<ActionResult<Dictionary<int, List<TimeslotViewModel>>>> GetAvailableTimeslotViewModelsForSessions()
         {
             var availableTimeslots
@@ -69,23 +70,23 @@ namespace Codecamp.Controllers.Api
             return availableTimeslots;
         }
 
-        /// <summary>
-        /// Gets the available TimeslotViewModel objects for the avtive event
-        /// </summary>
-        /// <param name="trackId">The desired TrackId</param>
-        /// <returns>The collection of TimeslotViewModel objects</returns>
-        [HttpGet("availableTimeslots/{sessionId}")]
-        [Produces("application/json")]
-        public async Task<ActionResult<List<TimeslotViewModel>>> GetAvailableTimeslots(int sessionId)
-        {
-            var availableTimeslots
-                = await _scheduleBL.GetAvailableTimeslotViewModels(sessionId);
+        ///// <summary>
+        ///// Gets the available TimeslotViewModel objects for the avtive event
+        ///// </summary>
+        ///// <param name="trackId">The desired TrackId</param>
+        ///// <returns>The collection of TimeslotViewModel objects</returns>
+        //[HttpGet("availableTimeslots/{sessionId}")]
+        //[Produces("application/json")]
+        //public async Task<ActionResult<List<TimeslotViewModel>>> GetAvailableTimeslots(int sessionId)
+        //{
+        //    var availableTimeslots
+        //        = await _scheduleBL.GetAvailableTimeslotViewModels(sessionId);
 
-            return availableTimeslots;
-        }
+        //    return availableTimeslots;
+        //}
 
         [HttpPost("sessionApproval/{sessionId}")]
-        [Produces("application/json")]
+        [Produces("application/json", Type = typeof(bool))]
         public async Task<ActionResult<bool>> SetApprovalStatus(int sessionId, [FromBody] bool approvalStatus)
         {
             var session = await _sessionBL.GetSession(sessionId);
@@ -103,7 +104,7 @@ namespace Codecamp.Controllers.Api
         }
 
         [HttpPost("assignTrackToSession/{sessionId}")]
-        [Produces("application/json")]
+        [Produces("application/json", Type = typeof(int?))]
         public async Task<ActionResult<int>> AssignTrackToSession(int sessionId,
             [FromBody] int trackId)
         {
@@ -125,7 +126,7 @@ namespace Codecamp.Controllers.Api
         }
 
         [HttpPost("assignTimeslotToSession/{sessionId}")]
-        [Produces("application/json")]
+        [Produces("application/json", Type = typeof(int?))]
         public async Task<ActionResult<int>> AssignTimeslotToSession(int sessionId,
             [FromBody] int timeslotId)
         {
