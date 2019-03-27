@@ -136,6 +136,7 @@ namespace Codecamp.Controllers
                 ViewData["Title"] = "Sessions";
             }
 
+            pageModel.Sessions = pageModel.Sessions.OrderBy(s => s.StartTime).ToList();
             return View(pageModel);
         }
 
@@ -209,6 +210,7 @@ namespace Codecamp.Controllers
                 pageModel.Sessions = pageModel.Sessions
                     .Where(s => s.TrackId == pageModel.SelectedTrackId)
                     .ToList();
+            pageModel.Sessions = pageModel.Sessions.OrderBy(s => s.StartTime).ToList();
 
             return View(pageModel);
         }

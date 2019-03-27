@@ -47,7 +47,7 @@ namespace Codecamp.Controllers
 
             return View(schedule);
         }
-
+        [ResponseCache(Duration = 300, Location = ResponseCacheLocation.Any, NoStore = false)]
         // GET: Agenda
         public async Task<IActionResult> Agenda()
         {

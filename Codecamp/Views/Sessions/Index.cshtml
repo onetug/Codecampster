@@ -50,12 +50,12 @@
     <table class="table-striped">
         <thead>
             <tr>
-                <th class="col-md-2">
+                <th class="col-md-4">
                     @Html.DisplayNameFor(model => model.Sessions[0].Name)
                 </th>
-                <th class="col-md-2">
+                @*<th class="col-md-2">
                     @Html.DisplayNameFor(model => model.Sessions[0].Description)
-                </th>
+                </th>*@
                 <th class="col-md-2">
                     @Html.DisplayNameFor(model => model.Sessions[0].SpeakerNames)
                 </th>
@@ -87,9 +87,9 @@
                 <td style="padding: 10px;">
                     @Html.DisplayFor(modelItem => item.Name)
                 </td>
-                <td style="padding: 10px;">
+                @*<td style="padding: 10px;">
                     @Html.DisplayFor(modelItem => item.Description)
-                </td>
+                </td>*@
                 <td style="padding: 10px;">
                     @Html.DisplayFor(modelItem => item.SpeakerNames)
                 </td>
