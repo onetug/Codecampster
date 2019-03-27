@@ -70,6 +70,10 @@ namespace Codecamp.Controllers
             return View();
         }
 
+        public IActionResult Location()
+        {
+            return View();
+        }
         public IActionResult Contact()
         {
             ViewData["Message"] = "Your contact page.";
