@@ -47,7 +47,14 @@ namespace Codecamp
                 .AddEntityFrameworkStores<CodecampDbContext>()
                 .AddDefaultTokenProviders();
 
-            services.AddMvc()
+            services.AddMvc(options =>
+                {
+                    options.CacheProfiles.Add("Default300",
+                        new CacheProfile()
+                        {
+                            Duration = 300
+                        });
+                })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
                 .AddRazorPagesOptions(options =>
                 {
