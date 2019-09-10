@@ -15,12 +15,18 @@
 }
 
 <h2><span style="font-weight: bold;">Title:&nbsp;</span>@Model.Session.Name</h2>
-@*<div style="float: right;">
-    @Html.HiddenFor(model => user.Id, new { id = "hiddenFieldUserId" })
-    @Html.HiddenFor(model => model.Session.SessionId, new { id = "hiddenFieldSessionId" })
-    @Html.CheckBoxFor(model => model.Session.IsUserFavorite, 
-        new { id = "checkBoxIsUserFavorite" })
-</div>*@
+@*@if (user != null)
+    {
+        // Only display for logged in users
+        <div style="float: right;">
+            <div style="width: 100px;">
+                <i id='i_isUserFavorite' class='material-icons' style="font-size: xx-large; cursor: pointer;">star_bordered</i>
+            </div>
+            @Html.HiddenFor(model => user.Id, new { id = "hiddenFieldUserId" })
+            @Html.HiddenFor(model => model.Session.SessionId, new { id = "hiddenFieldSessionId" })
+            @Html.HiddenFor(model => model.Session.IsUserFavorite, new { id = "hiddenFieldIsUserFavorite" })
+        </div>
+    }*@
 
 <div style="margin-bottom: 40px;">
     @foreach (var speaker in Model.Speakers)
@@ -52,6 +58,10 @@
         <dd>
             @Html.DisplayFor(model => model.Session.Name)
         </dd>
+        <dt>@Html.DisplayNameFor(model => model.Session.TrackName)</dt>
+        <dd>@Html.DisplayFor(model => model.Session.TrackName)</dd>
+        <dt>@Html.DisplayNameFor(model => model.Session.TimeslotName)</dt>
+        <dd>@Html.DisplayFor(model => model.Session.TimeslotName)</dd>
         <dt>
             @Html.DisplayNameFor(model => model.Session.Description)
         </dt>
@@ -81,7 +91,7 @@
 
 <div class="bottom-navigation">
     @if (User.IsInRole("Admin") || (User.IsInRole("Speaker")
-      && speakerId.HasValue && Model.Speakers.Any(s => s.SpeakerId == speakerId.Value)))
+     && speakerId.HasValue && Model.Speakers.Any(s => s.SpeakerId == speakerId.Value)))
     {
         <a asp-action="Edit" asp-route-id="@Model.Session.SessionId">Edit</a><span> | </span>
     }
@@ -90,10 +100,25 @@
 
 @section Scripts {
     <script type="text/javascript">
+        function initializePage() {
+            let IsUserFavoriteValue = 'True' == $('#hiddenFieldIsUserFavorite').val();
+            if (IsUserFavoriteValue)
+                $('#i_isUserFavorite').text('star')
+            else
+                $('#i_isUserFavorite').text('star_bordered')
+
+            $('.speakerImage').each(function () {
+                setSpeakerImage(this, this.id);
+            });
+        }
+
         function initializeEventHandlers() {
-            $('#checkBoxIsUserFavorite').change(function () {
-                let checkBoxIsUserFavoriteValue = $(this).is(':checked');
+            $('#i_isUserFavorite').click(function () {
+                // Is this a user's favorite
+                let IsUserFavoriteValue = 'True' == $('#hiddenFieldIsUserFavorite').val();
+                // Get the session Id
                 let sessionId = parseInt($('#hiddenFieldSessionId').val(), 10);
+                // Get the user's Id
                 let userId = $('#hiddenFieldUserId').val();
 
                 let options = {}
@@ -103,28 +128,34 @@
                 options.data = JSON.stringify(userId);
                 options.contentType = 'application/json';
                 options.success = function (data) {
-                    if (data != true) {
-                        if (checkBoxIsUserFavoriteValue)
-                            $('#checkBoxIsUserFavorite').prop('checked', true);
-                        else
-                            $('#checkBoxIsUserFavorite').prop('checked', false);
+                    if (data == true) {
+                        // We're successful, toggle locally
+                        IsUserFavoriteValue = !IsUserFavoriteValue;
+                        // Set the hidden field
+                        $('#hiddenFieldIsUserFavorite').val(IsUserFavoriteValue == true ? "True" : "False");
                     }
+
+                    // Toggle the star filled/bordered
+                    if (IsUserFavoriteValue)
+                        $('#i_isUserFavorite').text('star')
+                    else
+                        $('#i_isUserFavorite').text('star_bordered')
                 };
                 options.error = function () {
                     // Error saving track to session
                     $('#message').html('Error while calling Web API to toggle favorite session');
                 };
+                // Toggle the user favorite
                 $.ajax(options);
             });
         }
 
         $(document).ready(function () {
+            // Initialize the page
+            initializePage();
+
             // Initialie the page event handlers
             initializeEventHandlers();
-
-            $('.speakerImage').each(function () {
-                setSpeakerImage(this, this.id);
-            });
         });
     </script>
 }

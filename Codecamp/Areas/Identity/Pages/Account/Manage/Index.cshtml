@@ -4,7 +4,13 @@
     ViewData["Title"] = "Profile";
 }
 
-<h4>@ViewData["Title"]</h4>
+<h4>
+    @ViewData["Title"]
+    @if (string.IsNullOrEmpty(Model.Input.FirstName) && string.IsNullOrEmpty(Model.Input.LastName))
+    {
+        <span> - </span><span class="text-danger">Please complete user registration!</span>
+    }
+</h4>
 @await Html.PartialAsync("_StatusMessage", Model.StatusMessage)
 
 <div class="row">

@@ -13,6 +13,9 @@ namespace Codecamp.Controllers.Api
     [ApiController]
     public class SessionsApiController : ControllerBase
     {
+        private ISessionsApiBusinessLogic BusinessLogic { get; }
+        private ISessionBusinessLogic _sessionBL { get; set; }
+
         public SessionsApiController(
             ISessionsApiBusinessLogic logic,
             ISessionBusinessLogic sessionBL)
@@ -20,9 +23,6 @@ namespace Codecamp.Controllers.Api
             BusinessLogic = logic;
             _sessionBL = sessionBL;
         }
-
-        private ISessionsApiBusinessLogic BusinessLogic { get; }
-        private ISessionBusinessLogic _sessionBL { get; set; }
 
         [HttpGet]
         [Produces("application/json", Type = typeof(List<ApiSession>))]
@@ -54,7 +54,7 @@ namespace Codecamp.Controllers.Api
         }
 
         [HttpPost("toggleFavoriteSession/{sessionId}")]
-        [Produces("application/json")]
+        [Produces("application/json", Type = typeof(bool))]
         public async Task<ActionResult<bool>> ToggleFavoriteSession(int sessionId, [FromBody] string userId)
         {
             var result = await _sessionBL.ToggleFavoriteSession(sessionId, userId);

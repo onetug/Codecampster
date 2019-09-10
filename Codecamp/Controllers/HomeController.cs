@@ -42,7 +42,7 @@ namespace Codecamp.Controllers
             _announcementBL = announcementBL;
             _sponsorBL = sponsorBL;
         }
-
+        [ResponseCache(Duration = 300, Location = ResponseCacheLocation.Any, NoStore = false)]
         public async Task<IActionResult> Index()
         {
             var viewModel = new HomePageViewModel
@@ -70,6 +70,10 @@ namespace Codecamp.Controllers
             return View();
         }
 
+        public IActionResult Location()
+        {
+            return View();
+        }
         public IActionResult Contact()
         {
             ViewData["Message"] = "Your contact page.";
