@@ -1,11 +1,27 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27703.2042
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29411.138
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Codecamp", "Codecamp\Codecamp.csproj", "{7EB58B6F-5B59-4652-A57F-415E20BD9E22}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{1FA63A8E-C70B-40F0-B901-78B34906B6D5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ResizeCodecampSpeakerImages", "ResizeCodecampSpeakerImages\ResizeCodecampSpeakerImages.csproj", "{DC1F49C7-0969-4542-8E02-70ADAFBFA272}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{202BDEA0-4D1F-44B6-A2DB-3408A11F1F6A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{C1CB5EA1-26BE-4B99-BACC-546264BC80B7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Web Apps", "Web Apps", "{D615F4F8-4C65-463D-A86D-7815030B667D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Building Blocks", "Building Blocks", "{D7FD855A-54CA-4F1E-AF94-608C9686FDF9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WebHostCustomization", "WebHostCustomization", "{2622C9DF-D0E2-41F9-A256-6E7FB563F2BF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebHost.Customization", "src\BuildingBlocks\WebHostCustomization\WebHost.Customization\WebHost.Customization.csproj", "{40CBADA2-67E5-4C7D-807B-AE9F828A2AF9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebMVC", "src\Web\WebMVC\WebMVC.csproj", "{F519260B-3490-4C26-B182-E46C10CEEB1A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebStatus", "src\Web\WebStatus\WebStatus.csproj", "{35DFFDB0-FD24-4A20-96BA-7774D5B2427D}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{0F9AC79B-6389-4555-B3A3-C8D01B0B6A38}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,17 +29,34 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{7EB58B6F-5B59-4652-A57F-415E20BD9E22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7EB58B6F-5B59-4652-A57F-415E20BD9E22}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7EB58B6F-5B59-4652-A57F-415E20BD9E22}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7EB58B6F-5B59-4652-A57F-415E20BD9E22}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DC1F49C7-0969-4542-8E02-70ADAFBFA272}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DC1F49C7-0969-4542-8E02-70ADAFBFA272}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DC1F49C7-0969-4542-8E02-70ADAFBFA272}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DC1F49C7-0969-4542-8E02-70ADAFBFA272}.Release|Any CPU.Build.0 = Release|Any CPU
+		{40CBADA2-67E5-4C7D-807B-AE9F828A2AF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{40CBADA2-67E5-4C7D-807B-AE9F828A2AF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{40CBADA2-67E5-4C7D-807B-AE9F828A2AF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{40CBADA2-67E5-4C7D-807B-AE9F828A2AF9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F519260B-3490-4C26-B182-E46C10CEEB1A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F519260B-3490-4C26-B182-E46C10CEEB1A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F519260B-3490-4C26-B182-E46C10CEEB1A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F519260B-3490-4C26-B182-E46C10CEEB1A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{35DFFDB0-FD24-4A20-96BA-7774D5B2427D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{35DFFDB0-FD24-4A20-96BA-7774D5B2427D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{35DFFDB0-FD24-4A20-96BA-7774D5B2427D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{35DFFDB0-FD24-4A20-96BA-7774D5B2427D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0F9AC79B-6389-4555-B3A3-C8D01B0B6A38}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F9AC79B-6389-4555-B3A3-C8D01B0B6A38}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0F9AC79B-6389-4555-B3A3-C8D01B0B6A38}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0F9AC79B-6389-4555-B3A3-C8D01B0B6A38}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C1CB5EA1-26BE-4B99-BACC-546264BC80B7} = {1FA63A8E-C70B-40F0-B901-78B34906B6D5}
+		{D615F4F8-4C65-463D-A86D-7815030B667D} = {1FA63A8E-C70B-40F0-B901-78B34906B6D5}
+		{D7FD855A-54CA-4F1E-AF94-608C9686FDF9} = {1FA63A8E-C70B-40F0-B901-78B34906B6D5}
+		{2622C9DF-D0E2-41F9-A256-6E7FB563F2BF} = {D7FD855A-54CA-4F1E-AF94-608C9686FDF9}
+		{40CBADA2-67E5-4C7D-807B-AE9F828A2AF9} = {2622C9DF-D0E2-41F9-A256-6E7FB563F2BF}
+		{F519260B-3490-4C26-B182-E46C10CEEB1A} = {D615F4F8-4C65-463D-A86D-7815030B667D}
+		{35DFFDB0-FD24-4A20-96BA-7774D5B2427D} = {D615F4F8-4C65-463D-A86D-7815030B667D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {415F33E8-2E62-4089-84A9-833B4AE6C168}

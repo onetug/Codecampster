@@ -1,0 +1,69 @@
+version: '3.7'
+
+services: 
+  nginx.ingress:
+    ports:
+      - "5000:443"
+    secrets:
+      - nginx.cert
+      - nginx.key
+    logging:
+      driver: gelf
+      options:
+        gelf-address: "udp://${CODECAMPER_EXTERNAL_DNS_NAME_OR_IP}:12201"
+  sqelf:
+    ports:
+      - "12201:12201/udp"
+    environment:
+      SEQ_ADDRESS: "http://seq"
+    restart: unless-stopped
+  seq:
+    environment:
+      - ACCEPT_EULA=Y
+    ports:
+      - "5340:80"
+    restart: unless-stopped
+  sql.data:
+    environment:
+      - SA_PASSWORD=Pass@word
+      - ACCEPT_EULA=Y
+    ports:
+      - "5433:1433"    # Important: In a production environment your should remove the external port
+    logging:
+      driver: gelf
+      options:
+        gelf-address: "udp://${CODECAMPER_EXTERNAL_DNS_NAME_OR_IP}:12201"
+  azstore.data: #Only required for local azure storage emulation via docker
+    ports:
+      - "10000:10000"
+      - "10001:10001"
+    logging:
+      driver: gelf
+      options:
+        gelf-address: "udp://${CODECAMPER_EXTERNAL_DNS_NAME_OR_IP}:12201"
+
+  webmvc:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://0.0.0.0:80
+      - ApplicationInsights__InstrumentationKey=${INSTRUMENTATION_KEY}
+      - ConnectionStrings__CodecampDbContextConnection=${CODECAMPER_AZURE_WEB_DB:-Server=sql.data;Database=CodeCamper.Web.WebMVCDb;User Id=sa;Password=Pass@word}
+    ports:
+      - "5100:80"
+
+  webstatus:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://0.0.0.0:80
+      - HealthChecks-UI__HealthChecks__1__Name=Code Camper MVC Site
+      - HealthChecks-UI__HealthChecks__1__Uri=http://webmvc/hc
+      - ApplicationInsights__InstrumentationKey=${INSTRUMENTATION_KEY}
+      - PATH_BASE=/status
+    ports:
+      - "5107:80"
+
+secrets:
+  nginx.cert: 
+    file: ./src/ApiGateways/Nginx/nginx.cert
+  nginx.key: 
+    file: ./src/ApiGateways/Nginx/nginx.key

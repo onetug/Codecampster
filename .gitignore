@@ -256,7 +256,25 @@ paket-files/
 # CodeRush
 .cr/
 
+# OpenCover UI analysis results
+OpenCover/
+
+# Azure Stream Analytics local run output 
+ASALocalRun/
+
+# NVidia Nsight GPU debugger configuration file
+*.nvuser
+
+# MFractors (Xamarin productivity tool) working folder 
+.mfractor/
+
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
 /Codecamp/Properties/PublishProfiles
+
+# Ignore HealthCheckdb
+*healthchecksdb*
+
+#Docker
+secrets.env

@@ -1,0 +1,38 @@
+version: '3.7'
+
+services:
+  nginx.ingress:
+    image: nginx:1.16.1
+    volumes:
+      - ./src/ApiGateways/Nginx/nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - sqelf
+  sqelf:
+    image: datalust/sqelf:latest
+    depends_on:
+      - seq
+  seq:
+    image: datalust/seq:latest
+  sql.data:
+    image: mcr.microsoft.com/mssql/server:2019-GA-ubuntu-16.04
+    depends_on:
+      - sqelf
+  azstore.data:
+    image: mcr.microsoft.com/azure-storage/azurite
+    depends_on:
+      - sqelf
+  
+  webmvc:
+    image: ${REGISTRY:-codecamper}/webmvc:${PLATFORM:-linux}-${TAG:-latest}
+    build:
+      context: .
+      dockerfile: src/Web/WebMVC/Dockerfile    
+    depends_on:
+      - seq
+  webstatus:
+    image: ${REGISTRY:-codecamper}/webstatus:${TAG:-latest}
+    build:
+      context: .
+      dockerfile: src/Web/WebStatus/Dockerfile
+    depends_on:
+      - seq
