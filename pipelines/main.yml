@@ -3,7 +3,7 @@ trigger:
 
 variables:
   ACR.ContainerRegistryServiceConnnection: 'codecampster-nebbia-registry'
-  ACR.Name: nebbiaregistry
+  ACR.Name: orlandocodecamp
   Service.Name: mvc
   Image.Name: codecampster/mvc
   Service.Dockerfile: src/Web/WebMVC/Dockerfile
