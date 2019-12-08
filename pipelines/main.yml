@@ -28,4 +28,6 @@ stages:
         repository: codecampster/$(Service.Name)
         buildContext: .
         Dockerfile: $(Service.Dockerfile)
-        tags: $(Build.BuildNumber)
+        tags: |
+          - $(Build.BuildNumber)
+          - latest
