@@ -29,5 +29,5 @@ stages:
         buildContext: .
         Dockerfile: $(Service.Dockerfile)
         tags: |
-          - $(Build.BuildNumber)
-          - latest
+          $(Build.BuildNumber)
+          latest
