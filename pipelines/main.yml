@@ -2,7 +2,7 @@ trigger:
 - master
 
 variables:
-  ACR.ContainerRegistryServiceConnnection: 'nebbia-container-registry'
+  ACR.ContainerRegistryServiceConnnection: 'codecampster-nebbia-partner'
   ACR.Name: nebbiaregistry
   Service.Name: mvc
   Image.Name: codecampster/mvc
