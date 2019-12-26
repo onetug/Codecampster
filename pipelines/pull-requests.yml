@@ -8,6 +8,8 @@ trigger: none
 pr:
 - master
 
+pool: ubuntu-latest
+
 variables:
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
