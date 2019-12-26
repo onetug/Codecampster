@@ -23,6 +23,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebStatus", "src\Web\WebSta
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{0F9AC79B-6389-4555-B3A3-C8D01B0B6A38}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCampster.Web", "src\Web\CodeCampster.Web\CodeCampster.Web.csproj", "{8889AF71-0C81-4C44-9A1E-5AFD1890CE21}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,10 @@ Global
 		{0F9AC79B-6389-4555-B3A3-C8D01B0B6A38}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0F9AC79B-6389-4555-B3A3-C8D01B0B6A38}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0F9AC79B-6389-4555-B3A3-C8D01B0B6A38}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8889AF71-0C81-4C44-9A1E-5AFD1890CE21}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8889AF71-0C81-4C44-9A1E-5AFD1890CE21}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8889AF71-0C81-4C44-9A1E-5AFD1890CE21}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8889AF71-0C81-4C44-9A1E-5AFD1890CE21}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -57,6 +63,7 @@ Global
 		{40CBADA2-67E5-4C7D-807B-AE9F828A2AF9} = {2622C9DF-D0E2-41F9-A256-6E7FB563F2BF}
 		{F519260B-3490-4C26-B182-E46C10CEEB1A} = {D615F4F8-4C65-463D-A86D-7815030B667D}
 		{35DFFDB0-FD24-4A20-96BA-7774D5B2427D} = {D615F4F8-4C65-463D-A86D-7815030B667D}
+		{8889AF71-0C81-4C44-9A1E-5AFD1890CE21} = {D615F4F8-4C65-463D-A86D-7815030B667D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {415F33E8-2E62-4089-84A9-833B4AE6C168}
