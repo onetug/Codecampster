@@ -13,5 +13,7 @@ namespace CodeCampster.Web
         {
 
         }
+
+        public string SessionizeUrl => Sessionize.SessionsUrl;
     }
 }
