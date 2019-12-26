@@ -1,6 +1,8 @@
 trigger:
 - master
 
+pr: none
+
 variables:
   ACR.ContainerRegistryServiceConnnection: 'codecampster-nebbia-registry'
   ACR.Name: orlandocodecamp
