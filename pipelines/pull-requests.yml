@@ -8,7 +8,8 @@ trigger: none
 pr:
 - master
 
-pool: ubuntu-latest
+pool: 
+- image: ubuntu-latest
 
 variables:
   solution: '**/*.sln'
