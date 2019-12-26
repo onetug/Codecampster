@@ -9,7 +9,7 @@ pr:
 - master
 
 pool: 
-- image: ubuntu-latest
+ image: ubuntu-latest
 
 variables:
   solution: '**/*.sln'
