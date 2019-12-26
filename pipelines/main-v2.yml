@@ -1,0 +1,33 @@
+trigger:
+- master
+
+variables:
+  ACR.ContainerRegistryServiceConnnection: 'codecampster-nebbia-registry'
+  ACR.Name: orlandocodecamp
+  Service.Name: mvc-v2
+  Image.Name: codecampster/mvc-v2
+  Service.Dockerfile: src/Web/CodeCampster.Web/Dockerfile
+  ACR.RepositoryName: '$(ACR.Name)'
+  ACR.FullName: '$(ACR.Name).azurecr.io'
+  ACR.ImageFullName: '$(ACR.FullName)/$(Image.Name)'
+
+stages:
+- stage: Build
+  displayName: Build and Push
+  jobs:  
+  - job: Build
+    displayName: Build and Push
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - task: Docker@2
+      displayName: Build and Push
+      inputs:
+        command: buildAndPush
+        containerRegistry: $(ACR.ContainerRegistryServiceConnnection)
+        repository: codecampster/$(Service.Name)
+        buildContext: .
+        Dockerfile: $(Service.Dockerfile)
+        tags: |
+          $(Build.BuildNumber)
+          latest
