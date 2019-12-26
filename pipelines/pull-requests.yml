@@ -9,7 +9,7 @@ pr:
 - master
 
 pool:
-  image: windows-latest
+  vmImage: windows-latest
 
 variables:
   solution: '**/*.sln'
