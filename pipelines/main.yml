@@ -3,6 +3,10 @@ trigger:
 
 pr: none
 
+variables:
+  ACR.ContainerRegistryServiceConnnection: 'codecampster-nebbia-registry'
+  DockerHub.ContainerRegistryServiceConnnection: 'orlando-codecamp-registry'
+
 stages:
 - stage: Build
   displayName: Build and Push
@@ -14,7 +18,6 @@ stages:
     variables: 
       App.Name: mvc
       App.Dockerfile: src/Web/WebMVC/Dockerfile
-      ACR.ContainerRegistryServiceConnnection: 'codecampster-nebbia-registry'
     steps:
     - task: Docker@2
       displayName: Build and Push
@@ -33,7 +36,6 @@ stages:
       image: 'ubuntu-latest'
     variables: 
       App.Dockerfile: src/Web/CodeCampster.Web/Dockerfile
-      DockerHub.ContainerRegistryServiceConnnection: 'orlando-codecamp-registry'
       DockerHub.OrganizationName: orlandocodecamp
     steps:
     - task: Docker@2
