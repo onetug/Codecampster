@@ -35,7 +35,7 @@ stages:
     pool:
       image: 'ubuntu-latest'
     variables: 
-      App.Name: codecampster
+      App.Name: codecampsterweb
       App.Dockerfile: src/Web/CodeCampster.Web/Dockerfile
     steps:
     - task: Docker@2
