@@ -11,7 +11,7 @@ stages:
 - stage: Build
   displayName: Build and Push
   jobs:  
-  - job: Build
+  - job: build_legacy
     displayName: Build and Push Legacy
     pool:
       image: 'ubuntu-latest'
@@ -30,7 +30,7 @@ stages:
         tags: |
           $(Build.BuildNumber)
           latest
-  - job: Build
+  - job: build_greenfield
     displayName: Build and Push Greenfield
     pool:
       image: 'ubuntu-latest'
