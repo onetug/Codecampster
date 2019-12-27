@@ -49,3 +49,14 @@ stages:
         tags: |
           $(Build.BuildNumber)
           latest
+    - task: CopyFiles@2
+      inputs:
+        SourceFolder: 'iac'
+        Contents: '**'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'iac'
+        publishLocation: 'Container'
+    
