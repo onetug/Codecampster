@@ -6,6 +6,7 @@ pr: none
 variables:
   ACR.ContainerRegistryServiceConnnection: 'codecampster-nebbia-registry'
   DockerHub.ContainerRegistryServiceConnnection: 'orlando-codecamp-registry'
+  Azure.ServiceConnection: 'codecampster-nebbia-partner'
 
 stages:
 - stage: build
@@ -71,7 +72,6 @@ stages:
       variables: 
         Environment: prod
         ResourceGroup: rg-codecamp-$(Environment)-001
-        Azure.ServiceConnection: 'codecampster-nebbia-partner'
         FullImageTag: orlandocodecamp/codecampster:$(Build.BuildNumber)
       steps: 
       - download: current
