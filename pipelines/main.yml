@@ -90,8 +90,8 @@ stages:
           templateLocation: 'Linked artifact'
           csmFile: '$(Pipeline.Workspace)/iac/armdeploy.json'
           csmParametersFile: '$(Pipeline.Workspace)/iac/armdeploy.parameters.json'
-          overrideParameters: "-name 'azapp-codecampster-$(Environment)-001' 
-                              -hostingPlanName 'azapp-codecampster-$(Environment)-001-sp'
+          overrideParameters: "-name azapp-codecampster-$(Environment)-001
+                              -hostingPlanName azapp-codecampster-$(Environment)-001-sp
                               -fullImageTag $(FullImageTag)"
           deploymentMode: 'Incremental'
       
