@@ -88,8 +88,8 @@ stages:
           resourceGroupName: '$(ResourceGroup)'
           location: 'East US'
           templateLocation: 'Linked artifact'
-          csmFile: '$(Pipeline.Workspace)/iac/azuredeploy.json'
-          csmParametersFile: '$(Pipeline.Workspace)/iac/azuredeploy.parameters.json'
+          csmFile: '$(Pipeline.Workspace)/iac/armdeploy.json'
+          csmParametersFile: '$(Pipeline.Workspace)/iac/armdeploy.parameters.json'
           overrideParameters: "-name 'azapp-codecampster-$(Environment)-001' 
                               -hostingPlanName=apapp-codecampster-$(Environment)-001-sp 
                               -fullImageTag $(FullImageTag)"
