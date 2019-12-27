@@ -4,8 +4,7 @@ trigger:
 pr: none
 
 variables:
-  DockerHub.ContainerRegistryServiceConnnection: 'orlando-codecamp-registry'
-  DockerHub.OrganizationName: orlandocodecamp
+  
 
 stages:
 - stage: Build
@@ -18,13 +17,14 @@ stages:
     variables: 
       App.Name: mvc
       App.Dockerfile: src/Web/WebMVC/Dockerfile
+      ACR.ContainerRegistryServiceConnnection: 'codecampster-nebbia-registry'
     steps:
     - task: Docker@2
       displayName: Build and Push
       inputs:
         command: buildAndPush
-        containerRegistry: $(DockerHub.ContainerRegistryServiceConnnection)
-        repository: $(DockerHub.OrganizationName)/codecampster/$(App.Name)
+        containerRegistry: $(ACR.ContainerRegistryServiceConnnection)
+        repository: codecampster/$(App.Name)
         buildContext: .
         Dockerfile: $(App.Dockerfile)
         tags: |
@@ -35,17 +35,23 @@ stages:
     pool:
       image: 'ubuntu-latest'
     variables: 
-      App.Name: web
       App.Dockerfile: src/Web/CodeCampster.Web/Dockerfile
+      DockerHub.ContainerRegistryServiceConnnection: 'orlando-codecamp-registry'
+      DockerHub.OrganizationName: orlandocodecamp
     steps:
     - task: Docker@2
       displayName: Build and Push
       inputs:
         command: buildAndPush
         containerRegistry: $(DockerHub.ContainerRegistryServiceConnnection)
-        repository: $(DockerHub.OrganizationName)/codecampster/$(App.Name)
+        repository: $(DockerHub.OrganizationName)/codecampster
         buildContext: .
         Dockerfile: $(App.Dockerfile)
         tags: |
           $(Build.BuildNumber)
           latest
+    - task: Docker@2
+      inputs:
+        containerRegistry: 'orlando-codecamp-registry'
+        command: 'buildAndPush'
+        Dockerfile: '**/Dockerfile'
