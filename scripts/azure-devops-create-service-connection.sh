@@ -12,13 +12,15 @@ name='codecampster-nebbia-partner'
 subscriptionId=$(az account show | jq -r '.id')
 subscriptionName=$(az account show | jq -r '.name')
 resourceGroupName1='rg-codecamp-dev-001'
-resourceGroupName2='rg-codecamp-core-001'
+resourceGroupName2='rg-codecamp-shared-001'
+resourceGroupName3='rg-codecamp-prod-001'
 
 echo 'creating service principal in Azure AD'
 
-response=$(az ad sp create-for-rbac -n $name --role contributor \
+response=$(az ad sp create-for-rbac -n $name --role owner \
     --scopes /subscriptions/$subscriptionId/resourceGroups/$resourceGroupName1 \
-             /subscriptions/$subscriptionId/resourceGroups/$resourceGroupName2)
+             /subscriptions/$subscriptionId/resourceGroups/$resourceGroupName2 \
+             /subscriptions/$subscriptionId/resourceGroups/$resourceGroupName3)
 
 echo 'parsing response'
 appId=$(echo $response | jq -r '.appId')
