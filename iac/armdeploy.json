@@ -41,12 +41,6 @@
         "dockerRegistryUrl": {
             "type": "string"
         },
-        "dockerRegistryUsername": {
-            "type": "string"
-        },
-        "dockerRegistryPassword": {
-            "type": "securestring"
-        },
         "dockerRegistryStartupCommand": {
             "type": "string"
         }
@@ -74,14 +68,6 @@
                         {
                             "name": "DOCKER_REGISTRY_SERVER_URL",
                             "value": "[parameters('dockerRegistryUrl')]"
-                        },
-                        {
-                            "name": "DOCKER_REGISTRY_SERVER_USERNAME",
-                            "value": "[parameters('dockerRegistryUsername')]"
-                        },
-                        {
-                            "name": "DOCKER_REGISTRY_SERVER_PASSWORD",
-                            "value": "[parameters('dockerRegistryPassword')]"
                         },
                         {
                             "name": "WEBSITES_ENABLE_APP_SERVICE_STORAGE",
