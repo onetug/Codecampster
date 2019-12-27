@@ -69,6 +69,7 @@ stages:
     image: 'ubuntu-latest'
   jobs:    
     - job: deploy_production
+      displayName: "Deploy to Production"
       variables: 
         Environment: prod
         ResourceGroup: rg-codecamp-$(Environment)-001
