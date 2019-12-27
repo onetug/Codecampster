@@ -35,8 +35,8 @@ stages:
     pool:
       image: 'ubuntu-latest'
     variables: 
-      App.Name: mvc
-      App.Dockerfile: src/Web/WebMVC/Dockerfile
+      App.Name: codecampster
+      App.Dockerfile: src/Web/CodeCampster.Web/Dockerfile
     steps:
     - task: Docker@2
       displayName: Build and Push
