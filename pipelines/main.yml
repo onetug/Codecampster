@@ -3,9 +3,6 @@ trigger:
 
 pr: none
 
-variables:
-  
-
 stages:
 - stage: Build
   displayName: Build and Push
