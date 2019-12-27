@@ -49,8 +49,3 @@ stages:
         tags: |
           $(Build.BuildNumber)
           latest
-    - task: Docker@2
-      inputs:
-        containerRegistry: 'orlando-codecamp-registry'
-        command: 'buildAndPush'
-        Dockerfile: '**/Dockerfile'
