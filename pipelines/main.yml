@@ -8,7 +8,7 @@ variables:
   DockerHub.ContainerRegistryServiceConnnection: 'orlando-codecamp-registry'
 
 stages:
-- stage: Build
+- stage: build
   displayName: Build and Push
   jobs:  
   - job: build_legacy
@@ -61,4 +61,33 @@ stages:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)'
         ArtifactName: 'iac'
         publishLocation: 'Container'
-    
+- stage: deploy_production
+  displayName: "Production"
+  dependsOn: build
+  pool:
+    image: 'ubuntu-latest'
+  jobs:    
+    - job: deploy_production
+      variables: 
+        Environment: prod
+        ResourceGroup: rg-codecamp-$(Environment)-001
+        Azure.ServiceConnection: 'codecampster-nebbia-partner'
+        FullImageTag: orlandocodecamp/codecampster:$(Build.BuildNumber)
+      steps: 
+      - download: current
+      - task: AzureResourceManagerTemplateDeployment@3
+        displayName: ARM Template Deployment
+        inputs:
+          deploymentScope: 'Resource Group'
+          azureResourceManagerConnection: '$(Azure.ServiceConnection)'
+          action: 'Create Or Update Resource Group'
+          resourceGroupName: '$(ResourceGroup)'
+          location: 'East US'
+          templateLocation: 'Linked artifact'
+          csmFile: '$(Pipeline.Workspace)/iac/azuredeploy.json'
+          csmParametersFile: '$(Pipeline.Workspace)/iac/azuredeploy.parameters.json'
+          overrideParameters: "-name 'azapp-codecampster-$(Environment)-001' 
+                              -hostingPlanName=apapp-codecampster-$(Environment)-001-sp 
+                              -fullImageTag $(FullImageTag)"
+          deploymentMode: 'Incremental'
+      
