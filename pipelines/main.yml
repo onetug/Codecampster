@@ -50,11 +50,13 @@ stages:
           $(Build.BuildNumber)
           latest
     - task: CopyFiles@2
+      displayName: "Copying IaC to artifacts directory"
       inputs:
         SourceFolder: 'iac'
         Contents: '**'
         TargetFolder: '$(Build.ArtifactStagingDirectory)'
     - task: PublishBuildArtifacts@1
+      displayName: "Publishing Build Artifacts"
       inputs:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)'
         ArtifactName: 'iac'
