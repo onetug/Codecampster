@@ -77,7 +77,7 @@ stages:
       steps: 
       - download: current
       - script: |
-          ls -a $(Pipeline.Workspace)
+          ls -a $(Pipeline.Workspace)/iac
         workingDirectory: 
       - task: AzureResourceManagerTemplateDeployment@3
         displayName: ARM Template Deployment
