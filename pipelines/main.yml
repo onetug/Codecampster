@@ -1,33 +1,94 @@
 trigger:
 - master
 
+pr: none
+
 variables:
   ACR.ContainerRegistryServiceConnnection: 'codecampster-nebbia-registry'
-  ACR.Name: orlandocodecamp
-  Service.Name: mvc
-  Image.Name: codecampster/mvc
-  Service.Dockerfile: src/Web/WebMVC/Dockerfile
-  ACR.RepositoryName: '$(ACR.Name)'
-  ACR.FullName: '$(ACR.Name).azurecr.io'
-  ACR.ImageFullName: '$(ACR.FullName)/$(Image.Name)'
+  DockerHub.ContainerRegistryServiceConnnection: 'orlando-codecamp-registry'
+  Azure.ServiceConnection: 'codecampster-nebbia-partner'
 
 stages:
-- stage: Build
+- stage: build
   displayName: Build and Push
   jobs:  
-  - job: Build
-    displayName: Build and Push
+  - job: build_legacy
+    displayName: Build and Push Legacy
     pool:
       image: 'ubuntu-latest'
+    variables: 
+      App.Name: mvc
+      App.Dockerfile: src/Web/WebMVC/Dockerfile
     steps:
     - task: Docker@2
       displayName: Build and Push
       inputs:
         command: buildAndPush
         containerRegistry: $(ACR.ContainerRegistryServiceConnnection)
-        repository: codecampster/$(Service.Name)
+        repository: codecampster/$(App.Name)
         buildContext: .
-        Dockerfile: $(Service.Dockerfile)
+        Dockerfile: $(App.Dockerfile)
         tags: |
           $(Build.BuildNumber)
           latest
+  - job: build_greenfield
+    displayName: Build and Push Greenfield
+    pool:
+      image: 'ubuntu-latest'
+    variables: 
+      App.Dockerfile: src/Web/CodeCampster.Web/Dockerfile
+      DockerHub.OrganizationName: orlandocodecamp
+    steps:
+    - task: Docker@2
+      displayName: Build and Push
+      inputs:
+        command: buildAndPush
+        containerRegistry: $(DockerHub.ContainerRegistryServiceConnnection)
+        repository: $(DockerHub.OrganizationName)/codecampster
+        buildContext: .
+        Dockerfile: $(App.Dockerfile)
+        tags: |
+          $(Build.BuildNumber)
+          latest
+    - task: CopyFiles@2
+      displayName: "Copying IaC to artifacts directory"
+      inputs:
+        SourceFolder: 'iac'
+        Contents: '**'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    - task: PublishBuildArtifacts@1
+      displayName: "Publishing Build Artifacts"
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'iac'
+        publishLocation: 'Container'
+- stage: deploy_production
+  displayName: "Production"
+  dependsOn: build
+  pool:
+    image: 'ubuntu-latest'
+  jobs:    
+    - job: deploy_production
+      displayName: "Deploy to Production"
+      variables: 
+        Environment: prod
+        ResourceGroup: rg-codecamp-$(Environment)-001
+        FullImageTag: orlandocodecamp/codecampster:$(Build.BuildNumber)
+      steps: 
+      - download: current
+      - task: AzureResourceManagerTemplateDeployment@3
+        displayName: ARM Template Deployment
+        inputs:
+          deploymentScope: 'Resource Group'
+          azureResourceManagerConnection: '$(Azure.ServiceConnection)'
+          action: 'Create Or Update Resource Group'
+          resourceGroupName: '$(ResourceGroup)'
+          location: 'East US'
+          templateLocation: 'Linked artifact'
+          csmFile: '$(Pipeline.Workspace)/iac/armdeploy.json'
+          csmParametersFile: '$(Pipeline.Workspace)/iac/armdeploy.parameters.json'
+          overrideParameters: "-name azapp-codecampster-$(Environment)-001
+                              -hostingPlanName azapp-codecampster-$(Environment)-001-sp
+                              -fullImageTag $(FullImageTag)"
+          deploymentMode: 'Incremental'
+      
