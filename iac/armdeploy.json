@@ -50,15 +50,16 @@
     },
     "resources": [
         {
-            "type": "Microsoft.Web/sites/providers/locks",
+            "type": "Microsoft.Authorization/locks	",
             "apiVersion": "2016-09-01",
-            "name": "[concat(parameters('name'), '/Microsoft.Authorization/siteLock')]",
+            "name": "readonly",
             "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', parameters('name'))]"
+                "[resourceId('Microsoft.Web/sites', parameters('name'))]",
+                "[concat('Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]"
             ],
             "properties": {
                 "level": "ReadOnly",
-                "notes": "Site is readonly"
+                "notes": "Resource group is readonly"
             }
         },
         {
