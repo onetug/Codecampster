@@ -80,7 +80,7 @@ stages:
         displayName: "Delete resource group lock"
         inputs:
           azureSubscription: '$(Azure.ServiceConnection)'
-          scriptType: 'batch'
+          scriptType: bash
           scriptLocation: 'inlineScript'
           inlineScript: 'az group lock delete -g $(ResourceGroup) -n readonly'
       - task: AzureResourceManagerTemplateDeployment@3
