@@ -50,7 +50,7 @@
     },
     "resources": [
         {
-            "type": "Microsoft.Authorization/locks	",
+            "type": "Microsoft.Authorization/locks",
             "apiVersion": "2016-09-01",
             "name": "readonly",
             "dependsOn": [
