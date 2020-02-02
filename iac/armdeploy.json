@@ -46,7 +46,8 @@
         }
     },
     "variables": {
-        "linuxFxVersion": "[concat('DOCKER|', parameters('fullImageTag'))]"
+        "linuxFxVersion": "[concat('DOCKER|', parameters('fullImageTag'))]",
+        "appInsights": "[concat(parameters('name'), '-ai')]"
     },
     "resources": [
         {
@@ -119,6 +120,22 @@
                 "Tier": "[parameters('sku')]",
                 "Name": "[parameters('skuCode')]"
             }
+        },
+         {
+          "apiVersion": "2014-04-01",
+          "name": "[variables('appInsights')]",
+          "type": "Microsoft.Insights/components",
+          "location": "[resourceGroup().location]",
+          "tags": {
+            "applicationType": "web",
+            "projectName": "Orlando Code Camp"
+          },
+          "dependsOn": [
+            "[concat('Microsoft.Web/sites/', parameters('name'))]"
+          ],
+          "properties": {
+            "applicationId": "[parameters('name')]"
+          }
         }
     ]
 }
