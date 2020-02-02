@@ -79,6 +79,10 @@
                 "siteConfig": {
                     "appSettings": [
                         {
+                            "name": "ASPNETCORE_ENVIRONMENT",
+                            "value": "Production"
+                        },
+                        {
                             "name": "DOCKER_REGISTRY_SERVER_URL",
                             "value": "[parameters('dockerRegistryUrl')]"
                         },
