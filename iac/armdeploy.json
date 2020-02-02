@@ -135,9 +135,6 @@
             "applicationType": "web",
             "projectName": "Orlando Code Camp"
           },
-          "dependsOn": [
-            "[concat('Microsoft.Web/sites/', parameters('name'))]"
-          ],
           "properties": {
             "applicationId": "[parameters('name')]"
           }
