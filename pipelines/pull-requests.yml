@@ -28,7 +28,7 @@ steps:
   displayName: "Build Projects"
   inputs:
     command: 'build'
-    projects: '**/*.csproj'
+    projects: '**/CodeCampster.Web.csproj'
 
 - task: DotNetCoreCLI@2
   displayName: "Run Unit Tests"
