@@ -41,21 +41,25 @@ namespace CodeCampster.Web.Auth
         public string ResetPasswordPolicyId { get; set; }
         public string EditProfilePolicyId { get; set; }
         public string RedirectUri { get; set; }
-
+        /// <summary>
+        /// Gets or sets the sign in callback path.
+        /// </summary>
+        public string CallbackPath { get; set; }
+        /// <summary>
+        /// Gets or sets the sign out callback path.
+        /// </summary>
+        public string SignedOutCallbackPath { get; set; }
         /// <summary>
         /// Gets or sets the default policy.
         /// </summary>
         public string DefaultPolicy => SignUpSignInPolicyId;
         public string Authority => $"{AzureAdB2CInstance}/{Tenant}/{DefaultPolicy}/v2.0";
-
         /// <summary>
         /// Gets or sets the client secret.
         /// </summary>
         public string ClientSecret { get; set; }
-
         public string ApiUrl { get; set; }
         public string ApiScopes { get; set; }
-
         /// <summary>
         /// Gets all the underlying authentication schemes.
         /// </summary>

@@ -41,6 +41,7 @@ namespace CodeCampster.Web.Auth
                 context.ProtocolMessage.Scope += $" offline_access {Options.ApiScopes}";
                 context.ProtocolMessage.ResponseType = OpenIdConnectResponseType.CodeIdToken;
             }
+            context.ProtocolMessage.RedirectUri = Options.RedirectUri;
             return Task.FromResult(0);
         }
 

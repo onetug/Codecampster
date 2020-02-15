@@ -42,7 +42,8 @@ namespace CodeCampster.Web.Auth
             options.Events = new OpenIdConnectEvents
             {
                 OnRedirectToIdentityProvider = handlers.OnRedirectToIdentityProvider,
-                OnRemoteFailure = handlers.OnRemoteFailure
+                OnRemoteFailure = handlers.OnRemoteFailure,
+                OnAuthorizationCodeReceived = handlers.OnAuthorizationCodeReceived
             };
         }
 
