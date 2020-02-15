@@ -1,0 +1,43 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "rgName": {
+            "type": "string"
+        },
+        "rgLocation": {
+            "type": "string"
+        },
+        "environment":{
+            "type":"string"
+        },
+        "applicationTier":{
+            "type":"string"
+        },
+        "costCenter":{
+            "type":"string"
+        }
+    },
+    "variables": {
+        "rgFullName": "[tolower(concat('rg-',trim(parameters('environment')),'-',trim(parameters('rgName'))))]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Resources/resourceGroups",
+            "apiVersion": "2019-05-01",
+            "location": "[parameters('rgLocation')]",
+            "name": "[variables('rgFullName')]",
+            "tags": {
+                "application-tier": "[parameters('applicationTier')]",
+                "cost-center": "[parameters('costCenter')]"
+            },
+            "properties": {}
+        }
+    ],
+    "outputs": {
+        "rgFullName":{
+            "type":"string",
+            "value": "[variables('rgFullName')]"
+        }
+    }
+}
