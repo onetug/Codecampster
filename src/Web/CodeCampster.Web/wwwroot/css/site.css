@@ -72,11 +72,11 @@ body {
 
 /* Landing Page */
 .masthead {
-    height: 100vh;
-    min-height: 500px;
-    /*background-image: url('../img/epcot-center-1114606_1280.jpg');*/
-    background-image: url('https://source.unsplash.com/BtbjCFUvBXs/1920x1080');
-    background-size: cover;
+    height: 50vh;
+    min-height: 200px;
+    /* background-image: url('../img/epcot-center-1114606_1280.jpg');*/
+    background-image: url('../img/keynote2020.png'); 
+    background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
 }
