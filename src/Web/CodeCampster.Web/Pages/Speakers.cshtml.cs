@@ -14,6 +14,6 @@ namespace CodeCampster.Web
                 
         }
 
-        public string SessionizeUrl => Sessionize.SpeakersUrl;
+        public string SessionizeUrl => Sessionize.SpeakersWallUrl;
     }
 }
