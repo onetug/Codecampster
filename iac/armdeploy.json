@@ -46,7 +46,8 @@
         }
     },
     "variables": {
-        "linuxFxVersion": "[concat('DOCKER|', parameters('fullImageTag'))]"
+        "linuxFxVersion": "[concat('DOCKER|', parameters('fullImageTag'))]",
+        "appInsights": "[concat(parameters('name'), '-ai')]"
     },
     "resources": [
         {
@@ -72,7 +73,8 @@
                 "projectName": "Orlando Code Camp"
             },
             "dependsOn": [
-                "[concat('Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]"
+                "[concat('Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
+                "[resourceId('Microsoft.insights/components/', variables('appInsights'))]"
             ],
             "properties": {
                 "name": "[parameters('name')]",
@@ -81,6 +83,10 @@
                         {
                             "name": "ASPNETCORE_ENVIRONMENT",
                             "value": "Production"
+                        },
+                      {
+                            "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                            "value": "[reference(variables('appInsights')).InstrumentationKey]"
                         },
                         {
                             "name": "DOCKER_REGISTRY_SERVER_URL",
@@ -123,6 +129,19 @@
                 "Tier": "[parameters('sku')]",
                 "Name": "[parameters('skuCode')]"
             }
+        },
+         {
+          "apiVersion": "2014-04-01",
+          "name": "[variables('appInsights')]",
+          "type": "Microsoft.Insights/components",
+          "location": "[resourceGroup().location]",
+          "tags": {
+            "applicationType": "web",
+            "projectName": "Orlando Code Camp"
+          },
+          "properties": {
+            "applicationId": "[parameters('name')]"
+          }
         }
     ]
 }
