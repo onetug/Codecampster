@@ -80,3 +80,9 @@ body {
     background-position: center;
     background-repeat: no-repeat;
 }
+
+#grad1 {
+  height: 200px;
+  background-color: gray; /* For browsers that do not support gradients */
+  background-image: linear-gradient(to center, white , gray); /* Standard syntax (must be last) */
+}
