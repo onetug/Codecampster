@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace CodeCampster.Web
 {
-    public class ScheduleModel : PageModel
+    public class SponsorsModel : PageModel
     {
         public void OnGet()
         {
