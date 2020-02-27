@@ -110,7 +110,7 @@ stages:
             deploymentOutputs: 'Outputs.ArmJsonRaw'
         - template: templates/toggleResourceGroupLock.yml
           parameters:
-            ARMServiceConnection: 'ARM Connection'
+            ARMServiceConnection: '$(Azure.ServiceConnection)'
             SubscriptionId: $(SubscriptionId)
             AzureRegion: '$(PrimaryRegion)'
             ResourceGroupName: $(ResourceGroup)
