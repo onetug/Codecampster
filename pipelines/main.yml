@@ -7,6 +7,7 @@ variables:
   ACR.ContainerRegistryServiceConnnection: 'codecampster-nebbia-registry'
   DockerHub.ContainerRegistryServiceConnnection: 'orlando-codecamp-registry'
   Azure.ServiceConnection: 'codecampster-nebbia-partner'
+  PrimaryRegion: 'eastus'
 
 stages:
 - stage: build
@@ -64,12 +65,12 @@ stages:
         publishLocation: 'Container'
 - stage: deploy_production
   displayName: "Production"
-  dependsOn: build
+  dependsOn: ['build']
   pool:
     image: 'ubuntu-latest'
   jobs:    
-    - job: deploy_production
-      displayName: "Deploy to Production"
+    - job: deploy_production_webapp
+      displayName: "Deploy Web App to Production"
       variables: 
         Environment: prod
         ResourceGroup: rg-codecamp-$(Environment)-001
@@ -90,7 +91,7 @@ stages:
           azureResourceManagerConnection: '$(Azure.ServiceConnection)'
           action: 'Create Or Update Resource Group'
           resourceGroupName: '$(ResourceGroup)'
-          location: 'East US'
+          location: '$(PrimaryRegion)'
           templateLocation: 'Linked artifact'
           csmFile: '$(Pipeline.Workspace)/iac/armdeploy.json'
           csmParametersFile: '$(Pipeline.Workspace)/iac/armdeploy.parameters.json'
@@ -98,4 +99,39 @@ stages:
                               -hostingPlanName azapp-codecampster-$(Environment)-001-sp
                               -fullImageTag $(FullImageTag)"
           deploymentMode: 'Incremental'
-      
+    - job: deploy_production_networking
+      displayName: "Deploy Networking Resources"
+      variables: 
+        Environment: prod
+        ResourceGroup: rg-codecamp-core-001
+        lockType: 'delete'
+      steps:
+        - download: current
+        - template: templates/toggleResourceGroupLock.yml
+          parameters:
+            ARMServiceConnection: '$(Azure.ServiceConnection)'
+            SubscriptionId: $(SubscriptionId)
+            AzureRegion: '$(PrimaryRegion)'
+            ResourceGroupName: '$(ResourceGroup)'
+            LockType: '$(lockType)'
+            LockState: 'Disabled'
+        - task: AzureResourceManagerTemplateDeployment@3
+          displayName: 'ARM deployment: Azure Front Door'
+          inputs:
+            deploymentScope: 'Resource Group'
+            azureResourceManagerConnection: '$(Azure.ServiceConnection)'
+            subscriptionId: $(SubscriptionId)
+            resourceGroupName: $(ResourceGroup)
+            location: '$(PrimaryRegion)'
+            csmFile: '$(System.DefaultWorkingDirectory)/iac/FrontDoor.json'
+            csmParametersFile: '$(System.DefaultWorkingDirectory)/iac/FrontDoor-$(Environment).parameters.json'
+            deploymentMode: 'Incremental'
+            deploymentOutputs: 'Outputs.ArmJsonRaw'
+        - template: templates/toggleResourceGroupLock.yml
+          parameters:
+            ARMServiceConnection: 'ARM Connection'
+            SubscriptionId: $(SubscriptionId)
+            AzureRegion: '$(PrimaryRegion)'
+            ResourceGroupName: $(ResourceGroup)
+            LockType: '$(lockType)'
+            LockState: 'Enabled'
