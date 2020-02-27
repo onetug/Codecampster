@@ -12,6 +12,11 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
+- task: UseDotNet@2
+  displayName: 'Install .NET Core SDK'
+  inputs:
+    version: '3.1.x'
+    performMultiLevelLookup: true
 - task: DotNetCoreCLI@2
   displayName: "Restore Packages"
   inputs:
@@ -23,7 +28,7 @@ steps:
   displayName: "Build Projects"
   inputs:
     command: 'build'
-    projects: '**/*.csproj'
+    projects: '**/CodeCampster.Web.csproj'
 
 - task: DotNetCoreCLI@2
   displayName: "Run Unit Tests"

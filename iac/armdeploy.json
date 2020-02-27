@@ -81,6 +81,10 @@
                 "siteConfig": {
                     "appSettings": [
                         {
+                            "name": "ASPNETCORE_ENVIRONMENT",
+                            "value": "Production"
+                        },
+                      {
                             "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
                             "value": "[reference(variables('appInsights')).InstrumentationKey]"
                         },

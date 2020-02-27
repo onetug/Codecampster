@@ -13,25 +13,6 @@ stages:
 - stage: build
   displayName: Build and Push
   jobs:  
-  - job: build_legacy
-    displayName: Build and Push Legacy
-    pool:
-      image: 'ubuntu-latest'
-    variables: 
-      App.Name: mvc
-      App.Dockerfile: src/Web/WebMVC/Dockerfile
-    steps:
-    - task: Docker@2
-      displayName: Build and Push
-      inputs:
-        command: buildAndPush
-        containerRegistry: $(ACR.ContainerRegistryServiceConnnection)
-        repository: codecampster/$(App.Name)
-        buildContext: .
-        Dockerfile: $(App.Dockerfile)
-        tags: |
-          $(Build.BuildNumber)
-          latest
   - job: build_greenfield
     displayName: Build and Push Greenfield
     pool:
