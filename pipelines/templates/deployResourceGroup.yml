@@ -1,0 +1,31 @@
+parameters:
+  ARMServiceConnection: ''
+  SubscriptionId: ''
+  AzureRegion: ''
+  ResourceName: ''
+  Environment: ''
+  AppTier: ''
+  CostCenter: ''
+steps:
+- task: AzureResourceManagerTemplateDeployment@3
+  displayName: 'ARM Template deployment: Subscription scope'
+  inputs:
+    deploymentScope: Subscription
+    azureResourceManagerConnection: ${{ parameters.ARMServiceConnection}}
+    subscriptionId: ${{ parameters.SubscriptionId}}
+    location: '${{ parameters.AzureRegion}}'
+    csmFile: '$(System.DefaultWorkingDirectory)/iac/utils/resourceGroupTemplate.json'
+    overrideParameters: "-rgName ${{parameters.ResourceName}}
+      -rgLocation ${{parameters.AzureRegion}}
+      -environment ${{parameters.Environment}}
+      -applicationTier ${{parameters.AppTier}}
+      -costCenter ${{parameters.CostCenter}}"
+    deploymentMode: 'Incremental'
+    deploymentOutputs: 'Outputs.ArmJsonRaw'
+
+- task: PowerShell@2
+  displayName: "Parsing outputs from ARM deployment to pipeline variables"
+  inputs:
+    targetType: 'filePath'
+    filePath: '$(System.DefaultWorkingDirectory)/iac/utils/Convert-ArmOutput.ps1'
+    arguments: "-ArmOutputString '$(Outputs.ArmJsonRaw)' -Verbose"
