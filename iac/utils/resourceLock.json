@@ -1,0 +1,36 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters":{
+    "lockType":{
+      "type":"string",
+      "allowedValues":[
+        "delete",
+        "readonly"
+      ],
+      "defaultValue": "readonly"
+    }
+  },
+  "resources":[
+    {
+        "condition": "[equals(parameters('lockType'),'readonly')]",
+        "type": "Microsoft.Authorization/locks",
+        "apiVersion": "2016-09-01",
+        "name": "readonly",
+        "properties": {
+            "level": "ReadOnly",
+            "notes": "Resource group and all subresources are readonly"
+        }
+    },
+    {
+        "condition": "[equals(parameters('lockType'),'delete')]",
+        "type": "Microsoft.Authorization/locks",
+        "apiVersion": "2016-09-01",
+        "name": "delete",
+        "properties": {
+            "level": "CanNotDelete",
+            "notes": "Resource group and all subresources are protected from deletion"
+        }
+    }
+  ]
+}

@@ -1,0 +1,185 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "frontDoorName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the frontdoor resource."
+            }
+        },
+        "primaryDomainName":{
+            "type": "string",
+            "metadata": {
+                "description": "The hostname of the frontendEndpoints. Must be a domain name."
+            }
+        },
+        "sessionAffinityEnabledState": {
+            "type": "string",
+            "allowedValues": [
+                "Enabled",
+                "Disabled"
+            ],
+            "metadata": {
+                "description": "Whether to allow session affinity on this host. Valid options are 'Enabled' or 'Disabled'."
+            }
+        },
+        "sessionAffinityTtlSeconds": {
+            "type": "int",
+            "metadata": {
+                "description": "The TTL to use in seconds for session affinity, if applicable."
+            }
+        },
+        "primarySiteBackendPool": {
+            "type": "object",
+            "metadata": {
+                "description": "Details of the primary Site Backend Pool for the Azure Front Door"
+            }
+        }
+    },
+    "variables": {
+        "frontDoorName": "[toLower(concat('fd-',parameters('frontDoorName')))]",
+        "frontdoorLocation": "global",
+        "primaryDomainFrontendId": "[resourceId('Microsoft.Network/frontDoors/frontendEndpoints',variables('frontDoorName'),'primaryDomainEndpoint')]"
+    },
+    "resources": [        
+        {
+            "apiVersion": "2019-04-01",
+            "type": "Microsoft.Network/frontDoors",
+            "name": "[variables('frontDoorName')]",
+            "location": "[variables('frontdoorLocation')]",
+            "tags": {},
+            "properties":{
+                "routingRules": [
+                    {
+                        "name": "HTTPSRedirect",
+                        "properties": {
+                            "frontendEndpoints":[
+                                {
+                                    "id": "[resourceId('Microsoft.Network/frontDoors/frontendEndpoints',variables('frontDoorName'),'defaultEndpoint')]"
+                                },
+                                {
+                                    "id": "[resourceId('Microsoft.Network/frontDoors/frontendEndpoints',variables('frontDoorName'),'primaryDomainEndpoint')]"
+                                }
+                            ],
+                            "routeConfiguration": {
+                                "@odata.type": "#Microsoft.Azure.FrontDoor.Models.FrontdoorRedirectConfiguration",
+                                "redirectType": "Found",
+                                "redirectProtocol": "HttpsOnly"
+                            },
+                            "acceptedProtocols": [
+                                "Http"
+                            ],
+                            "patternsToMatch": [
+                                "/*"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "primarySite-HTTPS",
+                        "properties":{
+                            "frontendEndpoints":[
+                                {
+                                    "id": "[variables('primaryDomainFrontendId')]"
+                                }
+                            ],
+                            "acceptedProtocols":[
+                                "Https"
+                            ],
+                            "patternsToMatch":[
+                                "/*"
+                            ],
+                            "routeConfiguration": {
+                                "@odata.type": "#Microsoft.Azure.FrontDoor.Models.FrontdoorForwardingConfiguration",
+                                "forwardingProtocol": "HttpsOnly",
+                                "backendPool": {
+                                    "id": "[resourceId('Microsoft.Network/frontDoors/backendPools', variables('frontDoorName'), parameters('primarySiteBackendPool').name)]"
+                                },
+                                "cacheConfiguration": {
+                                    "queryParameterStripDirective": "StripAll",
+                                    "dynamicCompression": "Enabled"
+                                }
+                            },
+                            "enabledState": "Enabled"
+                        }
+                    }
+                ],
+                "healthProbeSettings": [
+                    {
+                        "name": "healthProbeRoot",
+                        "properties": {
+                            "path": "/",
+                            "protocol": "Https",
+                            "intervalInSeconds": 120
+                        }
+                    },
+                    {
+                        "name": "healthProbeHealthCheckEndpoint",
+                        "properties": {
+                            "path": "/hc",
+                            "protocol": "Https",
+                            "intervalInSeconds": 60
+                        }
+                    }
+                ],
+                "loadBalancingSettings": [
+                    {
+                        "name": "loadBalancingSettings1",
+                        "properties": {
+                            "sampleSize": 4,
+                            "successfulSamplesRequired": 2
+                        }
+                    }
+                ],
+                "backendPools": [
+                    {
+                        "name": "[parameters('primarySiteBackendPool').name]",
+                        "properties": {
+                            "copy": [
+                                {
+                                    "name": "backends",
+                                    "count": "[length(parameters('primarySiteBackendPool').backends)]",
+                                    "input": {
+                                        "address": "[parameters('primarySiteBackendPool').backends[copyIndex('backends')].address]",
+                                        "httpPort": "[parameters('primarySiteBackendPool').backends[copyIndex('backends')].httpPort]",
+                                        "httpsPort": "[parameters('primarySiteBackendPool').backends[copyIndex('backends')].httpsPort]",
+                                        "weight": "[parameters('primarySiteBackendPool').backends[copyIndex('backends')].weight]",
+                                        "priority": "[parameters('primarySiteBackendPool').backends[copyIndex('backends')].priority]",
+                                        "enabledState": "[parameters('primarySiteBackendPool').backends[copyIndex('backends')].enabledState]",
+                                        "backendHostHeader": "[parameters('primarySiteBackendPool').backends[copyIndex('backends')].backendHostHeader]"
+                                    }
+                                }
+                            ],
+                            "loadBalancingSettings": {
+                                "id": "[resourceId('Microsoft.Network/frontDoors/loadBalancingSettings', variables('frontDoorName'), 'loadBalancingSettings1')]"
+                            },
+                            "healthProbeSettings": {
+                                "id": "[resourceId('Microsoft.Network/frontDoors/healthProbeSettings', variables('frontDoorName'), 'healthProbeRoot')]"
+                            }
+                        }
+                    }
+                ],
+                "frontendEndpoints": [
+                    {
+                        "name": "defaultEndpoint",
+                        "properties": {
+                            "hostName": "[concat(variables('frontDoorName'), '.azurefd.net')]",
+                            "sessionAffinityEnabledState": "[parameters('sessionAffinityEnabledState')]",
+                            "sessionAffinityTtlSeconds": "[parameters('sessionAffinityTtlSeconds')]"
+                        }
+                    },
+                    {
+                        "name": "primaryDomainEndpoint",
+                        "properties": {
+                            "hostName": "[parameters('primaryDomainName')]",
+                            "sessionAffinityEnabledState": "[parameters('sessionAffinityEnabledState')]",
+                            "sessionAffinityTtlSeconds": "[parameters('sessionAffinityTtlSeconds')]",
+                        }
+                    }
+                ],
+                "enabledState": "Enabled"
+            }
+        }
+    ],
+    "outputs": {}
+}
