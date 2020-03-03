@@ -58,13 +58,6 @@ stages:
         FullImageTag: orlandocodecamp/codecampster:$(Build.BuildNumber)
       steps: 
       - download: current
-      - task: AzureCLI@2
-        displayName: "Delete resource group lock"
-        inputs:
-          azureSubscription: '$(Azure.ServiceConnection)'
-          scriptType: bash
-          scriptLocation: 'inlineScript'
-          inlineScript: 'az group lock delete -g $(ResourceGroup) -n delete'
       - task: AzureResourceManagerTemplateDeployment@3
         displayName: ARM Template Deployment
         inputs:
