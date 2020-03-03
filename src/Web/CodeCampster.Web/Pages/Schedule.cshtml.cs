@@ -14,6 +14,6 @@ namespace CodeCampster.Web
 
         }
 
-        public string SessionizeUrl => Sessionize.SessionsUrl;
+        public string SessionizeUrl => Sessionize.ScheduleSmartGridUrl;
     }
 }
