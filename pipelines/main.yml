@@ -64,7 +64,7 @@ stages:
           azureSubscription: '$(Azure.ServiceConnection)'
           scriptType: bash
           scriptLocation: 'inlineScript'
-          inlineScript: 'az group lock delete -g $(ResourceGroup) -n readonly'
+          inlineScript: 'az group lock delete -g $(ResourceGroup) -n delete'
       - task: AzureResourceManagerTemplateDeployment@3
         displayName: ARM Template Deployment
         inputs:
