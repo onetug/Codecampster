@@ -19,11 +19,11 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
-                    <partial name="_LoginPartial" />
+                    @* <partial name="_LoginPartial" /> *@
                     <ul class="navbar-nav flex-grow-1">
-                        @* <li class="nav-item">
+                        <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-page="/Sessions">Sessions</a>
-                        </li> *@
+                        </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-page="/schedule">Schedule</a>
                         </li>
@@ -33,6 +33,32 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-page="/Sponsors">Sponsors</a>
                         </li>
+                        <li class="nav-item">
+                            <!-- Noscript content for added SEO -->
+<noscript><a href="https://www.eventbrite.com/e/orlando-codecamp-tech-conference-2020-tickets-97690782761" rel="noopener noreferrer" target="_blank"></noscript>
+<!-- You can customize this button any way you like -->
+<button id="eventbrite-widget-modal-trigger-97690782761" type="button">RSVP</button>
+<noscript></a>RSVP here</noscript>
+
+<script src="https://www.eventbrite.com/static/widgets/eb_widgets.js"></script>
+
+<script type="text/javascript">
+    var exampleCallback = function() {
+        console.log('Registration complete!');
+    };
+
+    window.EBWidgets.createWidget({
+        widgetType: 'checkout',
+        eventId: '97690782761',
+        modal: true,
+        modalTriggerElementId: 'eventbrite-widget-modal-trigger-97690782761',
+        onOrderComplete: exampleCallback
+    });
+</script>
+                        </li>
+                        @* <li class="nav-item">
+                            <a class="nav-link text-dark" target="_blank" href="https://orlando-codecamp-tech-conf-2020.sessionize.com/">Mobile-friendly site</a>
+                        </li> *@
                     </ul>
                 </div>
             </div>
