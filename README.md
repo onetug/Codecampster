@@ -1,8 +1,8 @@
 [![Build Status](https://dev.azure.com/NebbiaDemo/OrlandoCodeCamp/_apis/build/status/codecampster.main?branchName=master)](https://dev.azure.com/NebbiaDemo/OrlandoCodeCamp/_build/latest?definitionId=239&branchName=master)
 
-# Code Campster
+# Codecampster
 
-Welcome to the source code for Code Campster!
+Welcome to the source code for Codecampster!
 
 ## Getting started
 

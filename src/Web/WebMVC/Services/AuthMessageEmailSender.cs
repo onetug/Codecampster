@@ -27,7 +27,7 @@ namespace Codecamp.Services
         {
             var _message = new MimeMessage();
             _message.Subject = subject;
-            _message.From.Add(new MailboxAddress("Orlando Code Camp", Options.Account));
+            _message.From.Add(new MailboxAddress("Orlando Codecamp", Options.Account));
             _message.To.Add(new MailboxAddress(emailAddress, emailAddress));
             _message.Body = new TextPart("html") { Text = message };
 
