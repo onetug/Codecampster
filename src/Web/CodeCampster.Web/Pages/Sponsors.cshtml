@@ -4,28 +4,174 @@
     ViewData["Title"] = "Sponsors";
     Layout = "Shared/PageLayout";
 }
-<h1>Sponsors</h1>
+<style>
+    hr.grayHR {
+        border: none;
+        color: #bbb;
+        background-color: #bbb;
+        height: 1px;
+        width:95%;
+    }
+    h2 {
+      font-style:italic;
+      font-family:inherit;
+      font-size:x-large;
+      font-weight:bold;
 
-<section class="py-5">
-    <div class="container">
-        <h2>Platinum</h2>
-        <img src="/img/sponsors/SeminoleState.png" style="height: 50px;"/>
-        <img src="/img/sponsors/Onetug.png" style="height: 50px;"/>
-        <h2>Speaker Party</h2>
-        <img src="/img/sponsors/NewSignature.png" style="height: 50px;"/>
-        <h2>Gold</h2>
-        <img src="/img/sponsors/Cybermedics.png" style="height: 50px;">
-        <h2>Silver</h2>
-        <img src="/img/sponsors/codingblocks.png" style="height: 50px;">
-        <img src="/img/sponsors/timcorey.jpg" style="height: 50px;">
-        <img src="/img/sponsors/kforce.png" style="height: 50px;">
-        <img src="/img/sponsors/SNI.png" style="height: 50px;">
-        <img src="/img/sponsors/tews.png" style="height: 50px;">
-        <img src="/img/sponsors/PowerDMS.png" style="height: 50px;">
-        <h2>Bronze</h2>
-        <img src="/img/sponsors/atlanticnet.jpg" style="height: 50px;">
-        <img src="/img/sponsors/EPS.png" style="height: 50px;">
-        <img src="/img/sponsors/agilethought.png" style="height: 50px;">
-        <img src="/img/sponsors/syncfusion.png" style="height: 50px;">
+    }
+    h1 {
+        font-family: inherit;
+        font-weight: bold;
+        font-size:2em;
+    }
+    buffer {
+        margin-top:10px;
+        margin-bottom: 15px;
+    }
+</style>
+<section id="SponsorDiv">
+    <section id="sponsorHeader" class="col-12">
+        <div class="row">
+            <div class="col-4">
+                <h1>Sponsors</h1>
+            </div>
+            <div class="col">
+                <p>Orlando CodeCamp &amp; Tech Conference wouldn't be possible with our amazing sponsors. We encourage every attendee to visit their sites and to stop by their booths in the exhibit area while at Codecamp to let them know we appreciate their contributions. </p>
+            </div>
+
+        </div>
+        <hr class="grayHR" />
+    </section>
+
+    <div class="row" id="Sponsors">
+        <div class="col-6 col-md-4">
+            <h2 style="white-space:pre-wrap;">Platinum</h2>
+        </div>
+
+        <div class="col-6 col-md-4">
+            <a href="https://www.seminolestate.edu" target="_blank">
+                <img src="/img/sponsors/SeminoleState.png" style="height: 75px;" sizes="" alt="SeminoleStateCollege.png" />
+            </a>
+
+        </div>
+        <div class="col-6 col-md-4">
+            <a href="http://www.onetug.org" target="_blank">
+                <img src="/img/sponsors/Onetug.png" style="height: 75px;" alt="onetug.png" />
+            </a>
+        </div>
+
+        <div class="w-100"></div>
+
+        <div class="col-6 col-md-4">
+            <h2 style="white-space:pre-wrap;">Speaker Party</h2>
+        </div>
+        <div class="col-6 col-md-4">
+            <a href="https://www.newsignature.com" target="_blank">
+                <img src="/img/sponsors/NewSignature.png" style="height: 75px;" alt="NewSignature.png" />
+            </a>
+        </div>
+
+        <div class="w-100"></div>
+
+        <div class="col-6 col-md-4">
+            <h2 style="white-space:pre-wrap;">Gold Sponsors</h2>
+        </div>
+
+        <div class="col-6 col-md-4">
+            <a href="http://www.cyber-medics.com" target="_blank">
+                <img src="/img/sponsors/Cybermedics.png" style="height: 75px;" alt="Cybermedics.png" />
+            </a>
+        </div>
+
+
+        <div class="w-100"></div>
+
+        <div class="col-6 col-md-4">
+            <h2 style="white-space:pre-wrap;">Silver Sponsors</h2>
+        </div>
+
+        <div class="col-6 col-md-4">
+            <a href="https://www.codingblocks.net" target="_blank">
+                <img src="/img/sponsors/codingblocks.png" style="height: 75px;" alt="codingblocks.png" />
+            </a>
+        </div>
+
+        <div class="col-6 col-md-4">
+            <a href="https://www.kforce.com/" target="_blank">
+                <img src="/img/sponsors/kforce.png" style="height: 40%;" alt="kforce.png" />
+            </a>
+        </div>
+
+        <div class="w-100"></div>
+
+        <div class="col-12"></div>
+        <div class="col-6 col-md-4"></div>
+
+        <div class="col-6 col-md-4">
+            <a href="https://www.iamtimcorey.com/" target="_blank">
+                <img src="/img/sponsors/timcorey.png" style="height: 75px;" alt="timcorey.png" />
+            </a>
+        </div>
+
+        <div class="col-6 col-md-4">
+            <a href="http://www.snicompanies.com/" target="_blank">
+                <img src="/img/sponsors/SNI.png" style="height: 40%;" alt="sni.png" />
+            </a>
+        </div>
+
+        <div class="w-100"></div>
+
+        <div class="col-6 col-md-4"></div>
+
+        <div class="col-6 col-md-4">
+            <a href="https://tewscompany.com/" target="_blank">
+                <img src="/img/sponsors/tews.png" style="height: 75px;" alt="tews.png" />
+            </a>
+        </div>
+
+        <div class="col-6 col-md-4">
+            <a href="https://www.powerdms.com/" target="_blank">
+                <img src="/img/sponsors/PowerDMS.png" style="height: 75px;" alt="powerdms.png" />
+            </a>
+        </div>
+
+        <div class="w-100"></div>
+
+        <div class="col-6 col-md-4">
+            <h2 style="white-space:pre-wrap;">Bronze Sponsors</h2>
+        </div>
+
+        <div class="col-6 col-md-4">
+            <a href="https://agilethought.com/" target="_blank">
+                <img src="/img/sponsors/agilethought.png" style="height: 45%;" alt="agilethought.png" />
+            </a>
+        </div>
+
+        <div class="col-6 col-md-4">
+            <a href="https://www.codemag.com/" target="_blank">
+                <img src="/img/sponsors/EPS.png" style="height: 45%;" alt="EPS.png" />
+            </a>
+        </div>
+
+        <div class="w-100"></div>
+
+        <div class="col-12"></div>
+        <div class="col-6 col-md-4"></div>
+
+        <div class="col-6 col-md-4">
+            <a href="https://www.atlantic.net/" target="_blank">
+                <img src="/img/sponsors/atlanticnet.png" style="height: 65%;" alt="atlanticnet.png" />
+            </a>
+        </div>
+
+        <div class="col-6 col-md-4">
+            <a href="https://www.syncfusion.com/" target="_blank">
+                <img src="/img/sponsors/syncfusion.png" style="height: 55%;" alt="syncfusion.png" />
+            </a>
+        </div>
+    </div>
+
+    <div class="buffer">
+        <p>Thank you to all our sponsors!</p>
     </div>
 </section>
