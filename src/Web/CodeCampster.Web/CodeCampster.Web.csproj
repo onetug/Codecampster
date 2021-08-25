@@ -14,7 +14,7 @@
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.4.0" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.13.1" />
     <PackageReference Include="Microsoft.ApplicationInsights.DependencyCollector" Version="2.13.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.18" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="3.1.2" />
     <PackageReference Include="Microsoft.Extensions.Logging.AzureAppServices" Version="3.1.2" />
     <PackageReference Include="Microsoft.Identity.Client" Version="4.8.2" />
